@@ -1,7 +1,7 @@
 ---
 title: Java锁
 date: {{ date }}
-top: 970
+sticky: 970
 categories:
 - Java
 ---

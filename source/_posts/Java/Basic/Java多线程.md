@@ -1,7 +1,7 @@
 ---
 title: Java多线程
 date: {{ date }}
-top: 960
+sticky: 960
 categories:
 - Java
 ---

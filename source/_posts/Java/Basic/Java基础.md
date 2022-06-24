@@ -1,7 +1,7 @@
 ---
 title: Java基础
 # date: {{ date }}
-top: 1000
+sticky: 1000
 categories:
 - Java
 tags: Java
