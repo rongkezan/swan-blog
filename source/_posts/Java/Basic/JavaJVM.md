@@ -1,7 +1,6 @@
 ---
 title: Java JVM
 date: {{ date }}
-sticky: 5
 categories:
 - Java
 ---

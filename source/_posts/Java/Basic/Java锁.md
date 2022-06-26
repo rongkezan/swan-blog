@@ -1,7 +1,6 @@
 ---
 title: Java锁
 date: {{ date }}
-sticky: 970
 categories:
 - Java
 ---
@@ -12,7 +11,7 @@ categories:
 
 是一组规范，可见性、原子性、有序性，定义了程序中各个变量的访问方式。
 
-**解释**：线程创建时JVM会为其创建工作内存（线程私有），JMM规定所有变量存储在主内存（共享），但线程必须在工作内存中操作变量。具体流程：拷贝->操作->写回</。各个工作内存存储主内存变量的复印件，不同线程无法互相访问，线程间通信必须通过主内存。
+**解释**：线程创建时JVM会为其创建工作内存（线程私有），JMM规定所有变量存储在主内存（共享），但线程必须在工作内存中操作变量。具体流程：拷贝->操作->写回。各个工作内存存储主内存变量的复印件，不同线程无法互相访问，线程间通信必须通过主内存。
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210121135743932.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
@@ -24,13 +23,9 @@ categories:
 
 ## volatile
 
-### 作用
+作用：保证可见性，禁止指令重排
 
-保证可见性，禁止指令重排
-
-### 原理
-
-缓存一致性协议。JMM模型里有8个指令完成数据的读写，通过其中load和store指令相互组成的4个内存屏障实现禁止指令重排序。
+原理：缓存一致性协议。JMM模型里有8个指令完成数据的读写，通过其中load和store指令相互组成的4个内存屏障实现禁止指令重排序。
 
 **字节码层面**：ACC_VOLATILE
 

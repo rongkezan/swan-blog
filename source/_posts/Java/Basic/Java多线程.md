@@ -1,18 +1,13 @@
 ---
-title: Java多线程
+title: Java线程
 date: {{ date }}
-sticky: 960
 categories:
 - Java
 ---
 
-# Java 多线程
+## 线程的概念
 
-## 1. 线程的概念
-
-**操作系统是如何切换线程的**
-
-Cpu会从内存里取出线程，线程内部状态是由线程栈来维护的。
+操作系统是如何切换线程的：Cpu会从内存里取出线程，线程内部状态是由线程栈来维护的
 
 一个程序的不同分支
 
@@ -38,9 +33,9 @@ new Thread(() -> {
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210107211056470.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
-## 2. 线程的创建方式
+## 线程的创建方式
 
-1. 继承Thead类
+### 继承Thead类
 
 ```java
 class MyThread extends Thread{
@@ -54,7 +49,7 @@ MyThread t = new MyThread();
 t.start();
 ```
 
-2. 实现Runnable接口
+### 实现Runnable接口
 
 普通写法
 
@@ -78,7 +73,9 @@ new Thread(() -> {
 }).start();
 ```
 
-3. 实现Callable接口：可以抛出异常，支持泛型的返回值
+### 实现Callable接口
+
+> 可以抛出异常，支持泛型的返回值
 
 - Future：可以获得线程的执行结果
 
@@ -113,7 +110,7 @@ task2.exceptionally(e -> {
 Thread.sleep(200);
 ```
 
-4. 使用线程池
+### 使用线程池
 
 ```java
 ScheduledExecutorService pool = Executors.newScheduledThreadPool(5);
@@ -126,16 +123,16 @@ System.out.println(result.get());
 pool.shutdown();
 ```
 
-## 3. 线程池详解
+## 线程池详解
 
-### 3.1 线程池种类
+### 线程池种类
 
 - newFixedThreadPool（固定大小的线程池）
 - newSingleThreadExecutor（单线程线程池）
 - newCachedThreadPool（可缓存线程的线程池）用于并发执行大量短期的小任务。
 - newScheduledThreadPool：用于需要多个后台线程执行周期任务，同时需要限制线程数量的场景。
 
-### 3.2 线程池参数
+### 线程池参数
 
 1. corePoolSize: 线程池中的常驻核心线程数，即使空闲也不归还。
 2. maximumPoolSize: 线程池能够容纳同时执行的最大线程数，空闲了会归还给操作系统。
@@ -145,7 +142,7 @@ pool.shutdown();
 6. threadFactory: 表示生成线程池中工作线程的线程工厂，用于创建线程，一般默认即可。
 7. handler: 拒绝策略，表示当队列满了并且工作线程大于等于线程的最大线程数时如何来拒绝请求执行的runnable策略。
 
-### 3.3 线程池底层工作原理
+### 线程池底层工作原理
 
 - 在创建了线程池后，等待提交过来的任务请求
 - 当调用execute()方法添加一个请求任务时，线程池会做如下判断
@@ -159,7 +156,7 @@ pool.shutdown();
   - 如果当线程数大于corePoolSize，那么这个线程就被停掉
   - 线程池的所有任务完成后最终会收缩到corePoreSize
 
-### 3.4 拒绝策略
+###  拒绝策略
 
 定义：等待队列和max线程数都满了，那么就需要启用拒绝策略处理这个问题。
 
@@ -169,7 +166,7 @@ pool.shutdown();
 - DiscardPolicy：直接丢弃任务，不予任何处理也不抛出异常
 - 自定义Policy：实现 `RejectedExecutionHandler` 接口
 
-### 3.5 自定义线程池
+### 自定义线程池
 
 #### ThreadPoolExecutor
 
@@ -245,7 +242,7 @@ public Executor taskExector() {
 ThreadPoolTaskExecutor taskExecutor;
 ```
 
-### 3.6 如何合理配置线程池
+### 如何合理配置线程池
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210116163921272.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 

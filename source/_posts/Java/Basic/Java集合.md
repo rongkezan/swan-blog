@@ -1,7 +1,6 @@
 ---
 title: Java集合
 date: {{ date }}
-sticky: 980
 categories:
 - Java
 ---
