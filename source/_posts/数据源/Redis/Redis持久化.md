@@ -1,0 +1,106 @@
+---
+title: Redis持久化
+date: {{ date }}
+categories:
+- 数据源
+- Redis
+---
+
+## 1. RDB
+
+默认的持久化方式，快照，是指在指定的时间间隔内将内存中的数据集快照写入磁盘，全量更新
+
+这种方式是就是将内存中数据以快照的方式写入到二进制文件中，默认的文件名为dump.rdb
+
+优势：
+
+1. RDB文件紧凑，全量备份，非常适合用于进行备份和灾难恢复。
+
+2. 生成RDB文件的时候，redis主进程会fork一个子进程来处理所有保存工作，主进程不需要进行任何磁盘IO操作。
+
+3. RDB 在恢复大数据集时的速度比 AOF 的恢复速度要快。
+
+fork：指的是子进程和父进程指向了同一个内存空间，但父子进程数据是隔离的，所以快照备份的是快照时间点的那部分数据。
+
+fork实现了copy on write，也就是说父进程修改的时候会复制一份到子进程，本质上是子进程修改了指针指向
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210127185350887.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
+劣势：
+
+由于进行快照持久化时，会开启一个子进程专门负责快照持久化，子进程会拥有父进程的内存数据，所以在快照持久化期间修改的数据不会被保存，可能丢失数据
+
+不支持拉链，只有一个 dump.rdb
+
+配置文件说明
+
+```
+# 900秒内1条记录更新则备份
+save 900 1
+save 300 10
+save 60 10000
+# 当启用了RDB且最后一次后台保存数据失败，redis是否停止接收数据
+stop-writes-on-bgsave-error yes
+# 对于存储到磁盘中的快照，可以设置是否进行压缩存储
+rdbcompression yes
+# redis使用CRC64算法来进行数据校验，但是这样做会增加大约10%的性能消耗
+rdbchecksum yes
+# 设置快照的文件名
+dbfilename dump.rdb
+```
+
+## 2. AOF
+
+redis会将每一个收到的写命令都通过write函数追加到文件中，通俗的理解就是日志记录。
+
+持久化文件会变的越来越大，为了压缩aof的持久化文件。redis提供了bgrewriteaof命令。将内存中的数据以命令的方式保存到临时文件中，同时会fork出一条新进程来将文件重写。
+
+**优点**
+
+（1）AOF可以更好的保护数据不丢失，一般AOF会每隔1秒，通过一个后台线程执行一次fsync操作，最多丢失1秒钟的数据。（2）AOF日志文件没有任何磁盘寻址的开销，写入性能非常高，文件不容易破损。
+
+（3）AOF日志文件即使过大的时候，出现后台重写操作，也不会影响客户端的读写。
+
+（4）AOF日志文件的命令通过非常可读的方式进行记录，这个特性非常适合做灾难性的误删除的紧急恢复。比如某人不小心用flushall命令清空了所有数据，只要这个时候后台rewrite还没有发生，那么就可以立即拷贝AOF文件，将最后一条flushall命令给删了，然后再将该AOF文件放回去，就可以通过恢复机制，自动恢复所有数据
+
+**缺点**
+
+（1）对于同一份数据来说，AOF日志文件通常比RDB数据快照文件更大
+
+（2）AOF开启后，支持的写QPS会比RDB支持的写QPS低，因为AOF一般会配置成每秒fsync一次日志文件，当然，每秒一次fsync，性能也还是很高的
+
+（3）以前AOF发生过bug，就是通过AOF记录的日志，进行数据恢复的时候，没有恢复一模一样的数据出来。
+
+配置文件说明
+
+```
+# 是否开启AOF，yes 是， no 否
+appendonly yes
+
+# 持久化策略
+# 1. always: 同步持久化，每次发生数据变更会立即记录到磁盘，性能较差但完整性较好
+# 2. everysec: 出厂默认推荐，异步操作，每秒记录，如果一秒宕机，有数据丢失
+# 3. no
+appendfsync everysec
+
+# AOF文件持续增长过大时，会fork出一条新进程来讲文件重写
+no-appendfsync-on-rewrite no	 # 重写时是否可以运用appendfsync，用no即可，保证数据的安全性
+auto-aof-rewrite-percentage 100
+auto-aof-rewrite-min-size 64mb
+```
+修复AOF文件
+
+- redis-check-aof --fix appendonly.aof
+
+**设计一个方案让 AOF 足够小**
+
+hdfs + fsimage + edits.log 让日志只记录增量合并的过程
+
+4.0以前：重写，删除抵消的命令、合并重复的命令，最终也是一个纯指令的日志文件
+
+4.0以后：重写，将增量以指令的方式 Append 到 RDB，AOF是是一个混合体，利用了RDB的和AOF的全量
+
+
+
+写操作会触发IO：no、always、每秒
+
