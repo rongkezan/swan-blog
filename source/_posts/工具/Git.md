@@ -3,7 +3,6 @@ title: Git
 date: {{ date }}
 categories:
 - 工具
-- Git
 ---
 ## Git 仓库操作
 

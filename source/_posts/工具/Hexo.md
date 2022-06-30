@@ -3,7 +3,6 @@ title: Hexo
 date: {{ date }}
 categories:
 - 工具
-- Hexo
 ---
 
 # Hexo

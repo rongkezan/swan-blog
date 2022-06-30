@@ -1,3 +1,10 @@
+---
+title: JMH
+date: {{ date }}
+categories:
+- 工具
+---
+
 # JMH Java准测试工具套件
 
 http://openjdk.java.net/projects/code-tools/jmh/ 
