@@ -5,8 +5,6 @@ categories:
 - 基础知识
 ---
 
-# Tomcat
-
 ## 总体架构
 Tomcat为什么慢，因为它在应用层，是Java开发跑在JVM上的，相当于在内核上又虚拟的一块内存出来，在CPU调内核的时候又切换成虚拟机的状态，所以性能低。
 
@@ -20,7 +18,7 @@ Tomcat为什么慢，因为它在应用层，是Java开发跑在JVM上的，相�
 
 tomcat代码看似很庞大，但从结构上看却很清晰和简单，它主要由一堆组件组成，如Server、Service、Connector等，并基于JMX管理这些组件，另外实现以上接口的组件也实现了代表生存期的接口Lifecycle，使其组件履行固定的生存期，在其整个生存期的过程中通过事件侦听LifecycleEvent实现扩展。Tomcat的核心类图如下所示：
 
-![img](https://p-blog.csdn.net/images/p_blog_csdn_net/cutesource/EntryImages/20091214/coreClass.jpg)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/885184bfede04106a8c2af88bd8f5e0c.png)
 
 Catalina：与开始/关闭shell脚本交互的主类，因此如果要研究启动和关闭的过程，就从这个类开始看起。
 

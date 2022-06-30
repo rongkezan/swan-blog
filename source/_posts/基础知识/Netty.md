@@ -5,7 +5,7 @@ categories:
 - 基础知识
 ---
 
-# Netty
+## Netty简介
 
 Netty 是一个高性能，异步事件驱动的 NIO 框架，它提供了对 TCP、UDP 的文件传输支持。作为一个异步 NIO 框架，Netty 的所有 IO 操作都是异步非阻塞的，通过 Future-Listener 机制，用户可以通过 主动获取或通知机制获得 IO 操作结果。
 
