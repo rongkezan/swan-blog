@@ -551,3 +551,22 @@ CREATE TABLE tb_major(
 -- 查看表中的索引
 SHOW INDEX FROM tb_stu
 ```
+
+## 常用关键字
+
+```sql
+## DISTINCT & GROUP BY
+
+# 得到去重后的uid
+SELECT DISTINCT uid from user_info;
+SELECT uid from user_info GROUP BY uid;
+# 得到去重后的uid,uname
+SELECT DISTINCT uid, uname from user_info;
+SELECT uid, uname GROUP BY uid, uname;
+# 如果要聚合查询，只能使用GROUP BY
+SELECT uid, SUM(score) from user_info GROUP BY uid;
+
+## HAVING: 与GROUP BY组合使用，如SUM之后需要筛选
+SELECT uid, SUM(score) AS s from user_info GROUP BY uid HAVING s > 100;
+```
+
