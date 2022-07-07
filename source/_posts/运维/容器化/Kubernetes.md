@@ -222,3 +222,23 @@ kubectl apply -f test-pod.yaml
 kubectl delete -f test-pod.yaml
 ```
 
+### Deployment
+
+```sh
+# 创建一个部署
+kubectl create deployment mytomcat --image=tomcat:8.5.68
+# 创建一个部署 -- 多副本
+kubectl create deployment mytomcat --image=tomcat:8.5.68 --replicas=3
+# 当删除该部署创建的Pod的时候，会自动重启一个Pod（自愈能力）
+kubectl delete pod mytomcat-5c9c88c545-vhrfb
+# 删除部署
+kubectl delete deploy mytomcat
+```
+
+### Watch
+
+```sh
+# 每隔1秒运行一次获取Pod命令
+watch -n 1 kubectl get pod
+```
+
