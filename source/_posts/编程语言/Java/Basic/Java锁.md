@@ -6,8 +6,6 @@ categories:
 - Java
 ---
 
-# Java 锁
-
 ## JMM (Java Memory Model)
 
 是一组规范，可见性、原子性、有序性，定义了程序中各个变量的访问方式。

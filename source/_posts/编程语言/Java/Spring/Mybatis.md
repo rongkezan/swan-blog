@@ -10,9 +10,17 @@ categories:
 
 ## SqlSession
 
-每当我们使用MyBatis开启一次和数据库的会话，MyBatis会创建出一个SqlSession对象表示一次数据库会话。
-
-在对数据库的一次会话中，我们有可能会反复地执行完全相同的查询语句，如果不采取一些措施的话，每一次查询都会查询一次数据库,而我们在极短的时间内做了完全相同的查询，那么它们的结果极有可能完全相同，由于查询一次数据库的代价很大，这有可能造成很大的资源浪费。
+- SqlSessionFactoryBuilder
+  - 一旦创建了SqlSessionFactory，就不在需要它
+  - 局部变量
+- SqlSessionFactory
+  - 可以理解为：数据库连接池
+  - SqlSessionFactory一旦被创建就应该在应用的运行期间一直存在，没有任何理由丢弃或重新创建另一个实例
+  - SqlSessionFactory的最佳作用域是应用作用域
+  - 使用单例模式或者静态单例模式
+- SqlSession：
+  - 连接到连接池的一个请求
+  - 用完之后需要关闭，否则资源被占用
 
 ## Mybatis 缓存
 
@@ -29,7 +37,7 @@ categories:
 
 **一级缓存的两种级别**
 
-1. session 级别的缓存，在同一个 sqlSession 内，对同样的查询将不再查询数据库，直接从缓存中。
+1. session 级别的缓存，在同一个 sqlSession 内，对同样的查询将不再查询数据库，直接从缓存中读。
 2. statement 级别的缓存，避坑： 为了避免这个问题，可以将一级缓存的级别设为 statement 级别的，这样每次查询结束都会清掉一级缓存。
 
 ### 二级缓存
