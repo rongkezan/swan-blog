@@ -6,8 +6,6 @@ categories:
 - Linux
 ---
 
-# Linux命令
-
 ## 常用命令
 
 ### ls

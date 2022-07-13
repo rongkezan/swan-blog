@@ -24,6 +24,10 @@ categories:
 
 Kubernetes Cluster = N Master Node + N Worker Node (N >= 1)
 
+## 工作负载
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/067d736577e54325ab31581b0e7665ee.png)
+
 ## Mac安装Kubernetes
 
 ### 1. 启动Kubernetes
@@ -224,6 +228,10 @@ kubectl delete -f test-pod.yaml
 
 ### Deployment
 
+> 扩缩容、自愈、滚动更新
+
+#### 基本操作
+
 ```sh
 # 创建一个部署
 kubectl create deployment mytomcat --image=tomcat:8.5.68
@@ -233,6 +241,58 @@ kubectl create deployment mytomcat --image=tomcat:8.5.68 --replicas=3
 kubectl delete pod mytomcat-5c9c88c545-vhrfb
 # 删除部署
 kubectl delete deploy mytomcat
+# 扩缩容
+kubectl scale --replicas=5 deployment/my-dep
+# 滚动更新
+kubectl set image deployment/my-dep nginx=nginx:1.16.1
+kubectl rollout status deployment/my-dep
+## 版本回退
+# 历史记录
+kubectl rollout history deployment/my-dep
+# 查看某个历史详情
+kubectl rollout history deployment/my-dep --revision=2
+# 回滚(回到上次)
+kubectl rollout undo deployment/my-dep
+# 回滚(回到指定版本)
+kubectl rollout undo deployment/my-dep --to-revision=2
+```
+
+#### 使用配置文件
+
+`test-deployment.yaml` 内容
+
+```yaml
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app: my-dep
+    name: my-dep
+  spec:
+    replicas: 3
+    selector:
+      matchLabels:
+        app: my-dep
+    template:
+      metadata:
+        labels:
+          app: my-dep
+      spec:
+        containers:
+        - image: nginx
+          name: nginx
+```
+
+应用配置文件
+
+```sh
+kubectl apply -f test-deployment.yaml
+```
+
+删除指定配置文件所创建的资源
+
+```sh
+kubectl delete -f test-deployment.yaml
 ```
 
 ### Watch
