@@ -6,8 +6,6 @@ categories:
 - Java
 ---
 
-# Java 基础
-
 ## 类加载顺序
 
 1. 类初始化：静态方法 -> 静态代码块，先初始化父类再初始化子类
@@ -684,66 +682,4 @@ System.out.println(summary.getMax());
 // 拼接
 String str = emps.stream().map(Employee::getName).collect(Collectors.joining(","));
 ```
-
-## 对象
-
-### 对象的创建过程
-
-1. class loading
-
-2. class linking (verification preparation resolution)
-
-3. class initializing：静态变量赋值，执行静态语句块
-
-4. 申请内存对象
-
-5. 成员变量赋值
-
-6. 调用构造方法
-   1. 成员变量顺序赋初始值
-   2. 执行构造方法语句
-
-### 对象在内存中的存储布局
-
-一个Object对象占16个字节
-
-#### 普通对象
-
-1. 对象头 markdown 8
-2. ClassPoniter指针：开启-XX:+UseCompressedClassPoiners 为4字节，不开启为8字节
-
-3. 实例数据
-
-   引用类型：开启-XX:+UseCompressedOops为4字节 不开启为8字节
-
-4. Padding对齐：8的倍数
-
-#### 数组对象
-
-1. 对象头 markdown 8
-2. ClassPoniter指针：开启-XX:+UseCompressedClassPoiners 为4字节，不开启为8字节
-3. 数组长度：4字节
-4. 数组数据
-5. Padding对齐：8的倍数
-
-### 对象头信息
-
-对象头信息包括：对象的HashCode，锁标志位、GC标记（分代的年龄）等
-
-markword 64位
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/2021011712102443.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
-
-### 对象定位
-
-1. 句柄池：间接指针，一个指向对象，另一个指向了.class
-2. 直接指针（HotSpot）：直接指向对象，对象再指向.class
-
-### 对象分配
-
-首先new一个对象的时候尝试往栈上分配，如可以分配下，就分配到栈上，栈一弹出对象就没了。
-
-如果对象过大，栈分配不下，直接分配到堆内存（老年代）。
-
-如果对象不大，先进行线程本地分配，分配不下找伊甸区，然后进行GC的过程，年龄到了进入老年代。
 

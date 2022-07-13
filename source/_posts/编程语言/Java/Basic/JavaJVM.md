@@ -6,7 +6,70 @@ categories:
 - Java
 ---
 
-# JVM
+## 对象
+
+### 对象的创建过程
+
+1. class loading
+
+2. class linking (verification preparation resolution)
+
+3. class initializing：静态变量赋值，执行静态语句块
+
+4. 申请内存对象
+
+5. 成员变量赋值
+
+6. 调用构造方法
+   1. 成员变量顺序赋初始值
+   2. 执行构造方法语句
+
+### 对象在内存中的存储布局
+
+一个Object对象占16个字节 = markword + class pointer + padding = 8 + 4 + 4 = 16
+
+#### 普通对象
+
+- 对象头
+  - markword：锁信息、HashCode、GC信息，8 bytes（64位JDK）
+  - class pointer：指向Class对象，4 bytes（压缩），8 bytes（不压缩）
+- instance data：对象的属性（大小根据属性计算）
+- padding：8的倍数
+
+#### 数组对象
+
+- 对象头
+  - markword：锁信息、HashCode、GC信息，8 bytes（64位JDK）
+  - class pointer：指向Class对象，4 bytes（压缩），8 bytes（不压缩）
+
+- 数组长度：4字节
+- 数组数据
+- Padding：8的倍数
+
+```sh
+-XX:+UseCompressedClassPoiners # class pointer压缩，默认开启
+```
+
+### 对象头信息
+
+对象头信息包括：对象的HashCode，锁标志位、GC标记（分代的年龄）等
+
+markword 64位
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/2021011712102443.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
+### 对象定位
+
+1. 句柄池：间接指针，一个指向对象，另一个指向了.class
+2. 直接指针（HotSpot）：直接指向对象，对象再指向.class
+
+### 对象分配
+
+首先new一个对象的时候尝试往栈上分配，如可以分配下，就分配到栈上，栈一弹出对象就没了。
+
+如果对象过大，栈分配不下，直接分配到堆内存（老年代）。
+
+如果对象不大，先进行线程本地分配，分配不下找伊甸区，然后进行GC的过程，年龄到了进入老年代。
 
 ## Class
 
@@ -20,19 +83,17 @@ categories:
 
 JIT：Just In-Time compiler
 
-
-
 混合使用解释器 + 热点代码编译
 
 起始阶段采用解释执行
 
-热点代码检测
+**热点代码检测**
 
 - 多次被调用的方法（方法计数器：监测方法执行频率）
 - 多次被调用的循环（循环计数器：监测循环执行频率）
 - 进行编译
 
-
+**不同模式的命令**
 
 - -Xmixed 默认为混合模式 开始解释执行，启动速度较快，对热点代码实行检测和编译
 - -Xint 使用编译模式，启动很快，执行稍慢
@@ -254,7 +315,7 @@ Java 可以做GC Root的对象：局部变量表、静态变量引用的对象�
 
   - CMS四个阶段：初始标记，并发标记，重新标记，并发清除
 
-  - CSM的问题：会产生碎片，有浮动垃圾，当老年代碎片过多，换Serial Old上场
+  - CMS的问题：会产生碎片，有浮动垃圾，当老年代碎片过多，换Serial Old上场
 
   - CMS问题解决方案之一：降低触发CMS的阈值，如果频繁发生SerialOld卡顿，应该调小阈值
 
@@ -266,7 +327,7 @@ Java 可以做GC Root的对象：局部变量表、静态变量引用的对象�
 
   G1可以在大多数情况下实现指定的GC暂停时间，同时还能保持较高的吞吐量。
   
-  G1可以动态地调整新老年代的比例，调整的依据是 YGC 的暂停时间。比如指定的暂定时间是20ms，此时10个 region 中有6个Y区，但回收时间是30ms，那么G1会将6个Y区减少至5个或4个Y区直到暂定时间小于20ms为止。
+  G1可以动态地调整新老年代的比例，调整的依据是 YGC 的暂停时间。比如指定的暂停时间是20ms，此时10个 region 中有6个Y区，但回收时间是30ms，那么G1会将6个Y区减少至5个或4个Y区直到暂停时间小于20ms为止。
   
   G1在对象太多的时候也会产生Full GC，如果产生Full GC，我们应该做：
   
