@@ -6,9 +6,11 @@ categories:
 - Java
 ---
 
-## 对象
+## 对象和Class
 
 ### 对象的创建过程
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210111220751109.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 1. class loading
 
@@ -71,41 +73,13 @@ markword 64位
 
 如果对象不大，先进行线程本地分配，分配不下找伊甸区，然后进行GC的过程，年龄到了进入老年代。
 
-## Class
+### 对象生命周期
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/de1cabf13ea549b991e3e3522f5d229e.png)
 
 ### Java从编码到执行
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210111203500781.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
-
-### 混合模式
-
-解释器：bytecode intepreter
-
-JIT：Just In-Time compiler
-
-混合使用解释器 + 热点代码编译
-
-起始阶段采用解释执行
-
-**热点代码检测**
-
-- 多次被调用的方法（方法计数器：监测方法执行频率）
-- 多次被调用的循环（循环计数器：监测循环执行频率）
-- 进行编译
-
-**不同模式的命令**
-
-- -Xmixed 默认为混合模式 开始解释执行，启动速度较快，对热点代码实行检测和编译
-- -Xint 使用编译模式，启动很快，执行稍慢
-- -Xcomp 使用纯编译模式，执行很快，启动很慢
-
-### Class类文件解释
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210111220329956.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
-
-### Class生命周期
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210111220751109.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 ### ClassLoader
 
@@ -266,19 +240,19 @@ GC是什么（分代收集算法）
 
 ### 如何定位垃圾
 
-**引用计数法**
+#### 引用计数法
 
 没有被引用的内存空间就是垃圾，需要被收集
 
 缺点：计数器本身有消耗，较难处理循环引用
 
-**根可达性分析算法**
+#### 根可达性分析算法
 
 通过一系列的名为"GC Root"的对象作为起点，从这些节点向下搜索，搜索所走过的路径称为引用链(Reference Chain)，当一个对象到GC Root没有任何引用链相连时，则该对象不可达，该对象是不可使用的，垃圾收集器将回收其所占的内存。
 
 Java 可以做GC Root的对象：局部变量表、静态变量引用的对象、常量池引用的对象、Native方法引用的对象。
 
-### 常用的垃圾回收算法
+### 垃圾回收算法
 
 1. 复制算法（Copying）：没有碎片，浪费空间
 
@@ -307,69 +281,95 @@ Java 可以做GC Root的对象：局部变量表、静态变量引用的对象�
 
 ### 垃圾回收器
 
-- 串行回收：单线程，会暂停所有的用户线程，Serial + Serial Old
+- 分代模型：将内存分为年轻代和老年代
 
-- 并行回收：多线程，会暂停所有的用户线程，Parallel Scavenge + Parallel Old（JDK8默认）
+  - Serial + Serial Old：串行回收，单线程，会暂停所有用户线程
 
-- 并发标记清除：用户线程和垃圾收集线程同时执行（并行或交替），ParNew + CMS
+  - Parallel Scavenge + Parallel Old（1.8默认使用）：并行回收，多线程，会暂停所有的用户线程
 
-  - CMS四个阶段：初始标记，并发标记，重新标记，并发清除
+  - ParNew + CMS：并发标记清除：用户线程和垃圾收集线程同时执行（并行或交替）
 
-  - CMS的问题：会产生碎片，有浮动垃圾，当老年代碎片过多，换Serial Old上场
+    - CMS是老年代的垃圾回收器
 
-  - CMS问题解决方案之一：降低触发CMS的阈值，如果频繁发生SerialOld卡顿，应该调小阈值
+    - CMS四个阶段
 
-    ```shell
-    -XX:CMSInitiatingOccupancyFraction 70% # 内存空间降低到70%再进行回收，默认是68%
+      1. 初始标记（STW）：标记根对象（GC Root）
+      2. 并发标记
+      3. 重新标记（STW）：标记在并发标记时产生的新垃圾
+      4. 并发清理：清理过程中会产生新垃圾，称为浮动垃圾，只能等待下一次CMS将其清理
+
+    - CMS的问题：① 会产生碎片 ② 有浮动垃圾，当老年代碎片过多，换Serial Old上场
+
+    - CMS问题解决方案之一：降低触发CMS的阈值，如果频繁发生SerialOld卡顿，应该调小阈值
+
+      ```sh
+      -XX:CMSInitiatingOccupancyFraction 70% # 内存空间降低到70%再进行回收，默认是68%
+      ```
+
+- 分区模型：将内存分为一个一个的小区域
+
+  - G1：将堆内存分割成不同的区域并发的对其进行垃圾回收，只在逻辑上分年轻代老年代
+
+    G1可以在大多数情况下实现指定的GC暂停时间，同时还能保持较高的吞吐量。
+
+    G1可以动态地调整新老年代的比例，调整的依据是 YGC 的暂停时间。比如指定的暂停时间是20ms，此时10个 region 中有6个Y区，但回收时间是30ms，那么G1会将6个Y区减少至5个或4个Y区直到暂停时间小于20ms为止。
+
+    G1在对象太多的时候也会产生Full GC，如果产生Full GC，我们应该做：
+
+    ```
+    1. 扩内存
+    2. 提高 CPU 性能
+    3. 降低 MixedGC 触发的阈值，让MixedGC提早发生（默认45%)
+    MixedGC（类似CMS）：初始标记STW，并发标记，最终标记STW，筛选回收STW（并行）
     ```
 
-- G1：将堆内存分割成不同的区域并发的对其进行垃圾回收，只在逻辑上分年轻代老年代
+  - ZGC
 
-  G1可以在大多数情况下实现指定的GC暂停时间，同时还能保持较高的吞吐量。
-  
-  G1可以动态地调整新老年代的比例，调整的依据是 YGC 的暂停时间。比如指定的暂停时间是20ms，此时10个 region 中有6个Y区，但回收时间是30ms，那么G1会将6个Y区减少至5个或4个Y区直到暂停时间小于20ms为止。
-  
-  G1在对象太多的时候也会产生Full GC，如果产生Full GC，我们应该做：
-  
-  1. 扩内存
-  
-  2. 提高 CPU 性能
-  
-  3. 降低 MixedGC 触发的阈值，让MixedGC提早发生（默认45%)
-  
-     MixedGC（类似CMS）：初始标记STW，并发标记，最终标记STW，筛选回收STW（并行）
+  - Shenandoah
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/2021011714275194.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 ### 垃圾回收器算法
 
-**垃圾回收器使用的算法**
+> CMS：三色标记 + Incremental Update
+>
+> G1：三色标记 + SATB（Snapshot at the begining）
+>
+> ZGC：Colored Pointers（颜色指针）
 
-CMS：三色标记 + Incremental Update
+#### 三色标记
 
-G1：三色标记 + SATB（Snapshot at the begining）
+三色标记把对象在逻辑上分成三种颜色，黑色对象不再被扫描，灰色对象会被再次扫描
 
-ZGC：Colored Pointers（颜色指针）
+- 白：未被标记的对象
+- 灰：自身被标记，成员变量未被标记
+- 黑：自身和成员变量均已标记完成
 
-**三色标记算法**
-
-三色标记把对象在逻辑上分成三种颜色
-
-白：未被标记的对象
-
-灰：自身被标记，成员变量未被标记
-
-黑：自身和成员变量均已标记完成
-
-漏标：本来是 live object，但是由于没有遍历到，被当成 garbage 回收掉了。在并发标记的过程中，黑色指向了白色，如果不对黑色重新扫描，则会把白色对象当做没有新引用指向从而回收掉。
-
-如果解决漏标：Incremental Update、SATB
-
-Incremental Update（增量更新）：当一个白色对象被一个黑色对象引用，将黑色重启标记为灰色，让 Controller 重新扫描
-
-SATB（Snapshot at the begining）：在起始的时候做一个快照，当灰色->白色引用消失时，要把这个引用推到GC的堆栈，下次扫描时拿到这个引用，由于有RSet的存在，不需要扫描整个堆区查找指向白色的引用，效率比较高。
+漏标问题：在并发标记的过程中，业务逻辑线程可能会把黑色的属性重新指向白色，如果不对黑色重新扫描，则会把白色对象当做没有新引用指向从而回收掉。
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210214141554379.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
+#### Incremental Update
+
+当一个白色对象被一个黑色对象引用，将黑色重启标记为灰色，让重新扫描。
+
+但是CMS在使用Increment Update的时候有一个致命问题是当黑灰被更新为灰色之后，当属性被标记完后还会被改成黑色。
+
+**举例：**
+
+```
+对象A有两个属性：1、2
+M1（垃圾回收线程）正在标记A，已经标完属性1，正在标记属性2
+M2（业务逻辑线程）把属性1指向白色对象D
+M3（垃圾回收线程）把A标位灰色
+M1（垃圾回收线程）认为所有属性标完，把A设为黑色，结果D被漏标
+```
+
+所以CMS的标记阶段，必须从头扫描一遍。
+
+#### SATB(Snapshot at the begining)
+
+在起始的时候做一个快照，当灰色->白色引用消失时，要把这个引用推到GC的堆栈，下次扫描时拿到这个引用，由于有RSet的存在，不需要扫描整个堆区查找指向白色的引用，效率比较高。
 
 ### 引用
 

@@ -109,7 +109,7 @@ CAS只会判断最终的对象是否与期望的一致，但不会判断在这�
 
 1. 加锁
 2. AtomicLong：CAS
-3. LongAdder：分段锁，线程数量特别多的时候比Atomic更有优势
+3. LongAdder：比AtomicXXX性能更高，内部维护了一个Cell数组，Cell 数组相当于一个分段的概念，把 AtomicXXX 中的一个值分成了多个值进行管理，当 CAS 更新失败时不再当前循环重试，而是尝试获取其他的资源锁，这样就降低了对于 AtomicXXX 中的单个资源的竞争，所以 LongAdder 的性能更高。代价是维护了 Cell 数组，也就意味着要占用更多的内存空间，以空间换时间，也是值得的。
 
 **AtomicInteger**
 
