@@ -60,37 +60,66 @@ set session transaction isolation level 事务隔离级别;
 | 可重复读 REPEATABLE READ（Mysql默认级别） | 否   | 否         | 是   |
 | 可序列化 SERIALIZABLE                     | 否   | 否         | 否   |
 
-## MVCC 多版本并发控制
+## MVCC
 
-MVCC在MySQL InnoDB中的实现主要是为了提高数据库并发性能，用更好的方式去处理读-写冲突，做到即使有读写冲突时，也能做到不加锁，非阻塞并发读。
+### MVCC 作用
 
-- 当前读
-  像select lock in share mode(共享锁), select for update ; update, insert ,delete(排他锁)这些操作都是一种当前读，为什么叫当前读？就是它读取的是记录的最新版本，读取时还要保证其他并发事务不能修改当前记录，会对读取的记录进行加锁。
+在Mysql InnoDB存储引擎下，READ COMMITED 和 REPEATABLE READ 基于MVCC（多版本并发控制）进行并发事务控制。
 
-- 快照读
-  像不加锁的select操作就是快照读，即不加锁的非阻塞读；快照读的前提是隔离级别不是串行级别，串行级别下的快照读会退化成当前读；之所以出现快照读的情况，是基于提高并发性能的考虑，快照读的实现是基于多版本并发控制，即MVCC,可以认为MVCC是行锁的一个变种，但它在很多情况下，避免了加锁操作，降低了开销；既然是基于多版本，即快照读可能读到的并不一定是数据的最新版本，而有可能是之前的历史版本
+MVCC是基于**数据版本**对并发事务进行访问。
 
-### 实现原理
+![在这里插入图片描述](https://img-blog.csdnimg.cn/120aa7b801364d769b525be1589c85ef.png)
 
-#### Undo Log
+对于事务D
 
-每行记录除了我们自定义的字段外，还有数据库隐式定义的DB_TRX_ID,DB_ROLL_PTR,DB_ROW_ID等字段
+READ COMMITED 结果：张三、张小三
 
-- DB_ROW_ID：隐含的自增ID（隐藏主键），如果数据表没有主键，InnoDB会自动以DB_ROW_ID产生一个聚簇索引
-- DB_TRX_ID：最近 修改/插入 事务ID，记录创建这条记录/最后一次修改该记录的事务ID
-- DB_ROLL_PTR：回滚指针，指向这条记录的上一个版本（存储于rollback segment里）
+REPEATABLE READ 结果：张三、张三
 
-每次事务提交都会有将其加入 undo log 中，undo log会成为一条记录版本线性表
+### Undo Log版本链
 
-- 在事务2修改该行数据时，数据库也先为该行加锁
-- 然后把该行数据拷贝到undo log中，作为旧记录，发现该行记录已经有undo log了，那么最新的旧数据作为链表的表头，插在该行记录的undo log最前面
-- 修改该行age为30岁，并且修改隐藏字段的事务ID为当前事务2的ID, 那就是2，回滚指针指向刚刚拷贝到undo log的副本记录
-- 事务提交，释放锁
+那么Mysql是怎么实现不读到已提交的修改数据？通过Undo Log版本链
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210125144344982.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+在版本链中存有 `事务ID` 和 `回滚指针` ，Mysql会确保版本链数据不再被引用后再将版本链删除
 
-#### Read View
+<img src="https://img-blog.csdnimg.cn/a00430ad479947c3850879ebe94f8367.png" alt="在这里插入图片描述" style="zoom: 25%;" />
 
-Read View 就是事务进行快照读操作的时候生产的读视图，在该事务执行的快照读的那一刻，会生成数据库系统当前的一个快照，记录并维护系统当前活跃事务的ID (当每个事务开启时，都会被分配一个ID, 这个ID是递增的，所以最新的事务，ID值越大)
+Undo Log版本链作用：
 
-Read View 遵循一个可见性算法，主要是将要被修改的数据的最新记录中的DB_TRX_ID（当前事务ID）取出来，与系统当前其他活跃事务的ID去对比，如果 DB_TRX_ID 跟 Read View 的属性做了某些比较，不符合可见性，那就通过 DB_ROLL_PTR 回滚指针去取出 Undo Log 中的 DB_TRX_ID 再比较，即遍历链表的DB_TRX_ID（从链首到链尾，即从最近的一次修改查起），直到找到满足特定条件的DB_TRX_ID, 那么这个DB_TRX_ID所在的旧记录就是当前事务能看见的最新老版本
+ReadView："快照读"SQL执行时MVCC提取数据的依据
+
+- ReadView是一个数据结构，包含4个字段：
+  - m_ids：当前活跃的事务编号集合
+  - min_trx_id：最小活跃事务编号
+  - max_trx_id：预分配事务编号，当前最大事务编号+1
+  - create_trx_id：ReadView创建者的事务编号
+- 快照读：最普通的SELECT查询语句
+- 当前读：执行下列语句时进行数据读取的方式
+  - INSERT、UPDATE、DELETE、SELECT...FOR UPDATE、SELECT...LOCK IN SHARE MODE
+
+#### READ COMMITED
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/ac58f0b6898048ba9da55663c42ccb8a.png)
+
+版本链数据访问规则：
+
+判断当前事务ID是否等于create_trx_id(4)，成立说明数据就是这个事务自己更改的，可以访问。
+
+判断 trx_id < min_trx_id(2)，成立说明数据已经提交了，可以访问。
+
+判断 trx_id > max_trx_id(5)，成立说明该事务在ReadView生成以后才开启，不允许访问。
+
+判断 min_trx_id(2) <= trx_id <= max_trx_id(5)，成立则在m_ids数据中对比，不存在数据则代表数据是已提交的，可以访问。
+
+因此根据ReadView可以读到1号事务提交的数据 -- 张三。
+
+#### REPEATABLE READ
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/b12840415d944d6eaf89cbe5ec6befaf.png)
+
+ReadView会复用第一次产生的，因此不会读到事务2修改已提交的数据
+
+**幻读**
+
+- 连续多次快照读，ReadView会产生复用，没有幻读问题
+- 当两次快照读之间存在当前读，ReadView会重新生成，导致产生幻读

@@ -763,6 +763,14 @@ if (p == head && tryAcquire(arg)){}
 
 JDK9使用VarHandle：普通的原子操作，比反射快，直接操作二进制码
 
+### AQS资源获取方式
+
+AQS定义了两种资源获取的方式：独占、共享
+
+独占：只有一个线程能访问运行，又根据顺序分为公平锁和非公平锁
+
+共享：多个线程可同时访问运行，如Semaphore、CountDownLatch、CyclicBarrier
+
 ## ThreadLocal
 
 > 线程独享的Map
