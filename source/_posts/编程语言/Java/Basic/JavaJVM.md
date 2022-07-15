@@ -63,7 +63,7 @@ markword 64位
 ### 对象定位
 
 1. 句柄池：间接指针，一个指向对象，另一个指向了.class
-2. 直接指针（HotSpot）：直接指向对象，对象再指向.class
+2. 直接指针（HotSpot）：直接指向对象，对象再指向 .class
 
 ### 对象分配
 
@@ -78,6 +78,8 @@ markword 64位
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/de1cabf13ea549b991e3e3522f5d229e.png)
 
 ### Java从编码到执行
+
+class被加载到内存之后，class的二进制文件加载到内存里，与此同时生成了class类的对象，该对象指向了二进制文件。class对象存在metaspace
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210111203500781.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
@@ -308,7 +310,7 @@ Java 可以做GC Root的对象：局部变量表、静态变量引用的对象�
 
 - 分区模型：将内存分为一个一个的小区域
 
-  - G1：将堆内存分割成不同的区域并发的对其进行垃圾回收，只在逻辑上分年轻代老年代
+  - G1：将堆内存分割成不同的区域并发的对其进行垃圾回收，只在逻辑上分年轻代老年代，物理不分代
 
     G1可以在大多数情况下实现指定的GC暂停时间，同时还能保持较高的吞吐量。
 
@@ -629,7 +631,5 @@ initial-mark: 混合回收阶段，这里是YGC混合老年代回收
 JVM一个线程的成本：1MB
 
 线程多了调度成本就高了，造成了CPU的浪费
-
-class被load到内存之后，class的二进制文件加载到内存里，与此同时生成了class类的对象，该对象指向了二进制文件。class对象存在metaspace
 
 阿里多租户JVM：每租户单空间，Session based GC
