@@ -6,7 +6,7 @@ categories:
 - Java
 ---
 
-# Spring AOP 
+## Spring AOP 使用 
 
 开启Aop 使用 `@Aspect` 标注其为切面类，并把该类加入容器
 
@@ -28,19 +28,19 @@ public class SpringConfig {
 }
 ```
 
-## Spring AOP常用注解
+## Spring AOP 常用注解
 
-@Before：前置通知，目标方法之前执行
+`@Before`：前置通知，目标方法之前执行
 
-@After：后置通知，目标方法之后执行（必然执行）
+`@After`：后置通知，目标方法之后执行（必然执行）
 
-@AfterReturning：返回后通知，执行方法结束前执行（异常不执行）
+`@AfterReturning`：返回后通知，执行方法结束前执行（异常不执行）
 
-@AfterThrowing：异常通知，出现异常时执行
+`@AfterThrowing`：异常通知，出现异常时执行
 
-@Around：环绕通知，环绕目标方法执行
+`@Around`：环绕通知，环绕目标方法执行
 
-## Spring Aop执行顺序
+## Spring Aop 执行顺序
 
 **Spring4**
 
@@ -75,19 +75,23 @@ public class SpringConfig {
 
 ### 动态代理
 
-Spring 提供了两种方式来生成代理对象: JDKProxy 和 Cglib，具体使用哪种方式生成由AopProxyFactory 根据 AdvisedSupport 对象的配置来决定。默认的策略是如果目标类是接口，则使用 JDK 动态代理技术，否则使用 Cglib 来生成代理。
+Spring 提供了两种方式来生成代理对象: `JDKProxy` 和 `Cglib`，具体使用哪种方式生成由AopProxyFactory 根据 AdvisedSupport 对象的配置来决定。
 
-**JDK动态接口代理**
+默认的策略是如果目标类是接口，则使用 JDK 动态代理技术，否则使用 Cglib 来生成代理。
+
+#### JDK动态接口代理
 
 > 需要有接口
 
 JDK 动态代理主要涉及到 java.lang.reflect 包中的两个类：Proxy 和 InvocationHandler。InvocationHandler是一个接口，通过实现该接口定义横切逻辑，并通过反射机制调用目标类的代码，动态将横切逻辑和业务逻辑编制在一起。Proxy 利用 InvocationHandler 动态创建一个符合某一接口的实例，生成目标类的代理对象。
 
-**CGLib 动态代理**
+#### CGLib 动态代理
 
 > 不需要有接口
 
-CGLib 全称为 Code Generation Library，是一个强大的高性能，高质量的代码生成类库，可以在运行期扩展 Java 类与实现 Java 接口，CGLib 封装了 asm，可以再运行期动态生成新的 class。和 JDK 动态代理相比较：JDK 创建代理有一个限制，就是只能为接口创建代理实例，而对于没有通过接口定义业务方法的类，则可以通过 CGLib 创建动态代理。
+CGLib 全称为 Code Generation Library，是一个强大的高性能，高质量的代码生成类库，可以在运行期扩展 Java 类与实现 Java 接口，CGLib 封装了 asm，可以再运行期动态生成新的 class。
+
+和 JDK 动态代理相比较：JDK 创建代理有一个限制，就是只能为接口创建代理实例，而对于没有通过接口定义业务方法的类，则可以通过 CGLib 创建动态代理。
 
 ### Spring 创建代理对象
 

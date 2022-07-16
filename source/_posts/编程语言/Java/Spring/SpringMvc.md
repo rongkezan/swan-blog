@@ -6,8 +6,6 @@ categories:
 - Java
 ---
 
-# Spring MVC
-
 ## Spring MVC 基本配置
 
 web.xml

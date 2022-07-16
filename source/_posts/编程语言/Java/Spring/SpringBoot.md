@@ -6,8 +6,6 @@ categories:
 - Java
 ---
 
-# Spring Boot
-
 ## Spring Boot 使用
 
 ### 静态资源访问

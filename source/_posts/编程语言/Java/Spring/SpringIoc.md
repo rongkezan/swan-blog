@@ -6,8 +6,6 @@ categories:
 - Java
 ---
 
-# Spring IOC
-
 ## Spring 容器
 
 ### Spring 容器 概述
@@ -33,11 +31,26 @@ ApplicationContext 常用的两种实现：ClassPathXmlApplicationContext, FileS
 
 ### Spring 容器整体视图
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210116230540355.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/a74433be6b774ecd8313f7caea5802ef.png)
 
 ### Spring 接口
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210116235007738.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+#### Spring顶层接口图
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/bc2074457f8f4aabad6e23615f2cc6b7.png)
+
+#### BeanRegistry
+
+Spring 配置文件中每一个`<bean>`节点元素在 Spring 容器里都通过一个 BeanDefinition 对象表示，它描述了 Bean 的配置信息。而 BeanDefinitionRegistry 接口提供了向容器手工注册 BeanDefinition 对象的方法。
+
+#### ApplicationContext
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/ba357bb3e1bd496db88567d133da975d.png)
+
+- **HierarchicalBeanFactory 和 ListableBeanFactory**： ApplicationContext 继承了 HierarchicalBeanFactory 和 ListableBeanFactory 接口，在此基础上，还通过多个其他的接口扩展了 BeanFactory 的功能。
+- **ApplicationEventPublisher**：让容器拥有发布应用上下文事件的功能，包括容器启动事件、关闭事件等。实现了 ApplicationListener 事件监听接口的 Bean 可以接收到容器事件 ， 并对事件进行响应处理 。 在 ApplicationContext 抽象实现类AbstractApplicationContext 中，我们可以发现存在一个 ApplicationEventMulticaster，它负责保存所有监听器，以便在容器产生上下文事件时通知这些事件监听者。
+- **MessageSource**：为应用提供 i18n 国际化消息访问的功能；
+- **ResourcePatternResolver** ： 所有 ApplicationContext 实现类都实现了类似于PathMatchingResourcePatternResolver 的功能，可以通过带前缀的 Ant 风格的资源文件路径装载 Spring 的配置文件。
 
 ### Spring 容器 实例化
 
@@ -209,7 +222,7 @@ public class SpringConfig {
 
 #### 3. @Import
 
-​	@Import直接注入
+@Import直接注入
 
 ```
 @Configuration
@@ -219,7 +232,7 @@ public class SpringConfig {
 }
 ```
 
-​	ImportSelector：使用Import给容器中导入多个组件
+ImportSelector：使用Import给容器中导入多个组件
 
 ```java
 @Configuration
@@ -238,7 +251,7 @@ public class MyImportSelector implements ImportSelector {
 }
 ```
 
-​	ImportBeanDefinitionRegistrar：手动注册Bean到容器中
+ImportBeanDefinitionRegistrar：手动注册Bean到容器中
 
 ```java
 @Configuration
@@ -312,18 +325,7 @@ User user = (User) applicationContext.getBean("userFactoryBean");
 
 5. application：类似标准HttpSession作用域
 
-### Spring Bean 生命周期
-
-#### Spring Bean 生命周期流程
-
-1. BeanPostProcessor Before Initialization
-2. InitializingBean
-3. init-method
-4. BeanPostProcessor After Initialization
-5. Disposable Bean
-6. destory-method
-
-#### Spring Bean 创建流程
+### Spring Bean 创建流程源码
 
 ```
 refresh();
@@ -384,7 +386,7 @@ ApplicationContext：BeanFactory的子接口，基于BeanFactory创建的对象�
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/2020121916571615.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
-#### Spring Bean 生命周期回调
+### Spring Bean 生命周期回调
 
 > 只有单实例Bean才会被容器管理，多实例Bean不会被容器管理
 
@@ -467,8 +469,8 @@ public class MyBeanPostProcessor implements BeanPostProcessor {
 @Value
 
 1. 基本数值
-2. SPEL表达式：#{}
-3. 取出配置文件的值：${} 
+2. SPEL表达式：`#{}`
+3. 取出配置文件的值：`${} `
 
 配合 `@PropertySource` 使用
 
@@ -552,6 +554,14 @@ public class MyBeanDefinitionRegistryPostProcessor implements BeanDefinitionRegi
     }
 }
 ```
+
+### BeanFactory和FactoryBean
+
+- BeanFactory：必须遵循完整的Bean的生命周期去创建对象
+- FactoryBean：创建对象，没有标准的流程，更像私人定制
+  - isSingleton：判断是否是单例
+  - getObjectType：返回对象的类型
+  - getObject：返回对象
 
 ## Spring Profile
 
