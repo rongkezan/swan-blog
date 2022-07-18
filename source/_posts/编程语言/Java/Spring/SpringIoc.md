@@ -31,7 +31,7 @@ ApplicationContext 常用的两种实现：ClassPathXmlApplicationContext, FileS
 
 ### Spring 容器整体视图
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/a74433be6b774ecd8313f7caea5802ef.png)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/fb97a6a80f914605b92aeb07cc2470bf.png)
 
 ### Spring 接口
 
@@ -47,7 +47,7 @@ Spring 配置文件中每一个`<bean>`节点元素在 Spring 容器里都通过
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/ba357bb3e1bd496db88567d133da975d.png)
 
-- **HierarchicalBeanFactory 和 ListableBeanFactory**： ApplicationContext 继承了 HierarchicalBeanFactory 和 ListableBeanFactory 接口，在此基础上，还通过多个其他的接口扩展了 BeanFactory 的功能。
+- **BeanFactory**： ApplicationContext 想要访问容器，就必须继承BeanFactory
 - **ApplicationEventPublisher**：让容器拥有发布应用上下文事件的功能，包括容器启动事件、关闭事件等。实现了 ApplicationListener 事件监听接口的 Bean 可以接收到容器事件 ， 并对事件进行响应处理 。 在 ApplicationContext 抽象实现类AbstractApplicationContext 中，我们可以发现存在一个 ApplicationEventMulticaster，它负责保存所有监听器，以便在容器产生上下文事件时通知这些事件监听者。
 - **MessageSource**：为应用提供 i18n 国际化消息访问的功能；
 - **ResourcePatternResolver** ： 所有 ApplicationContext 实现类都实现了类似于PathMatchingResourcePatternResolver 的功能，可以通过带前缀的 Ant 风格的资源文件路径装载 Spring 的配置文件。
@@ -384,8 +384,6 @@ BeanFactory：负责创建bean实例，容器里保存的所有单例Bean其实�
 
 ApplicationContext：BeanFactory的子接口，基于BeanFactory创建的对象之上完成容器的功能实现
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/2020121916571615.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
-
 ### Spring Bean 生命周期回调
 
 > 只有单实例Bean才会被容器管理，多实例Bean不会被容器管理
@@ -414,7 +412,7 @@ public class DemoBean {
 }
 ```
 
-- 自定义 init() 和 destroy() 方法
+- 自定义 `init()` 和 `destroy()` 方法
 
 ```java
 @Bean(initMethod = "init", destroyMethod = "destroy")
@@ -512,7 +510,7 @@ user.nick.name=keith
 
 后置处理器 `AutowiredAnnotationBeanPostProcessor` 用于解析自动装配
 
-### Spring Bean Post Processor
+### Bean Post Processor
 
 1. BeanPostPorcessor：Bean后置处理器，Bean创建对象初始化前后进行拦截工作
 
@@ -554,14 +552,6 @@ public class MyBeanDefinitionRegistryPostProcessor implements BeanDefinitionRegi
     }
 }
 ```
-
-### BeanFactory和FactoryBean
-
-- BeanFactory：必须遵循完整的Bean的生命周期去创建对象
-- FactoryBean：创建对象，没有标准的流程，更像私人定制
-  - isSingleton：判断是否是单例
-  - getObjectType：返回对象的类型
-  - getObject：返回对象
 
 ## Spring Profile
 
