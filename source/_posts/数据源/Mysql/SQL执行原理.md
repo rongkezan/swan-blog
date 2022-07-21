@@ -31,6 +31,17 @@ categories:
 ## 查询的底层原理
 
 ![](https://img-blog.csdnimg.cn/2019042319215785.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDUzNTQ3Ng==,size_16,color_FFFFFF,t_70)
+### 大致实现
+
+1. 命令解析器：检查语法，检查缓存
+2.  查询优化器：分析SQL，生成多个候选执行计划，选择开销最小的
+3.  查询执行器：将执行计划传给存储引擎
+4. 数据访问方法：将SQL解析为可操作数据代码，传给缓冲区管理器
+5. 缓冲区管理器：检查数据是否在缓存中存在，如存在直接返回，否则从磁盘读出放入缓存并返回给**数据访问方法**
+6. 数据访问方法 -> 查询执行器 -> 客户端
+
+### 详细实现
+
 1. 当客户端执行一条T-SQL语句给SQL Server服务器时，会首先到达服务器的网络接口，网络接口和客户端之间有协议层。
 
 2. 客户端和网络接口之间建立连接。使用称为“表格格式数据流”(TDS) 数据包的 Microsoft 通信格式来格式化通信数据。

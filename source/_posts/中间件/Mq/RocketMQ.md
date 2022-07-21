@@ -263,9 +263,9 @@ consumer.subscribe("myTopic", selector);
 
 ## 事务消息
 
-1. Half Message：预处理消息，当broker收到此类消息后，会存储到 RMQ_SYS_TRANS_HALF_TOPIC 的消息消费队列中
+1. Half Message：半事务消息，发送方已经成功的将消息发送到Broker，但是Broker未收到确认指令，此时该消息被标记为"暂不能投递"状态，即不能被消费者看到，即往RMQ_SYS_TRANS_HALF_TOPIC队列中投递消息。
 
-2. 检查事务状态：Broker会开启一个定时任务，消费RMQ_SYS_TRANS_HALF_TOPIC队列中的消息，每次执行任务会向消息发送者确认事务执行状态（提交、回滚、未知），如果是未知，等待下一次回调。
+2. 检查事务状态：Broker会开启一个定时任务，消费RMQ_SYS_TRANS_HALF_TOPIC队列中的消息，每次执行任务会向消息发送者确认事务执行状态（提交、回滚、未知），如果是未知，等待下一次回查。
 
 3. 超时：如果超过回查次数，默认回滚消息
 

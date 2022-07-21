@@ -6,8 +6,6 @@ categories:
 - Java
 ---
 
-# Spring Cloud 服务调用
-
 ## RestTemplate
 
 > springframework:spring-web 包下

@@ -6,8 +6,6 @@ categories:
 - Java
 ---
 
-# Spring Cloud 配置中心
-
 ## Spring Cloud Config Center
 
 1. 新建一个Git配置仓库，配置文件命名规则如下

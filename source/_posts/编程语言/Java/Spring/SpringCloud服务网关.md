@@ -6,8 +6,6 @@ categories:
 - Java
 ---
 
-# Spring Cloud 服务网关
-
 ## Zuul
 
 基于 Servlet

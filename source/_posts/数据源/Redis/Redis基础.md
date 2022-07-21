@@ -6,34 +6,30 @@ categories:
 - Redis
 ---
 
-# Basic
+## 常用命令
 
-## Type
-
-### String
-
-### List
-
-栈：同向命令，如 lpush + lpop，rpush + rpop
-
-队列：反向命令：如 lpush + rpop，rpush + lpop
-
-```shell
-# 查看list命令
-help @list
+```sh
+### list
 # 取出指定 key 的 start 到 end 个元素
 LRANGE KEY START END
-# 例：取出 k1 的所有元素
+# 栈：同向命令，如 `lpush + lpop`，`rpush + rpop`
+# 队列：反向命令：如 `lpush + rpop`，`rpush + lpop`
+# 取出 k1 的所有元素
 LRANGE k1 0 -1
-
-# 实现一个简单的阻塞队列
+# 实现阻塞队列
 BLPOP k1 0 # 客户端1阻塞
 LPUSH k1 1 2 3 # 客户端2压入数据客户端1取消阻塞
-```
+
+### set
+sadd kset 1 1 2 3 4 5 6 # 向set里加入数据并去重
+srandmember kset 3 # 随机取出3个元素，去重
+srandmember kset -3 # 随机取出3个元素，可以有重复
+spop kset # 弹出一个元素
+sinter a b # 取两个集合的交集
+sunion a b # 取两个集合的并集
+sdiff a b # 取a集合对于b集合的差集
 
 ### Hash
-
-```shell
 HSET sean name zzl
 HMSET sean age 18 address bj
 hget sean name
@@ -41,28 +37,80 @@ hmget sean name age
 hkeys sean
 ```
 
-### Set
+## 数据结构
 
-```shell
-# 向set里加入数据并去重
-sadd kset 1 1 2 3 4 5 6
-# 随机取出3个元素，去重
-srandmember kset 3
-# 随机取出3个元素，可以有重复
-srandmember kset -3
-# 弹出一个元素
-spop kset
-# 取两个集合的交集
-sinter a b
-# 取两个集合的并集
-sunion a b
-# 取a集合对于b集合的差集
-sdiff a b
+### String
+
+redis的字符串类型是由一种叫做简单动态字符串(SDS)的数据类型来实现
+
+- SDC和C语言字符串的区别：
+  - SDS保存了字符串的长度，而C语言不保存，只能遍历找到第一个\0的结束符才能确定字符串的长度
+  - 修改SDS，会检查空间是否足够，不足会先扩展空间，防止缓冲区溢出，C字符串不会检查
+  - SDS的预分配空间机制，可以减少为字符串重新分配空间的次数
+
+```c
+struct sdshdr {
+  int len;       // buf中已占用空间的长度
+  int free;      // buf中剩余空间的长度
+  char buf[];    // 数据空间
+}
 ```
 
-### Sorted Set
+### List
 
-## redis管道
+双向链表实现
+
+```cpp
+typedef struct list {
+    listNode *head;  						// 表头节点
+    listNode tail; 							// 表尾节点
+    unsigned long len; 						// 链表所包含的节点数量
+    void (dup) (void ptr); 					// 节点值赋值函数 这里有问题
+    void (free) (void ptr); 				// 节点值释放函数
+    int (match) (void *ptr, void *key) 		// 节点值对比函数
+}
+
+typedef struct listNode {
+    struct listNode * pre;  // 前置节点
+    struct listNode * next; // 后置节点
+    void * value;           // 节点的值
+}
+```
+
+### Hash
+
+哈希表是一个dictht结构体
+
+```cpp
+typedef struct dictht {
+  dictEntry ** table;    // 哈希表数组
+  unsigned long size;    // 哈希表大小
+  unsigned long sizemask // 哈希表大小掩码，用于计算索引值 总是等于 size - 1
+  unsigned logn used;    // 该哈希表已有节点的数量
+}
+
+typedef struct dictEntry{
+  void *key;   // 键
+  union {      // 不同键对饮的值得类型可能不同，使用union来处理这个问题
+    void *val;
+    uint64_tu64;
+    int64_ts64;
+  }
+  struct dictEntry *next;
+}
+```
+
+### Set
+
+无序集合可以用整数集合(intset)或者字典实现
+
+### ZSet
+
+1. 跳表：有序集合的底层实现之， 除此之外跳表它在 Redis 中没有其他应用。
+2. 整数集合（intset）： 当一个集合只包含整数值元素， 并且这个集合的元素数量不多时， Redis 就会使用整数集合作为集合键的底层实现。
+3. ziplist(压缩列表)：数据少时使用，占用连续内存，每项元素都是(数据+score)的方式连续存储，按照score从小到大排序。ziplist为了节省内存，每个元素占用的空间可以不同，对于大数据(long long)，就多用一些字节存储，而对于小的数据(short)，就少用一些字节来存储。因此查找的时候需要按顺序遍历。ziplist省内存但是查找效率低。
+
+## Pipeline
 
 可以将多个操作合并成一次请求，降低通信的成本
 
@@ -74,7 +122,18 @@ set k1 v1
 echo -e "set k2 2\n incr k2\n get k2" | nc localhost 6379
 ```
 
-## 消息订阅
+```java
+private void setCache(List<String> names, String key) {
+    Pipeline pipeline = redis.pipelined();
+    for (String name : names) {
+        pipeline.zadd(key, name, score);
+    }
+    pipeline.expire(key, CACHE_EXPIRE_SECONDS);
+    pipeline.sync();
+}
+```
+
+## Publish Subscribe
 
 在redis中的A端开启消息的发布`publish`
 
@@ -114,7 +173,7 @@ Reading messages... (press Ctrl-C to quit)
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210110094824260.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
-## redisBloom（布隆过滤器）
+## Bloom（布隆过滤器）
 
 布隆过滤器：解决缓存穿透
 

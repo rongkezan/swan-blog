@@ -6,8 +6,6 @@ categories:
 - Java
 ---
 
-# Spring Cloud Admin 健康检查
-
 ### Admin服务器端
 
 pom

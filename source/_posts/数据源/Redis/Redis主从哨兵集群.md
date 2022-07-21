@@ -8,7 +8,7 @@ categories:
 
 ## 主从模式
 
-### 1.1 简介
+### 简介
 
 简介：主从复制即将master中的数据及时有效地复制到slave中
 
@@ -16,11 +16,11 @@ categories:
 
 职责：master写数据，同步数据到salve，slave读数据
 
-### 1.2 示意图
+### 示意图
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200203094442305.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
-### 1.3 工作流程
+### 工作流程
 
 1. 建立连接
 
@@ -32,9 +32,9 @@ categories:
 
 
 
-### 1.4 主从配置
+### 主从配置
 
-#### 1.4.1 配置方式
+#### 配置方式
 
 方式1：客户端发送命令
 
@@ -54,7 +54,7 @@ redis-server -slaveof <master-ip> <master-port>
 slaveof <master-ip> <master-port>
 ```
 
-#### 1.4.2 相关命令
+#### 相关命令
 
 ```sh
 # 查看所有信息
@@ -67,7 +67,7 @@ info replication
 slaveof no one
 ```
 
-### 1.5 注意事项
+### 注意事项
 
 1. 复制缓冲区大小设置不合理会导致数据溢出使主从数据不一致，主从数据不一致会导致全量复制，所以必须将复制缓冲区设置一个合理的大小。
 
@@ -83,9 +83,9 @@ repl-blocking-size 1mb
 slave-serve-stale-data yes|no
 ```
 
-## 2. 哨兵模式
+## 哨兵模式
 
-### 2.1 简介
+### 简介
 
 哨兵（sentinel）是一个分布式系统，用于对主从结构中的每台服务器进行监控，当出现故障时通过投票机制选择新的master并将所有slave连接到新的master。哨兵也是一台redis服务器，只是不提供数据服务，通常哨兵的配置数量为单数。
 
@@ -93,7 +93,7 @@ slave-serve-stale-data yes|no
 2. 通知：当被监控的服务器出现故障时，向其他客户端发送通知
 3. 自动故障转移：断开master和slave连接，选取一个slave作master，将其他slave连接到新master，并告知客户端新的服务器地址
 
-### 2.2 配置文件
+### 配置文件
 
 ```shell
 # 指定端口 26379
@@ -124,7 +124,7 @@ PSUBSCRIBE *
 1) "pmessage"
 ```
 
-### 2.3 整合 Spring Boot
+### 整合 Spring Boot
 
 1. pom依赖
 
@@ -155,9 +155,9 @@ spring:
         - 127.0.0.1:26381
 ```
 
-## 3. 集群模式
+## 集群模式
 
-### 3.1 示意图
+### 示意图
 
 各个数据库相互通信，保存各个库中槽的编号数据
 
@@ -167,11 +167,11 @@ spring:
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200203150519604.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
-### 3.2 集群配置
+### 集群配置
 
 准备三个redis服务，6379 6380 6381
 
-### 3.3 命令启动集群
+### 命令启动集群
 
 ```shell
 # 主机正常启动
@@ -184,7 +184,7 @@ redis-server ./6381.conf --replicaof 127.0.0.1 6379
 127.0.0.1:6381> replicaof 127.0.0.1 6380
 ```
 
-### 3.4 配置文件启动集群
+### 配置文件启动集群
 
 1. 修改redis.conf
 
