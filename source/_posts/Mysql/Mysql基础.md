@@ -1,0 +1,571 @@
+---
+title: Mysql基础
+date: {{ date }}
+categories:
+- Mysql
+---
+
+## 官方案例库
+
+导入mysql官方案例数据库 https://dev.mysql.com/doc/index-other.html 
+
+```shell
+mysql -u root -p
+
+mysql>source /sakila-db/sakila-schema.sql
+mysql>source /sakila-db/sakila-data.sql
+```
+
+## 查询
+
+### 普通查询
+
+```sql
+-- 去重查询
+select distinct country_id from city;
+-- 分页查询: 从第10条记录开始查询5条记录
+select * from city limit 10,5;
+-- 查询前5条记录
+select * from city limit 5;
+-- 筛选分组后的各组数据 having
+select customer_id, sum(amount) from payment group by customer_id having sum(amount) > 200
+```
+
+### Join 查询
+
+#### 1. 笛卡尔积(没有加筛选条件的内连接)
+
+两表关联，把左表的列和右表的列通过笛卡尔积的形式表达出来
+
+```sql
+-- 三种写法
+select * from t1 join t2;
+select * from t1 inner join t2;
+select * from t1, t2;
+```
+
+#### 2. 左连接
+
+两表关联，左表全部保留，右表关联不上用null表示
+
+```sql
+select * from t1 left join t2 on t1.id = t2.id;
+```
+
+#### 3. 右连接
+
+两表关联，右表全部保留，左表关联不上的用null表示
+
+```sql
+select * from t1 right join t2 on t1.id =t2.id;
+```
+
+#### 4. 内连接
+
+两表关联，保留两表中交集的记录。
+
+```sql
+select * from t1 inner join t2 on t1.id = t2.id;
+```
+
+#### 5. 左表独有
+
+两表关联，查询左表独有的数据
+
+```sql
+select * from t1 left join t2 on t1.id = t2.id where t2.id is null;
+```
+
+#### 6. 右表独有
+
+两表关联，查询右表独有的数据
+
+```sql
+select * from t1 right join t2 on t1.id = t2.id where t1.id is null;
+```
+
+#### 7. 全连接
+
+两表关联，查询它们的所有记录
+
+oracle里面有full join，但是在mysql中没有full join，我们可以使用union来达到目的
+
+```sql
+select * from t1 left join t2 on t1.id = t2.id
+union 
+select * from t1 right join t2 on t1.id = t2.id;
+```
+
+#### 8. 并集去交集
+
+两表关联，取并集然后去交集
+
+```sql
+select * from t1 left join t2 on t1.id = t2.id where t2.id is null
+union 
+select * from t1 right join t2 on t1.id = t2.id where t1.id is null;
+```
+
+### Union 查询
+
+#### 1. union
+
+去重合并结果集
+
+```sql
+SELECT columns FROM t1
+union
+SELECT columns FROM t2;
+```
+
+#### 2. union all
+
+不去重合并结果集
+
+```sql
+SELECT columns FROM t1
+union all
+SELECT columns FROM t2;
+```
+
+## DDL（建库建表）
+
+### 库的管理
+
+```sql
+-- 若库不存在创建一个名为demo的库
+CREATE DATABASE IF NOT EXISTS demo
+
+-- 更改库的字符集为utf-8
+ALTER DATABASE demo CHARACTER SET utf-8
+
+-- 库的删除
+DROP DATABASE IF EXISTS demo
+```
+
+### 表的管理
+
+```sql
+-- 案例：创建表book
+CREATE TABLE IF NOT EXISTS book(
+	id INT,
+	bname VARCHAR(50),
+	price DOUBLE,
+	author VARCHAR(50),
+	publicDate DATETIME,
+)
+
+-- 表的修改
+-- ALTER TABLE 表名 ADD|DROP|MODIFY|CHANGE COLUMN 列名 [列类型 约束]
+-- 修改列名
+ALTER TABLE item CHANGE COLUMN publishDate pubDate DATETIME
+-- 修改列的类型或约束
+ALTER TABLE item MODIFY COLUMN pubDate TIMESTAMP
+-- 添加新列
+ALTER TABLE item ADD COLUMN annual DOUBLE;
+-- 删除列
+ALTER TABLE item DROP COLUMN annual;
+-- 修改表名
+ALTER TABLE item RENAME TO items
+-- 表的删除
+DROP TABLE IF EXISTS item
+-- 查看当前库的所有表
+SHOW TABLES
+-- 查看表的信息
+DESC book
+```
+
+### 备份数据
+
+复制表中的数据到新表中
+
+```sql
+-- 仅仅复制表的结构
+create table city_back like city;
+-- 复制表的结构和数据
+create table city_back as select * from city;
+-- 将旧表的数据插入到新表中
+insert into city_back select * from city;
+```
+
+## 变量
+
+### 系统变量
+
+```sql
+-- 查看所有系统变量
+SHOW VARIABLES
+-- 查看所有全局变量
+SHOW GLOBAL VARIABLES
+-- 查看所有会话变量
+SHOW SESSION VARIABLES
+-- 查看某个系统变量的值
+SELECT @@系统变量名
+SELECT @@global.autocommit -- 举例
+-- 为某个系统变量赋值
+SET 系统变量名 = 值
+```
+
+### 自定义变量
+
+| 变量     | 作用域    | 定义和使用的位置                |
+| -------- | --------- | ------------------------------- |
+| 用户变量 | 当前会话  | 会话中的任何地方                |
+| 局部变量 | BEGIN END | 只能在BEGIN END中，且为第一句话 |
+
+用户变量
+
+```sql
+-- 声明并初始化 三种写法
+SET @用户变量名=值;
+SET @用户变量名:=值;
+SELECT @用户变量名:=值;
+
+-- 赋值（更新用户变量的值）
+SET @用户变量名=值;
+SET @用户变量名:=值;
+SELECT @用户变量名:=值;
+SELECT 字段 INTO @变量名 FROM 表;
+
+-- 查看用户变量的值
+SELECT @用户变量名;
+```
+
+局部变量
+
+```sql
+-- 声明
+DECLARE 变量名 类型;
+DECLARE 变量名 类型 DEFAULT 值;
+
+-- 赋值
+SET 局部变量名=值;
+SET 局部变量名:=值;
+SELECT @局部变量名:=值;
+SELECT 字段 INTO 局部变量名 FROM 表;
+
+-- 查看
+SELECT 局部变量名
+```
+
+## 流程控制语句
+
+### IF函数
+
+语法：IF(表达式1，表达式2，表达式3)
+
+解释：如果表达式1成立，则返回表达式2，否则返回表达式3
+
+### CASE 结构
+
+特点：可以作为表达式，嵌套在其它语句中使用，也可以作为独立的语句使用
+
+类似switch case语句，一般用于实现等值判断
+
+```sql
+CASE 变量|表达式|字段
+WHEN 要判断的值 THEN 返回值1或语句1
+WHEN 要判断的值 THEN 返回值2或语句2
+...
+ELSE 返回值n或语句n
+END
+```
+
+类型多重if语句，一般用于实现区间判断
+
+```sql
+CASE 
+WHEN 要判断的条件1 THEN 返回值1或语句1
+WHEN 要判断的条件2 THEN 返回值2或语句2
+...
+ELSE 返回值n或语句n
+END
+```
+
+### IF结构
+
+应用在BEGIN END中
+
+```sql
+IF 条件1 THEN 语句1;
+ELSEIF 条件2 THEN 语句2;
+...
+ELSE 语句n;
+END IF
+```
+
+### 循环结构
+
+分类：while、loop、repeat
+
+循环控制：
+
+- iterate 类似于 continue，结束本次循环，继续下一次
+- leave 类似于 break，结束当前所在循环
+
+**while语法**
+
+```sql
+WHILE [Condition] DO 
+	-- do sth.
+END WHILE;
+```
+
+**loop语法**
+
+```sql
+-- 可以用来模拟简单的死循环
+LOOP
+	-- do sth.
+END LOOP;
+```
+
+**repeat语法**
+
+```sql
+REPEAT
+	-- do sth.
+UNTIL [Condition]
+END REPEAT
+```
+
+**循环定义名称**
+
+可以为循环定义名称，例如
+
+```sql
+[name]:WHILE [Condition] DO 
+	-- do sth.
+END WHILE [name];
+```
+
+**while案例**
+
+```sql
+-- 向admin表批量插入count条记录
+DELIMITER $
+CREATE PROCEDURE proc_test(IN count INT)
+BEGIN
+	DECLARE i INT DEFAULT 1;
+	WHILE i <= count DO
+		INSERT INTO admin (username, passowrd) VALUES (CONCAT('Jack', i), '123456');
+		SET i = i + 1;
+	END WHILE;
+END$
+```
+
+## 函数
+
+参数列表 包含两部分：参数名、参数类型
+
+函数体肯定会有RETURN语句，否则会报错
+
+使用 DELIMITER 设置结束标记
+
+```sql
+DELIMITER $
+-- 创建函数
+CREATE FUNCTION 函数名(参数列表) RETURNS 返回类型
+BEGIN
+	函数体 
+END $
+
+-- 调用语法
+SELECT 函数名(参数列表)$
+```
+
+无参有返回
+
+```sql
+DELIMITER $
+-- 返回公司员工的个数
+CREATE FUNCTION fun_test() RETURNS INT
+BEGIN
+	DECLARE c INT DEFAULT 0;
+	SELECT COUNT(*) INTO c
+	FROM tb_employee;
+	RETURN c;
+END $
+-- 调用
+SELECT fun_test()$
+```
+
+有参有返回
+
+```sql
+DELIMITER $
+-- 根据员工名，返回他的工资
+CREATE FUNCTION fun_test(empName VARCHAR(20)) RETURNS DOUBLE
+BEGIN
+	SET @sal = 0; -- 可使用局部变量和用户变量，这里使用用户变量
+	SELECT salary INTO @sal	-- 赋值
+	FROM tb_employee
+	WHERE last_name = empName;
+	RETURN @sal;
+END $
+SELECT fun_test('张三')$
+```
+
+查看和删除函数
+
+```sql
+-- 查看函数
+SHOW CREATE FUNCTION fun_test;
+
+-- 删除函数
+DROP FUNCTION fun_test;
+```
+
+## 存储过程
+
+创建语法 参数列表有3部分：参数模式、参数名、参数类型
+
+参数举例： IN stuname VARCHAR(20)
+
+参数模式：
+
+- IN 该参数可以作为输入，即需要调用方传过来值
+- OUT 该参数可以作为输出，即可作为返回值
+- INOUT 该参数既可以作为输入也可以作为输出
+
+如果存储过程体只有一句话，BEGIN END可以省略
+
+存储过程体中每条SQL语句的结尾必须加分号
+
+需要修改分隔符否则mysql遇到分号就退出了<code>DELIMITER $</code>
+
+```sql
+-- 创建语法
+DELIMITER $
+CREATE PROCEDURE 存储过程名(参数列表)
+BEGIN
+	存储过程体
+END $
+
+-- 调用语法
+CALL 存储过程名(参数列表);
+```
+
+案例（带IN模式的存储过程）
+
+```sql
+-- 账号密码相等返回成功，否则返回失败
+DELIMITER $
+CREATE PROCEDURE proc_test(IN username VARCHAR(20), IN password VARCHAR(20))
+BEGIN
+	DECLARE result INT DEFAULT 0; # 声明并初始化
+	SELECT COUNT(*) INTO result
+	FROM admin
+	WHERE admin.username = username
+	AND admin.password = password;
+	SELECT IF(result>0,'成功','失败');	# 使用变量
+END $
+-- 调用存储过程
+CALL proc_test('admin', '123456');
+```
+
+案例（带OUT模式的存储过程）
+
+```sql
+-- 根据女生名称查询出对应的男生名称
+DELIMITER $
+CREATE PROCEDURE proc_test(IN girl VARCHAR(20), OUT boy VARCHAR(20))
+BEGIN
+	SELECT bo.boyname INTO boy
+	FROM boys a
+	INNER JOIN girls b ON a.id = b.boyid
+	WHERE b.name = girl;
+END $
+
+-- 调用存储过程
+CALL proc_test('小昭', @bname);
+SELECT @bname;
+```
+
+案例（带INOUT模式的存储过程）
+
+```sql
+-- 传入a，b两个值，最终a，b都将翻倍并返回
+DELIMITER $
+CREATE PROCEDURE proc_test(INOUT a INT, INOUT b INT)
+BEGIN
+	SET a = a * 2;
+	SET b = b * 2;
+END $
+
+-- 调用存储过程，必须先定义用户变量
+SET @a = 10;
+SET @b = 20;
+CALL proc_test(@a, @b);
+SELECT @a, @b;
+```
+
+查看和删除存储过程
+
+```sql
+-- 查看存储过程信息
+SHOW CREATE PROCEDURE proc_test
+
+-- 删除存储过程
+DROP PROCEDURE proc_test
+```
+
+## 约束
+
+### 六大约束
+
+| 约束        | 说明                 |
+| ----------- | -------------------- |
+| NOT NULL    | 非空                 |
+| DEFAULT     | 非有默认值           |
+| PRIMARY KEY | 主键，唯一非空       |
+| UNIQUE      | 唯一可空             |
+| CHECK       | 检查（ Mysql中无效） |
+| FOREIGN KEY | 外键，限制两表关系   |
+
+约束添加的分类
+
+1. 列级约束：除了外键约束，其它都支持
+2. 表级约束：除了非空、默认，其它都支持
+
+### 创建表时添加约束
+
+```sql
+CREATE TABLE tb_stu(
+	id INT PRIMARY KEY,
+	stuName VARCHAR(20) NOT NULL,
+	gender CHAR(1) CHECK(gender='男' OR gender='女'),
+	seat INT UNIQUE,
+	age INT DEFAULT 18,
+	marjorId INT,
+
+	CONSTRAINT fk_stu_major FOREIGN KEY(majorId) REFERENCES major(id) # 创建外键
+)
+
+CREATE TABLE tb_major(
+	id INT PRIMARY KEY,
+	majorName VARCHAR(50)
+)
+
+-- 查看表中的索引
+SHOW INDEX FROM tb_stu
+```
+
+## 常用关键字
+
+```sql
+## DISTINCT & GROUP BY
+
+# 得到去重后的uid
+SELECT DISTINCT uid from user_info;
+SELECT uid from user_info GROUP BY uid;
+# 得到去重后的uid,uname
+SELECT DISTINCT uid, uname from user_info;
+SELECT uid, uname GROUP BY uid, uname;
+# 如果要聚合查询，只能使用GROUP BY
+SELECT uid, SUM(score) from user_info GROUP BY uid;
+
+## HAVING: 与GROUP BY组合使用，如SUM之后需要筛选
+SELECT uid, SUM(score) AS s from user_info GROUP BY uid HAVING s > 100;
+```
+

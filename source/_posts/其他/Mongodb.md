@@ -1,0 +1,251 @@
+---
+title: MongoDB
+date: {{ date }}
+categories:
+- 其他
+---
+
+## mongodb安装
+
+### Linux
+
+```shell
+# 下载
+wget https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-4.2.8.tgz
+# 解压
+tar xf mongodb-linux-x86_64-ubuntu1604-4.2.8.tgz
+# 配置安装路径
+export PATH=/usr/local/mongodb4/bin:$PATH
+```
+
+### Windows
+
+下载地址 https://www.mongodb.com/try/download/community
+
+配置完环境变量后，创建data文件夹，执行以下命名
+
+```shell
+mongod --dbpath E:\Software\MongoDB\data
+```
+
+### Studio 3T
+
+下载地址 https://studio3t.com/download/
+
+破解：重置试用日期
+
+新建文件 studio3T.bat 到 C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp
+
+运行启动即可
+
+```tex
+@echo off
+ECHO 重置Studio 3T的使用日期......
+REG DELETE "HKEY_CURRENT_USER\Software\JavaSoft\Prefs\3t\mongochef\enterprise" /f
+RMDIR /s /q %USERPROFILE%\.3T\studio-3t\soduz3vqhnnja46uvu3szq--
+RMDIR /s /q %USERPROFILE%\.3T\studio-3t\Lwm3TdTxgYJkXBgVk4s3
+RMDIR /s /q %USERPROFILE%\AppData\Local\t3\dataman\mongodb\app\AppRunner
+RMDIR /s /q C:\Users\Public\t3\dataman\mongodb\app\AppRunner
+RMDIR /s /q %USERPROFILE%\AppData\Local\Temp\t3\dataman\mongodb\app\AppRunner
+RMDIR /s /q %USERPROFILE%\AppData\Local\ftuwWNWoJl-STeZhVGHKkQ--
+RMDIR /s /q %USERPROFILE%\AppData\Local\Temp\ftuwWNWoJl-STeZhVGHKkQ--
+RMDIR /s /q %USERPROFILE%\.cache\ftuwWNWoJl-STeZhVGHKkQ--
+ECHO 重置完成, 按任意键退出......
+pause>nul
+EXIT
+```
+
+## mongodb基本操作
+
+### 1. 数据库操作
+
+```sql
+-- databaseName: 数据库名称
+
+-- 创建数据库
+use <databaseName>
+-- 删除数据库
+db.dropDatabase()
+```
+
+### 2. 集合操作
+
+```sql
+-- collectionName: 集合名称
+-- options: 可选参数, 指定有关内存大小及索引的选项
+
+-- 创建集合
+db.createCollection(<collectionName>, <options>)
+-- 删除集合
+db.<collectionName>.drop()
+```
+
+### 3. 文档操作
+
+查询文档
+
+```sql
+-- query ：可选，使用查询操作符指定查询条件
+-- projection ：可选，使用投影操作符指定返回的键。查询时返回文档中所有键值， 只需省略该参数即可（默认省略）。
+
+db.collection.find(<query>, <projection>)
+db.collection.find().pretty()
+
+-- and 查询
+db.col.find(
+    {
+    	k1:v1, k2:v2
+    }
+).pretty()
+
+-- or 查询
+db.col.find(
+   {$or: [{k1: v1}, {k2:v2}]}
+).pretty()
+
+-- or and 结合查询
+db.col.find(
+   {ka1:va1, ka2:va2},
+   {$or: [{ko1: vo1}, {ko2:vo2}]}
+).pretty()
+
+```
+
+插入文档
+
+```sql
+-- collectionName: 集合名称
+
+-- 可传数组或对象
+db.<collectionName>.insert(<document>)
+-- 只能传对象
+db.<collectionName>.insertOne(<document>)
+-- 只能传数组
+db.<collectionName>.insertMany(<document>)
+
+db.<collectionName>.save(<document>)
+```
+
+更新文档
+
+```sql
+-- query: 查询条件
+-- update: update的对象和一些更新的操作符
+-- upsert(Boolean): 可选，如果不存在update的记录，是否插入新数据，默认false
+-- multi(Boolean): 可选，只更新找到的第一条记录，如果这个参数为true,就把按条件查出来多条记录全部更新，默认false
+-- writeConcern :可选，抛出异常的级别
+
+-- 更新操作符
+-- $set: 修改文档中的指定属性
+-- $unset: 删除文档中的指定属性
+
+-- update默认只修改一个
+db.collection.update(
+   <query>,
+   <update>,
+   {
+     upsert: <upsert>,
+     multi: <multi>,
+     writeConcern: <writeConcern>
+   }
+)
+
+-- example
+-- 修改第一个文档
+db.inventory.updateOne(
+	{item: "paper"},
+    {
+    	$set: {status: "P"}
+    }
+)
+
+-- 修改所有符合条件的文档
+db.inventory.updatMany(
+	{item: "paper"},
+    {
+    	$set: {status: "P"}
+    }
+)
+```
+
+删除文档
+
+```sql
+-- query: 查询条件
+-- justOne: 可选，如果设为 true 或 1，则只删除一个文档，如果不设置该参数，或使用默认值 false，则删除所有匹配条件的文档。
+-- writeConcern :可选，抛出异常的级别。
+
+db.collection.remove(
+   <query>,
+   {
+     justOne: <justOne>,
+     writeConcern: <writeConcern>
+   }
+)
+```
+
+## SpringBoot整合Mongodb
+
+引入依赖
+
+```xml
+<!-- Spring Boot Mongodb -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-mongodb</artifactId>
+</dependency>
+```
+
+添加配置
+
+```properties
+spring.data.mongodb.uri=mongodb://name:pass@localhost:27017/test
+```
+
+测试类
+
+```java
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class SardineUserTest {
+
+    @Autowired
+    MongoTemplate mongoTemplate;
+
+    @Test
+    public void insert(){
+        Student student = new Student();
+        student.setName("Jerry").setAge("22");
+        mongoTemplate.insert(student);
+    }
+
+    @Test
+    public void update(){
+        Query query = Query.query(Criteria.where("name").is("Jerry"));
+        mongoTemplate.updateFirst(query, Update.update("age", "18"), Student.class);
+    }
+
+    @Test
+    public void find(){
+        Query query = Query.query(Criteria.where("name").is("Jerry"));
+        List<Student> students = mongoTemplate.find(query, Student.class);
+        System.out.println(students);
+    }
+
+    @Test
+    public void findPage(){
+        Query query = Query.query(Criteria.where("name").is("Jerry"));
+        query.with(PageRequest.of(0, 2)); // page从0开始
+        query.with(Sort.by(Sort.Direction.ASC, "age"));
+        List<Student> students = mongoTemplate.find(query, Student.class);
+        System.out.println(students);
+    }
+}
+```
+
+
+
+
+
+
+
