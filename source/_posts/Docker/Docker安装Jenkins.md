@@ -19,10 +19,10 @@ docker pull jenkinsci/blueocean
 
 **修改目录权限**
 
-因为当映射本地数据卷时，/docker/jenkins目录的拥有者为root用户，而容器中jenkins user的uid为1000
+因为当映射本地数据卷时，/root/docker/jenkins目录的拥有者为root用户，而容器中jenkins user的uid为1000
 
 ```shell
-chown -R 1000:1000 /docker/jenkins
+chown -R 1000:1000 /root/docker/jenkins
 ```
 **运行 Jenkins 容器**
 
@@ -32,7 +32,7 @@ docker run \
   -d \
   -p 8000:8080 \
   -p 50000:50000 \
-  -v /docker/jenkins:/var/jenkins_home \
+  -v /root/docker/jenkins:/var/jenkins_home \
   -e JAVA_OPTS=-Duser.timezone=Asia/Shanghai \
   jenkinsci/blueocean
 ```
