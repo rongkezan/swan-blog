@@ -132,11 +132,9 @@ Frame：每个方法对应一个 Frame
 
 Frame 存放：Local Variable Table, Operated Stack, Dynamic Linking, Return Address
 
-Local Variable Table：byte、short、int、long、float、double、boolean、char、reference
-
-Dynamic Linking：A方法调用B方法，这个过程就叫动态链接
-
-Return Address：A方法调用B方法，B方法返回值的存放地址
+- Local Variable Table：byte、short、int、long、float、double、boolean、char、reference
+- Dynamic Linking：A方法调用B方法，这个过程就叫动态链接
+- Return Address：A方法调用B方法，B方法返回值的存放地址
 
 案例：输出结果为8
 
@@ -159,7 +157,7 @@ System.out.println(i);
 
 ### 堆的基本概念
 
-Java 中的堆是用来存储对象本身的以及数组（当然，数组引用是存放在 Java 栈中的）， 堆是被所有线程共享的，在 JVM 中只有一个堆。所有对象实例以及数组都要在堆上分配内 存，单随着 JIT 发展，栈上分配，标量替换优化技术，在堆上分配变得不那么到绝对，只能在 server 模式下才能启用逃逸分析。
+Java 中的堆是用来存储对象本身的以及数组（当然，数组引用是存放在 Java 栈中的）， 堆是被所有线程共享的，在 JVM 中只有一个堆。所有对象实例以及数组都要在堆上分配内存，但随着 JIT 发展，栈上分配，标量替换优化技术，在堆上分配变得不那么到绝对，只能在 server 模式下才能启用逃逸分析。
 
 ```java
 // 左边存放在栈中，右边存放在堆中
@@ -225,7 +223,9 @@ GC是什么（分代收集算法）
 
 **Card Table**
 
-由于做 YGC 时，需要扫描整个 OLD 区，效率非常低，所以 JVM 设计了 Card Table，如果一个 OLD 区的 Card Table 中有对象指向 Y 区，就将它设为 Dirty，下次扫描时，只需要扫描 Ditry Card。在结构上，Card Table 用 Bit Map 实现。
+由于新生代的垃圾收集通常很频繁，如果老年代对象引用了新生代的对象，那么，需要跟踪从老年代到新生代的所有引用，效率非常低，所以 JVM 设计了 Card Table，如果一个老年代的 Card Table 中有对象指向新生代，就将它标记为 Dirty，下次扫描时，只需要扫描 Ditry Card，大大提升效率。
+
+在结构上，Card Table 用 Bit Map 实现。
 
 **CSet（Collection Set）**
 
@@ -578,7 +578,7 @@ jmap -histo 21853 | head -20
 解决方案1：设定以下参数，OOM的时候会自动生成堆转储文件
 
 ```shell
--XX:+HeapDumpOnOutOfMemoryError
+-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/usr/local/base
 ```
 
 解决方案2：有服务器备份（高可用），停掉这台服务器对其它服务器不影响

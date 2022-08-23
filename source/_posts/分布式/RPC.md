@@ -17,6 +17,12 @@ Dubbo、gRPC、Thrift、HSF (High Speed Service Framework)
 
 ## Dubbo
 
+### Dubbo 概述
+
+是一款高性能、轻量级的开源Java RPC框架
+
+提供了三大核心能力：面向接口的远程方法调用、智能容错和负载均衡、服务自动注册和发现
+
 ### Dubbo 协议
 
 | 协议名称   | 实现描述                                     | 连接                                     | 使用场景                                                     |
@@ -37,6 +43,12 @@ Dubbo、gRPC、Thrift、HSF (High Speed Service Framework)
 3. 当服务提供者有变更，注册中心会基于长链接的方式通知消费者
 4. 服务消费者会基于拉取到的服务调用服务提供者
 5. 每次调用的信息会定时地发送到监控中心
+
+### Dubbo 注册到zk的节点信息
+
+![img](https://img-blog.csdnimg.cn/6214bb29f4c548cc9ff2054e15544976.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5bqE5bCP54Sx,size_20,color_FFFFFF,t_70,g_se,x_16)
+
+当一台机器部署两个Dubbo生产者时，会出现端口冲突问题
 
 ### Dubbo 同步调用
 

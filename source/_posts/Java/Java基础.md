@@ -317,6 +317,17 @@ public class Client {
 }
 ```
 
+## 申请堆外内存
+
+unsafe类
+
+```java
+// 分配 10M 堆外内存
+long address = unsafe.allocateMemory(10 * 1024 * 1024);
+// 释放堆外内存
+unsafe.freeMemory()
+```
+
 ## 接口和抽象类
 
 接口：自上向下，定义约束和规范

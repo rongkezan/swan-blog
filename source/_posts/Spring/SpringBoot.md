@@ -280,6 +280,8 @@ spring.boot.admin.client.instance.prefer-ip=true
 
 ## Spring Boot 启动源码解析
 
+> 起步依赖、自动装配
+
 ### 总体概览
 
 ```java

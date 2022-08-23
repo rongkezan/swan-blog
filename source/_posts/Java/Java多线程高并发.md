@@ -142,6 +142,14 @@ pool.shutdown();
 6. threadFactory: 表示生成线程池中工作线程的线程工厂，用于创建线程，一般默认即可。
 7. handler: 拒绝策略，表示当队列满了并且工作线程大于等于线程的最大线程数时如何来拒绝请求执行的runnable策略。
 
+### 线程池状态
+
+- RUNNING：线程池创建之后的初始状态，这种状态下可以执行任务。
+- SHUTDOWN：该状态下线程池不再接受新任务，但是会将工作队列中的任务执行完毕。
+- STOP：该状态下线程池不再接受新任务，也不会处理工作队列中的剩余任务，并且将会中断所有工作线程。
+- TIDYING：该状态下所有任务都已终止或者处理完成，将会执行terminated()钩子方法。
+- TERMINATED：执行完terminated()钩子方法之后的状态。terminated钩子方法在Executor终止时调用，默认实现不执行任何操作
+
 ### 线程池底层工作原理
 
 - 在创建了线程池后，等待提交过来的任务请求
@@ -301,14 +309,19 @@ ThreadPoolTaskExecutor taskExecutor;
 
 #### 锁升级
 
+![在这里插入图片描述](https://img-blog.csdnimg.cn/6fbdf30b6fd742fe96ec2c09fccc0842.png)
+
 1. 无锁：程序不会有锁竞争
-2. 偏向锁：经常只有一个线程加锁，markword 记录线程ID
-3. 自旋锁：有线程来参与锁的竞争，但是获取锁的冲突时间很短
+
+2. 偏向锁：偏向第一个线程，通常只有一个线程加锁，只在markword中记录线程ID，相当于不加锁，当有线程来抢锁，进行锁升级。
+
+   偏向锁失效：调用 `hashCode函数` 的时候会把hashCode存放在markword，和偏向锁存放的信息有冲突，而hashCode是不会变的，所以只能进行锁升级。
+
+3. 轻量级锁（自旋锁）：有线程来参与锁的竞争，但是获取锁的冲突时间很短
+
 4. 重量级锁：自旋10次以后，升为重量级锁 - 去OS申请锁资源
 
-什么时候用自旋什么时候用重量级锁？
-
-执行时间长，线程多用重量级锁，否则用自旋。
+自旋锁不一定比重量级锁效率高：执行时间长，线程多用重量级锁，否则用自旋锁。
 
 #### 锁发生改变
 
@@ -615,14 +628,12 @@ class VolatileExample {
 
 **缺点**：循环时间长开销大、只能保证一个共享变量的原子操作、ABA问题。
 
-### CAS是怎么保证原子性的
+### CAS怎么保证原子性
 
-获取内存中的值，CAS比较不一致，则继续获取内存中的值，直到CAS成功为止
+调用了unsafe类，里面通过自旋获得内存中的真实值
 
 ```java
-// var1: 当前对象
-// var2: 当前对象的内存偏移量地址
-// var4: 增加的值
+// var1: 当前对象，var2: 当前对象的内存偏移量地址，var4: 增加的值
 public final int getAndAddInt(Object var1, long var2, int var4) {
     int var5;
     do {
@@ -632,6 +643,20 @@ public final int getAndAddInt(Object var1, long var2, int var4) {
     } while(!this.compareAndSwapInt(var1, var2, var5, var5 + var4));
     return var5;
 }
+```
+
+获取内存真实值调用的是C++的代码，C++执行了一条汇编指令：如果是mp则上锁，上锁后比较并交换
+
+上锁的原因是汇编中的 `cmpxchg` 也是不能保证原子性的
+
+```c++
+LOCK_IF_MP(%4) "cmpxchgl %1,(%3)"
+```
+
+而这条汇编的实际作用就是在操作交换之前加了一个lock执行
+
+```
+lock cmpxchg
 ```
 
 ### 为什么CAS要比synchronized快

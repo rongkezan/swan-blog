@@ -241,12 +241,8 @@ curl 10.96.50.125:8000
 通过 `[serviceName].[namespace].svc`的形式访问
 
 ```sh
-
+curl my-nginx.default.svc:8000
 ```
-
-
-
-
 
 #### ClusterIP
 
@@ -973,6 +969,24 @@ spec:
         runAsUser: 2000
 ```
 
+安装完成后k8s会新建service
+
+如图：一个是映射为80端口的32023，一个是映射443端口的30771
+
+```sh
+[root@master ~]# kubectl get service -A
+NAMESPACE              NAME                                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+default                hello-server                         ClusterIP   10.96.174.151   <none>        8000/TCP                     166m
+default                kubernetes                           ClusterIP   10.96.0.1       <none>        443/TCP                      4h18m
+default                nginx-demo                           ClusterIP   10.96.70.26     <none>        8000/TCP                     166m
+ingress-nginx          ingress-nginx-controller             NodePort    10.96.101.44    <none>        80:32023/TCP,443:30771/TCP   177m
+ingress-nginx          ingress-nginx-controller-admission   ClusterIP   10.96.218.95    <none>        443/TCP                      177m
+kube-system            kube-dns                             ClusterIP   10.96.0.10      <none>        53/UDP,53/TCP,9153/TCP       4h18m
+kubernetes-dashboard   dashboard-metrics-scraper            ClusterIP   10.96.181.48    <none>        8000/TCP                     4h5m
+kubernetes-dashboard   kubernetes-dashboard                 NodePort    10.96.95.53     <none>        443:31476/TCP                4h5m
+
+```
+
 #### 使用
 
 应用如下配置，准备好测试环境
@@ -1135,6 +1149,62 @@ spec:
             name: nginx-demo
             port:
               number: 8000
+```
+
+##### 配置SSL
+
+下载阿里云SSL证书，解压到服务器，执行下列命令
+
+```sh
+kubectl create secret tls app-nft-card-com-secret --key ./7995548__51nftcard.com.key --cert ./7995548__51nftcard.com.pem
+```
+
+修改`ingress-rule.yaml`增加ssl配置 
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-host-bar
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true' #http 自动转https
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "600" #修改代理超时时间，默认是60s
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - '51nftcard.com'
+    secretName: app-nft-card-com-secret
+  rules:
+  - host: "hello.51nftcard.com"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: hello-server
+            port:
+              number: 8000
+  - host: "demo.51nftcard.com"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/nginx(/|$)(.*)"  # 把请求会转给下面的服务，下面的服务一定要能处理这个路径，不能处理就是404
+        backend:
+          service:
+            name: nginx-demo  ## java，比如使用路径重写，去掉前缀nginx
+            port:
+              number: 8000
+```
+
+应用 `ingress-rule.yaml`
+
+```sh
+kubectl apply -f ingress-rule.yaml
 ```
 
 ### Watch
