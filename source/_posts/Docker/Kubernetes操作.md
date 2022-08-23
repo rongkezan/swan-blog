@@ -1,5 +1,5 @@
 ---
-title: Kubernetes
+title: Kubernetes操作、
 date: {{ date }}
 categories:
 - Docker
@@ -28,106 +28,6 @@ Kubernetes Cluster = N Master Node + N Worker Node (N >= 1)
 ## 工作负载
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/067d736577e54325ab31581b0e7665ee.png)
-
-## Mac安装Kubernetes
-
-### 1. 启动Kubernetes
-
-安装好Docker For Mac之后，会携带Kubernetes
-
-在Preferences中：
-
-1. 修改Docker Engine
-
-   ```json
-     "registry-mirrors": [
-       "https://docker.mirrors.ustc.edu.cn",
-       "https://cr.console.aliyun.com/"
-     ]
-   ```
-
-2. 启动Kubernetes
-
-   Kubernetes -> Enable Kubernetes -> Apply & Restart
-
-### 2. 验证是否启动成功
-
-```sh
-kubectl cluster-info
-kubectl get nodes
-kubectl describe node
-```
-
-### 3. 部署Dashboard
-
-部署Dashboard
-
-```sh
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.3.1/aio/deploy/recommended.yaml
-```
-
-启动Dashboard
-
-```sh
-kubectl proxy
-```
-
-访问控制台
-
-http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
-
-### 4. 登陆Dashboard
-
-1. 新建文件`dashboard-adminuser.yaml`
-
-```yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: admin-user
-  namespace: kubernetes-dashboard
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: admin-user
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cluster-admin
-subjects:
-- kind: ServiceAccount
-  name: admin-user
-  namespace: kubernetes-dashboard
-```
-
-2. 应用文件
-
-```sh
-kubectl apply -f dashboard-adminuser.yaml
-```
-
-3. 生成登陆的Token
-
-```sh
-kubectl -n kubernetes-dashboard create token admin-user
-```
-
-4. 得到如下格式的Token
-
-```
-eyJhbGciOiJSUzI1NiIsImtpZCI6ImVsb2s5NlluYWtYMDJNWmVPZFBZNmo5MU11el82VGZwR2gtVUE0OTlhY1UifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjLmNsdXN0ZXIubG9jYWwiXSwiZXhwIjoxNjU0Njg2MzM1LCJpYXQiOjE2NTQ2ODI3MzUsImlzcyI6Imh0dHBzOi8va3ViZXJuZXRlcy5kZWZhdWx0LnN2Yy5jbHVzdGVyLmxvY2FsIiwia3ViZXJuZXRlcy5pbyI6eyJuYW1lc3BhY2UiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsInNlcnZpY2VhY2NvdW50Ijp7Im5hbWUiOiJhZG1pbi11c2VyIiwidWlkIjoiYWExY2Y0MTAtODdlNS00MDY2LWI4ODgtMTg1MmE4NTg5NzFjIn19LCJuYmYiOjE2NTQ2ODI3MzUsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDprdWJlcm5ldGVzLWRhc2hib2FyZDphZG1pbi11c2VyIn0.UCSlwuNnIVQnsopHXG8PvLMDmcbtig3S8TCtN716xD4yITdpc4RqwmxzKJx1QI2L2bHKEnwMD38u96Q4qQnGWzcJ1R8MDtZc7gGtFWk51bgoie6lOtTyf4n1WSkSBzd2UFppMfDB6jiZ2vDR02crhazFgOO0dVtRGUfclDLOm2x1pTemdZJDQcR9TywKDXyQeLvGJXEi_N_a43AhnZmbI_OcadiRCc-hCwlWXWLEZSf0405t_nrXwA8NwzWjT1qJ8gDsAWHDoifS_2xoAETeP0ubhRK9HmrYa20aMHRc_M1HBiwbossNNET_iKdUqLYUNrac2r5SYQ72ia_qG4inRA
-```
-
-5. 使用Token登陆Dashboard
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/a4010b6b0b024cf59734eaded23817b5.png)
-
-6. 测试完成删除用户
-
-```sh
-kubectl -n kubernetes-dashboard delete serviceaccount admin-user
-```
 
 ## Kubernetes操作
 
@@ -300,11 +200,12 @@ kubectl delete -f test-deployment.yaml
 
 > 将一组Pods公开为网络服务的抽象方法
 
+#### 暴露服务
+
+将工作负载 `my-nginx` 的80端口映射到集群内部的8000端口并暴露
+
 ```sh
-# 暴露Deploy
-kubectl expose deployment my-dep --port=8000 --target-port=80
-# 使用标签检索Pod
-kubectl get pod -l app=my-dep
+kubectl expose deployment my-nginx --port=8000 --target-port=80
 ```
 
 ```yaml
@@ -312,16 +213,40 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: my-dep
-  name: my-dep
+    app: my-nginx
+  name: my-nginx
 spec:
   selector:
-    app: my-dep
+    app: my-nginx
   ports:
   - port: 8000
     protocol: TCP
     targetPort: 80
 ```
+
+#### 访问service
+
+```sh
+kubectl get service
+kubernetes   ClusterIP      10.96.0.1      <none>        443/TCP          40m
+my-nginx     LoadBalancer   10.96.50.125   <pending>     8000:30698/TCP   6m35s
+```
+
+通过 `[ip]:[port]` 的形式访问
+
+```sh
+curl 10.96.50.125:8000
+```
+
+通过 `[serviceName].[namespace].svc`的形式访问
+
+```sh
+
+```
+
+
+
+
 
 #### ClusterIP
 
@@ -1218,6 +1143,53 @@ spec:
 # 每隔1秒运行一次获取Pod命令
 watch -n 1 kubectl get pod
 ```
+
+## Kubernetes部署Java微服务
+
+### 打包
+
+> maven打成可执行jar，上传给master服务器
+
+### 制作镜像
+
+> docker根据Dockerfile把包打成指定的镜像
+
+`Dockerfile`
+
+```dockerfile
+# 引用的基础image
+FROM openjdk:11-jdk
+
+# 复制jar包
+COPY target/nft-card-0.0.1-SNAPSHOT.jar /app.jar
+
+# 启动时运行命令
+ENTRYPOINT ["java", "-jar", "/app.jar"]
+```
+
+构建Docker镜像
+
+```sh
+cd [project_dir]
+docker build -t [project_name]:[version] -f Dockerfile .
+```
+
+### 推送镜像
+
+将镜像推送给Docker Hub（阿里云镜像仓库）
+
+```sh
+# 登录阿里云Docker仓库
+docker login --username=[username] registry.cn-hangzhou.aliyuncs.com
+# 给镜像打标签
+docker tag [image_id] registry.cn-hangzhou.aliyuncs.com/[namespace]/kube-apiserver:[image_version]
+# 推送镜像
+docker push registry.cn-hangzhou.aliyuncs.com/[namespace]/kube-apiserver:[image_version]
+```
+
+### 应用部署
+
+让K8S部署应用
 
 ## 参考文献
 
