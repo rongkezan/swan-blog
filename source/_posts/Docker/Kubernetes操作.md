@@ -224,7 +224,7 @@ spec:
     targetPort: 80
 ```
 
-#### 访问service
+#### 集群内部访问service
 
 ```sh
 kubectl get service
@@ -241,12 +241,8 @@ curl 10.96.50.125:8000
 通过 `[serviceName].[namespace].svc`的形式访问
 
 ```sh
-
+curl my-nginx.default.svc:8000
 ```
-
-
-
-
 
 #### ClusterIP
 
@@ -303,7 +299,28 @@ spec:
 >
 > 官网：https://kubernetes.github.io/ingress-nginx/
 
-#### 安装
+#### 修改k8s端口限制范围
+
+k8s的node节点的端口默认被限制在30000-32767的范围，如果要开放其他端口需要修改
+
+```sh
+vi /etc/kubernetes/manifests/kube-apiserver.yaml
+```
+
+在spec.containers.command的最后面加上 --service-cluster-ip-range 这一行，如下内容
+
+```yaml
+- --service-node-port-range=1-65535
+```
+
+重启kubectl
+
+```sh
+systemctl daemon-reload
+systemctl restart kubelet
+```
+
+#### 安装Ingress
 
 ```sh
 # 可以使用下面的deploy.yaml
@@ -316,7 +333,7 @@ registry.cn-hangzhou.aliyuncs.com/lfy_k8s_images/ingress-nginx-controller:v0.46.
 kubectl get pod,svc -n ingress-nginx
 ```
 
-`deploy.yaml`
+`ingress-deploy.yaml`
 
 ```yaml
 apiVersion: v1
@@ -599,11 +616,13 @@ spec:
     - name: http
       port: 80
       protocol: TCP
-      targetPort: http
+      targetPort: 80
+      nodePort: 80
     - name: https
       port: 443
       protocol: TCP
-      targetPort: https
+      targetPort: 443
+      nodePort: 443
   selector:
     app.kubernetes.io/name: ingress-nginx
     app.kubernetes.io/instance: ingress-nginx
@@ -1071,10 +1090,10 @@ spec:
     http:
       paths:
       - pathType: Prefix
-        path: "/nginx"  # 把请求会转给下面的服务，下面的服务一定要能处理这个路径，不能处理就是404
+        path: "/nginx"
         backend:
           service:
-            name: nginx-demo  ## java，比如使用路径重写，去掉前缀nginx
+            name: nginx-demo
             port:
               number: 8000
 ```
