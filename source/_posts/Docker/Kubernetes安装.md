@@ -256,6 +256,33 @@ eyJhbGciOiJSUzI1NiIsImtpZCI6IlR2NjU1ckNvajQ5MlJhblRaZU9VdVNxXzM0V2Y4dDZWRVRCdHUz
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/a4010b6b0b024cf59734eaded23817b5.png)
 
+6. 修改token的有效时间
+
+```sh
+kubectl get deploy kubernetes-dashboard -o yaml -n kubernetes-dashboard > 88.yaml
+```
+
+```sh
+vim 88.yaml
+```
+
+添加参数：`--token-ttl=43200`
+
+```yaml
+    spec:
+      containers:
+      - args:
+        - --auto-generate-certificates
+        - --namespace=kubernetes-dashboard
+        - --token-ttl=43200  # 添加
+```
+
+应用配置
+
+```sh
+kubectl apply -f 88.yaml
+```
+
 ## 附录：完全卸载K8S和Docker
 
 ```sh
