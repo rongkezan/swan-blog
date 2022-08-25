@@ -1297,6 +1297,47 @@ systemctl restart kubelet.service
 
 原因：kubelet没有读取到/root/.docker/config.json的认证密钥
 
+### 部署脚本
+
+```sh
+#!/bin/bash
+
+VERSION_FILE=/root/k8s/version.log
+#若有此文件,则从文件中获取信息
+if [ -e ${VERSION_FILE} ]; then
+sum=`cat ${VERSION_FILE}`
+fi
+#将变量重新赋值,并执行自己的脚本进行调用
+offsets=`expr $sum \* 10`
+#执行完毕,将sum自增后放入文件
+sum=`expr $sum + 1`
+echo $sum >${VERSION_FILE}
+
+# Define Value
+IMAGE_NAME=nft-card:1.$sum
+PROJECT_DIR=/root/workspaces/nft-card/
+# Go to project dir
+cd ${PROJECT_DIR}
+# git pull latest code
+git pull
+# mvn package
+mvn clean package -DskipTests
+# delete image
+docker rmi -f ${IMAGE_NAME}
+# docker build
+docker build -t ${IMAGE_NAME} -f Dockerfile .
+# docker tag
+docker tag ${IMAGE_NAME} registry-vpc.cn-hangzhou.aliyuncs.com/nft_card/${IMAGE_NAME}
+# docker push
+docker push registry-vpc.cn-hangzhou.aliyuncs.com/nft_card/${IMAGE_NAME}
+# get aliyun image
+ALIYUN_IMAGE=registry-vpc.cn-hangzhou.aliyuncs.com/nft_card/${IMAGE_NAME}
+# update k8s deploy
+kubectl set image deployment/nft-card nft-card=${ALIYUN_IMAGE}
+# echo
+echo ${ALIYUN_IMAGE}
+```
+
 ## 参考文献
 
 https://www.yuque.com/leifengyang/oncloud/ctiwgo
