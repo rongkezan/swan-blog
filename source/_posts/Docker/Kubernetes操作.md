@@ -1257,9 +1257,22 @@ docker tag [image_id] registry.cn-hangzhou.aliyuncs.com/[namespace]/kube-apiserv
 docker push registry.cn-hangzhou.aliyuncs.com/[namespace]/kube-apiserver:[image_version]
 ```
 
-### 应用部署
+### 滚动更新K8S镜像
 
-让K8S部署应用
+```sh
+kubectl set image deployment/[deploy_name] [deploy_name]= registry.cn-hangzhou.aliyuncs.com/[namespace]/kube-apiserver:[image_version]
+```
+
+### 解决阿里云ECS搭建K8S无法拉取到阿里云镜像的问题
+
+```sh
+# 复制阿里云登录信息到kubelet目录
+cp /root/.docker/config.json /var/lib/kubelet
+# 重启kubelet
+systemctl restart kubelet.service
+```
+
+原因：kubelet没有读取到/root/.docker/config.json的认证密钥
 
 ## 参考文献
 
