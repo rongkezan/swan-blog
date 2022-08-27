@@ -1237,6 +1237,43 @@ kubectl apply -f ingress-rule.yaml
 watch -n 1 kubectl get pod
 ```
 
+### 存储抽象
+
+#### 所有节点安装nfs
+
+```sh
+yum install -y nfs-utils
+```
+
+#### 主节点配置
+
+```sh
+# nfs主节点
+echo "/nfs/data/ *(insecure,rw,sync,no_root_squash)" > /etc/exports
+
+mkdir -p /nfs/data
+systemctl enable rpcbind --now
+systemctl enable nfs-server --now
+# 配置生效
+exportfs -r
+# 查看nfs配置
+exportfs
+```
+
+#### 从节点配置
+
+```sh
+# 检查主节点有哪些目录可以挂载
+showmount -e 172.23.184.235
+# 挂载数据目录
+mkdir -p /nfs/data
+mount -t nfs 172.23.184.235:/nfs/data /nfs/data
+# 写入一个测试文件
+echo "hello nfs server" > /nfs/data/test.txt
+```
+
+
+
 ## Kubernetes部署Java微服务
 
 ### 打包
@@ -1250,14 +1287,23 @@ watch -n 1 kubectl get pod
 `Dockerfile`
 
 ```dockerfile
-# 引用的基础image
+# 拉取JDK镜像
 FROM openjdk:11-jdk
+MAINTAINER KEITH
 
-# 复制jar包
-COPY target/nft-card-0.0.1-SNAPSHOT.jar /app.jar
+# 修改服务器时间为东8区
+RUN /bin/cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo 'Asia/Shanghai' >/etc/timezone
 
-# 启动时运行命令
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+# 复制Jar包到容器内
+COPY target/*.jar /root/app.jar
+
+# 暴露8080端口
+EXPOSE 8080
+
+# 指定参数运行容器
+ARG ENV
+ENV JAVA_OPTS="--server.port=8080 --spring.profiles.active=${ENV}"
+ENTRYPOINT ["/bin/sh","-c","java -Dfile.encoding=utf8 -Djava.security.egd=file:/dev/./urandom -jar /root/app.jar ${JAVA_OPTS}"]
 ```
 
 构建Docker镜像
@@ -1302,7 +1348,18 @@ systemctl restart kubelet.service
 ```sh
 #!/bin/bash
 
-VERSION_FILE=/root/k8s/version.log
+# 部署测试环境
+# ./deploy-xxx.sh dev
+# 部署生产环境
+# ./deploy-xxx.sh prod
+
+if [ -n "$1" ];then
+  ENV=$1
+else
+  ENV=dev
+fi
+
+VERSION_FILE=/root/k8s/version/card.version
 #若有此文件,则从文件中获取信息
 if [ -e ${VERSION_FILE} ]; then
 sum=`cat ${VERSION_FILE}`
@@ -1322,18 +1379,22 @@ cd ${PROJECT_DIR}
 git pull
 # mvn package
 mvn clean package -DskipTests
-# delete image
-docker rmi -f ${IMAGE_NAME}
 # docker build
-docker build -t ${IMAGE_NAME} -f Dockerfile .
+docker build -t ${IMAGE_NAME} -f Dockerfile . --build-arg ENV=$ENV
 # docker tag
 docker tag ${IMAGE_NAME} registry-vpc.cn-hangzhou.aliyuncs.com/nft_card/${IMAGE_NAME}
+# delete image
+docker rmi -f ${IMAGE_NAME}
 # docker push
 docker push registry-vpc.cn-hangzhou.aliyuncs.com/nft_card/${IMAGE_NAME}
 # get aliyun image
 ALIYUN_IMAGE=registry-vpc.cn-hangzhou.aliyuncs.com/nft_card/${IMAGE_NAME}
 # update k8s deploy
-kubectl set image deployment/nft-card nft-card=${ALIYUN_IMAGE}
+if [ "$ENV"x = "prod"x ];then
+  kubectl set image deployment/nft-card nft-card=${ALIYUN_IMAGE} -n prod
+else
+  kubectl set image deployment/nft-card nft-card=${ALIYUN_IMAGE} -n dev
+fi
 # echo
 echo ${ALIYUN_IMAGE}
 ```
