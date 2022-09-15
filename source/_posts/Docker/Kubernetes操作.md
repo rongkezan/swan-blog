@@ -1345,37 +1345,9 @@ systemctl restart kubelet.service
 
 ### 部署脚本
 
+#### 拉取且部署
+
 ```sh
-#!/bin/bash
-
-# 部署测试环境
-# ./deploy-xxx.sh dev
-# 部署生产环境
-# ./deploy-xxx.sh prod
-
-if [ -n "$1" ];then
-  ENV=$1
-else
-  ENV=dev
-fi
-
-VERSION_FILE=/root/k8s/version/card.version
-#若有此文件,则从文件中获取信息
-if [ -e ${VERSION_FILE} ]; then
-sum=`cat ${VERSION_FILE}`
-fi
-#将变量重新赋值,并执行自己的脚本进行调用
-offsets=`expr $sum \* 10`
-#执行完毕,将sum自增后放入文件
-sum=`expr $sum + 1`
-echo $sum >${VERSION_FILE}
-
-# Define Value
-IMAGE_NAME=nft-card:1.$sum
-PROJECT_DIR=/root/workspaces/nft-card/
-# Go to project dir
-cd ${PROJECT_DIR}
-# git pull latest code
 git pull
 # mvn package
 mvn clean package -DskipTests
@@ -1394,6 +1366,65 @@ if [ "$ENV"x = "prod"x ];then
   kubectl set image deployment/nft-card nft-card=${ALIYUN_IMAGE} -n prod
 else
   kubectl set image deployment/nft-card nft-card=${ALIYUN_IMAGE} -n dev
+fi
+# 删除旧版镜像，只保留最新1个
+docker images | grep nft-card | awk '{print $3}' | awk 'BEGIN{FS=" "} NR>1 {print $NF}' | xargs docker rmi
+# echo
+echo ${ALIYUN_IMAGE}
+```
+
+#### 仅部署
+
+```sh
+#!/bin/bash
+
+# 部署测试环境
+# ./deploy.sh nft-card dev
+# 部署生产环境
+# ./deploy.sh nft-card prod
+
+if [ -z $1 ] || [ -z $2 ];then
+  echo 缺少必填参数
+  exit 1
+fi
+
+PROJECT_NAME=$1
+ENV=$2
+
+VERSION_FILE=/root/k8s/version/${PROJECT_NAME}.version
+# 文件不存在则创建
+if [ -f ${VERSION_FILE} ];then
+  echo 0 > ${VERSION_FILE}
+fi
+
+# 存放自增变量
+if [ -e ${VERSION_FILE} ];then
+  sum=`cat ${VERSION_FILE}`
+fi
+offsets=`expr $sum \* 10`
+sum=`expr $sum + 1`
+echo $sum > ${VERSION_FILE}
+
+# Define Value
+IMAGE_NAME=${PROJECT_NAME}:2.$sum
+PROJECT_DIR=/root/docker/jenkins/workspace/${PROJECT_NAME}
+# Go to project dir
+cd ${PROJECT_DIR}
+# docker build
+docker build -t ${IMAGE_NAME} -f Dockerfile . --build-arg ENV=$ENV
+# docker tag
+docker tag ${IMAGE_NAME} registry-vpc.cn-hangzhou.aliyuncs.com/nft_card/${IMAGE_NAME}
+# delete image
+docker rmi -f ${IMAGE_NAME}
+# docker push
+docker push registry-vpc.cn-hangzhou.aliyuncs.com/nft_card/${IMAGE_NAME}
+# get aliyun image
+ALIYUN_IMAGE=registry-vpc.cn-hangzhou.aliyuncs.com/nft_card/${IMAGE_NAME}
+# update k8s deploy
+if [ "$ENV"x = "prod"x ];then
+  kubectl set image deployment/${PROJECT_NAME} ${PROJECT_NAME}=${ALIYUN_IMAGE} -n prod
+else
+  kubectl set image deployment/${PROJECT_NAME} ${PROJECT_NAME}=${ALIYUN_IMAGE} -n dev
 fi
 # echo
 echo ${ALIYUN_IMAGE}

@@ -165,6 +165,25 @@ kubeadm join cluster-endpoint:6443 --token wzzmcd.qxn34cuou6pm1hnz \
 kubeadm token create --print-join-command
 ```
 
+### Node节点加入集群
+
+加入集群
+
+```sh
+kubeadm join cluster-endpoint:6443 --token wzzmcd.qxn34cuou6pm1hnz \
+    --discovery-token-ca-cert-hash sha256:112632af685d019af73c7b55d63f3c0d081a4249e30fe3bbf95c4d1c93e4b4bb 
+```
+
+配置环境变量
+
+```sh
+vim /etc/profile
+# 末尾加一行
+export KUBECONFIG=/etc/kubernetes/kubelet.conf
+# 使配置生效
+source /etc/profile
+```
+
 ### 安装网格组件（Master节点）
 
 ```sh

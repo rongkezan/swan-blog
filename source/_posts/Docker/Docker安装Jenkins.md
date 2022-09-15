@@ -7,128 +7,165 @@ categories:
 
 > 服务器域名以 192.168.25.100 为例
 
-## 安装 Jenkins 镜像
+## Jenkins 安装
 
-**拉取镜像 jenkinsci/blueocean**
-
-官方推荐使用的镜像是jenkinsci/blueocean，该镜像包含当前的长期支持 (LTS) 的 Jenkins 版本 (可以生产使用) ，并捆绑了所有 Blue Ocean 插件和功能。
+### 拉取镜像
 
 ```shell
-docker pull jenkinsci/blueocean
+docker pull jenkins/jenkins:2.366-jdk11
 ```
 
-**修改目录权限**
+### 创建目录
 
-因为当映射本地数据卷时，/root/docker/jenkins目录的拥有者为root用户，而容器中jenkins user的uid为1000
+```sh
+mkdir -p /root/docker/jenkins
+```
+
+### 修改目录权限
+
+> 将maven和jdk下载好后放入 `/root/docker/`目录下
+
+因为当映射本地数据卷时，`/root/docker/jenkins`目录的拥有者为root用户而容器中`jenkins user`的`uid`为1000
 
 ```shell
 chown -R 1000:1000 /root/docker/jenkins
+chown -R 1000:1000 /root/docker/maven
+chown -R 1000:1000 /root/docker/jdk11
 ```
-**运行 Jenkins 容器**
+### 运行 Jenkins 容器
 
-```shell
-docker run \
-  --name jenkins \
-  -d \
-  -p 8000:8080 \
-  -p 50000:50000 \
-  -v /root/docker/jenkins:/var/jenkins_home \
-  -e JAVA_OPTS=-Duser.timezone=Asia/Shanghai \
-  jenkinsci/blueocean
-```
-## 配置 Jenkins 安装插件国内地址
-
-**在 jenkins 安装目录下找 default.json**
-
-```shell
-find . -name default.json
-```
-
-**替换 default.json 中的内容**
-
-```shell
-sed -i 's/www.google.com/www.baidu.com/g' default.json
-sed -i 's/updates.jenkins-ci.org\/download/mirrors.tuna.tsinghua.edu.cn\/jenkins/g' default.json
+```sh
+docker run -d \
+    -p 8000:8080 \
+    -p 50000:50000 \
+    -v /root/docker/jenkins:/var/jenkins_home \
+    -v /root/docker/maven:/var/maven \
+    -v /root/docker/jdk11:/var/jdk11 \
+    -v /etc/localtime:/etc/localtime \
+    -v /proc:/host/proc \
+    --restart=always \
+    --name=jenkins \
+    --privileged=true \
+    --user=root \
+    jenkins/jenkins:2.366-jdk11
 ```
 
-**重启 jenkins**
+1. 映射端口8080到8000，50000到50000
 
-```shell
-http://192.168.25.100:8000/restart
+2. 挂载 `jenkins_home` 到宿主机
+
+3. 挂载 `maven` 目录
+
+4. 挂载 `jdk11` 目录
+
+5. 同步宿主机时间
+
+6. 容器内部操作宿主机shell指令
+
+   ```sh
+   # docker里面执行
+   nsenter --mount=/host/proc/1/ns/mnt sh -c "ls /root"
+   ```
+
+   
+
+### 配置 Jenkins 插件镜像源
+
+修改 `/var/jenkins_home/updates/default.json`文件里的镜像源地址
+
+```sh
+sed -i 's#https://updates.jenkins.io/download#https://mirrors.tuna.tsinghua.edu.cn/jenkins#g' default.json
+sed -i 's#https://www.google.com#https://www.baidu.com#g' default.json
 ```
 
-## 登陆 Jenkins
+将 `default.json` 上传到服务器，使用nginx指向到该文件 `https://static.51nftcard.com/update-center.json`
 
-**访问 Jenkins 页面**
+修改`/var/jenkins_home/hudson.model.UpdateCenter.xml`文件里的镜像源地址
+
+```xml
+<?xml version='1.1' encoding='UTF-8'?>
+<sites>
+  <site>
+    <id>default</id>
+    <url>https://static.51nftcard.com/update-center.json</url>
+  </site>
+</sites>
+```
+
+重启 `jenkins`
+
+```sh
+docker restart jenkins
+```
+
+## Jenkins使用
+
+### 登录 Jenkins
+
+访问 Jenkins 页面
 
 ```shell
 http://192.168.25.100:8000
 ```
 
-**输入管理员密码**
-
-获取 Docker 映射地址的密码
+获取管理员密码
 
 ```shell
-cat /docker/jenkins/secrets/initialAdminPassword
+cat /root/docker/jenkins/secrets/initialAdminPassword
+```
+
+```sh
 85770376692448b7b6a8e301fb437848
 ```
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210305234455971.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+登录后安装推荐插件
 
-## 配置 maven jdk git
+### 配置 maven jdk git
 
-**安装插件 Maven Integration，重启 Jenkins**
+#### 安装插件
 
-Manage Jenkins -> Manage Plugins -> Maven Intergration -> Download now and install after restart
+> Manage Jenkins -> Manage Plugins
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210307122414262.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+1. Maven Integration
+2. Git Parameter
 
-**进入容器查询 jdk 和 git 的路径**
+#### 全局配置
 
-```shell
-# 进入容器
-docker exec -it jenkins bash
-# 获取jdk的路径
-echo $JAVA_HOME
-# 获取git的路径
-which git
+> Manage Jenkins -> Global Tool Configuration
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/f71852ddbfe040eca8229800b13e7858.png)
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/b5e8acc99fbe40498db0d20d7cf305f2.png)
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/3945462ac7de47ca90187876ee6ae8ec.png)
+
+### 构建Maven项目
+
+#### 新建项目
+
+New Item -> Maven Project
+
+#### 配置Git参数化构建
+
+This project is parameterized -> Add Parameter : Git Parameter
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/7a07e7b5bc124a44b987141efead36a0.png)
+
+#### 配置Git仓库地址
+
+Source Code Management
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/c14d1a1e276547588ca128c7719ffc3d.png)
+
+#### 配置Maven脚本
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/f83b5eb8745e469f81c5a9228538ee5c.png)
+
+## 执行Shell脚本
+
+```sh
+nsenter --mount=/host/proc/1/ns/mnt sh -c "ls /root"
 ```
-**配置路径**
 
-Manage Jenkins -> Global Tool Configuration -> Update -> Save
 
-![JDK](https://img-blog.csdnimg.cn/20210307124810429.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
-## 构建项目
-
-New Item -> 构建一个maven项目
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210307131950770.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
-
-配置 Git 仓库地址
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210307132120544.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
-
-Build Now
-
-构建完成后，源码路径：/docker/jenkins/workspace/Test
-
-## 配置 Gitee
-
-**安装 Gitee 插件**
-
-Manage Jenkins -> Plugin Manager -> Search gitee -> Download now and install after restart
-
-**配置 Gitee**
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210307155434803.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
-
-**配置构建任务**
-
-General -> gitee链接
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210307161531768.png)
-
-Source Code Management -> 选择 Git -> 配置 Repository URL 和 Credentials
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210307161629421.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
