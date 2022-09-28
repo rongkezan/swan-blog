@@ -7,9 +7,9 @@ menu:
   # Archives: /archives/ || fas fa-archive
   Tags: /tags/ || fas fa-tags
   Categories: /categories/ || fas fa-folder-open
-  # List||fas fa-list:
+    # List||fas fa-list:
     # Music: /music/ || fas fa-music
-    # Movie: /movies/ || fas fa-video
+  # Movie: /movies/ || fas fa-video
   # Link: /link/ || fas fa-link
   About: /about/ || fas fa-heart
 
@@ -196,12 +196,12 @@ post_copyright:
 reward:
   enable: false
   QR_code:
-    # - img: /img/wechat.jpg
-    #   link:
-    #   text: wechat
-    # - img: /img/alipay.jpg
-    #   link:
-    #   text: alipay
+  # - img: /img/wechat.jpg
+  #   link:
+  #   text: wechat
+  # - img: /img/alipay.jpg
+  #   link:
+  #   text: alipay
 
 # Post edit
 # Easily browse and edit blog source code online.
@@ -457,10 +457,10 @@ google_adsense:
 # --------------------------------------
 
 site_verification:
-  # - name: google-site-verification
-  #   content: xxxxxx
-  # - name: baidu-site-verification
-  #   content: xxxxxxx
+# - name: google-site-verification
+#   content: xxxxxx
+# - name: baidu-site-verification
+#   content: xxxxxxx
 
 # Beautify/Effect (美化/效果)
 # --------------------------------------
@@ -564,9 +564,9 @@ click_heart:
 ClickShowText:
   enable: false
   text:
-    # - I
-    # - LOVE
-    # - YOU
+  # - I
+  # - LOVE
+  # - YOU
   fontSize: 15px
   random: false
   mobile: false
@@ -782,8 +782,8 @@ note:
 pjax:
   enable: false
   exclude:
-    # - xxxx
-    # - xxxx
+  # - xxxx
+  # - xxxx
 
 # Inject the css and script (aplayer/meting)
 aplayerInject:
@@ -841,9 +841,9 @@ css_prefix: true
 # 插入代码到头部 </head> 之前 和 底部 </body> 之前
 inject:
   head:
-    # - <link rel="stylesheet" href="/xxx.css">
+  # - <link rel="stylesheet" href="/xxx.css">
   bottom:
-    # - <script src="xxxx"></script>
+  # - <script src="xxxx"></script>
 
 # CDN
 # Don't modify the following settings unless you know how they work
@@ -867,52 +867,52 @@ CDN:
   custom_format:
 
   option:
-    # main_css:
-    # main:
-    # utils:
-    # translate:
-    # local_search:
-    # algolia_js:
-    # algolia_search_v4:
-    # instantsearch_v4:
-    # pjax:
-    # gitalk:
-    # gitalk_css:
-    # blueimp_md5:
-    # valine:
-    # disqusjs:
-    # disqusjs_css:
-    # twikoo:
-    # waline_js:
-    # waline_css:
-    # sharejs:
-    # sharejs_css:
-    # mathjax:
-    # katex:
-    # katex_copytex:
-    # mermaid:
-    # canvas_ribbon:
-    # canvas_fluttering_ribbon:
-    # canvas_nest:
-    # lazyload:
-    # instantpage:
-    # typed:
-    # pangu:
-    # fancybox_css_v4:
-    # fancybox_v4:
-    # medium_zoom:
-    # snackbar_css:
-    # snackbar:
-    # activate_power_mode:
-    # fireworks:
-    # click_heart:
-    # ClickShowText:
-    # fontawesomeV6:
-    # flickr_justified_gallery_js:
-    # flickr_justified_gallery_css:
-    # aplayer_css:
-    # aplayer_js:
-    # meting_js:
-    # prismjs_js:
-    # prismjs_lineNumber_js:
-    # prismjs_autoloader:
+  # main_css:
+  # main:
+  # utils:
+  # translate:
+  # local_search:
+  # algolia_js:
+  # algolia_search_v4:
+  # instantsearch_v4:
+  # pjax:
+  # gitalk:
+  # gitalk_css:
+  # blueimp_md5:
+  # valine:
+  # disqusjs:
+  # disqusjs_css:
+  # twikoo:
+  # waline_js:
+  # waline_css:
+  # sharejs:
+  # sharejs_css:
+  # mathjax:
+  # katex:
+  # katex_copytex:
+  # mermaid:
+  # canvas_ribbon:
+  # canvas_fluttering_ribbon:
+  # canvas_nest:
+  # lazyload:
+  # instantpage:
+  # typed:
+  # pangu:
+  # fancybox_css_v4:
+  # fancybox_v4:
+  # medium_zoom:
+  # snackbar_css:
+  # snackbar:
+  # activate_power_mode:
+  # fireworks:
+  # click_heart:
+  # ClickShowText:
+  # fontawesomeV6:
+  # flickr_justified_gallery_js:
+  # flickr_justified_gallery_css:
+  # aplayer_css:
+  # aplayer_js:
+  # meting_js:
+  # prismjs_js:
+  # prismjs_lineNumber_js:
+  # prismjs_autoloader:
