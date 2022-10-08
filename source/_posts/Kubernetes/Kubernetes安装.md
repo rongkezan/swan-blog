@@ -171,7 +171,7 @@ kubeadm token create --print-join-command
 
 ```sh
 kubeadm join cluster-endpoint:6443 --token wzzmcd.qxn34cuou6pm1hnz \
-    --discovery-token-ca-cert-hash sha256:112632af685d019af73c7b55d63f3c0d081a4249e30fe3bbf95c4d1c93e4b4bb 
+--discovery-token-ca-cert-hash sha256:112632af685d019af73c7b55d63f3c0d081a4249e30fe3bbf95c4d1c93e4b4bb 
 ```
 
 配置环境变量
@@ -182,6 +182,56 @@ vim /etc/profile
 export KUBECONFIG=/etc/kubernetes/kubelet.conf
 # 使配置生效
 source /etc/profile
+```
+
+### Master节点加入集群
+
+复制主节点配置到master备机
+
+```sh
+mkdir -p /etc/kubernetes/pki/etcd
+scp root@172.23.184.235:/etc/kubernetes/pki/ca.* /etc/kubernetes/pki/
+scp root@172.23.184.235:/etc/kubernetes/pki/sa.* /etc/kubernetes/pki/
+scp root@172.23.184.235:/etc/kubernetes/pki/front-proxy-ca.* /etc/kubernetes/pki/
+scp root@172.23.184.235:/etc/kubernetes/pki/etcd/ca.* /etc/kubernetes/pki/etcd/
+scp root@172.23.184.235:/etc/kubernetes/admin.conf /etc/kubernetes/admin.conf
+```
+
+Master节点加入集群
+
+```sh
+kubeadm join cluster-endpoint:6443 --token wzzmcd.qxn34cuou6pm1hnz \
+--discovery-token-ca-cert-hash sha256:112632af685d019af73c7b55d63f3c0d081a4249e30fe3bbf95c4d1c93e4b4bb \
+--control-plane
+```
+
+配置环境变量
+
+```sh
+vim /etc/profile
+# 末尾加一行
+export KUBECONFIG=/etc/kubernetes/admin.conf
+# 使配置生效
+source /etc/profile
+```
+
+### 驱逐节点
+
+在K8S集群中执行
+
+```sh
+# 查看这个node节点
+kubectl get nodes
+# 驱逐node01节点
+kubectl drain node01 --delete-local-data --force --ignore-daemonsets
+# 删除node01节点
+kubectl delete nodes node01
+```
+
+在node01节点上执行
+
+```sh
+kubeadm reset
 ```
 
 ### 安装网格组件（Master节点）
