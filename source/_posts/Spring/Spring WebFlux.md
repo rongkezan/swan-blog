@@ -1,5 +1,5 @@
 ---
-title: SpringWebFlux
+title: Spring WebFlux
 date: {{ date }}
 categories:
 - Spring

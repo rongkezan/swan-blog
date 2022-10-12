@@ -1,5 +1,5 @@
 ---
-title: Mybatis
+title: Spring Mybatis
 date: {{ date }}
 categories:
 - Spring

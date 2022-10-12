@@ -1,17 +1,17 @@
 ---
-title: SpringCloud 链路追踪
+title: Spring Cloud Sleuth
 date: {{ date }}
 categories:
 - Spring
 tags:
-- SpringCloud
+- Spring Cloud
 ---
+
+## 链路追踪的目的
 
 如果能跟踪每个请求，中间请求经过哪些微服务，请求耗时，网络延迟，业务逻辑耗时等。我们就能更好地分析系统瓶颈、解决系统问题。
 
 链路追踪目的：解决错综复杂的服务调用中链路的查看。排查慢服务。
-
-
 
 市面上链路追踪产品大部分都是基于google的Dapper论文
 
@@ -81,6 +81,8 @@ pom
 --- 参数解释 ---
 [服务名称，traceId（一条请求调用链中 唯一ID），spanID（基本的工作单元，获取数据等），是否让zipkin收集和展示此信息]
 ```
+
+
 
 ## Spring Cloud Zipkin
 

@@ -1,5 +1,5 @@
 ---
-title: SpringMVC
+title: Spring MVC
 date: {{ date }}
 categories:
 - Spring

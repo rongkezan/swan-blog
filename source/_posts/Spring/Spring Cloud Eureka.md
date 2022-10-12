@@ -4,7 +4,7 @@ date: {{ date }}
 categories:
 - Spring
 tags:
-- SpringCloud
+- Spring Cloud
 ---
 
 ## 注册中心和微服务的关系

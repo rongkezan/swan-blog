@@ -1,5 +1,5 @@
 ---
-title: SpringIOC
+title: Spring IOC
 date: {{ date }}
 categories:
 - Spring

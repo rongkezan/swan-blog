@@ -4,7 +4,7 @@ date: {{ date }}
 categories:
 - Spring
 tags:
-- SpringCloud
+- Spring Cloud
 ---
 
 ### Admin服务器端
