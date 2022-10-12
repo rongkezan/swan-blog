@@ -1,5 +1,5 @@
 ---
-title: SpringCloud 配置中心
+title: SpringCloud Config Center
 date: {{ date }}
 categories:
 - Spring
@@ -112,12 +112,4 @@ spring.rabbitmq.password=admin
 向配置中心发送 Post 请求
 
 `http://localhost:5100/actuator/bus-refresh` 
-
-## Consul
-
-## Apollo
-
-## Nacos
-
-
 
