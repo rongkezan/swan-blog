@@ -1,5 +1,5 @@
 ---
-title: Java集合
+title: Java 集合
 date: {{ date }}
 categories:
 - Java

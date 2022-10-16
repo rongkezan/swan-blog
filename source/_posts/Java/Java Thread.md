@@ -1,5 +1,5 @@
 ---
-title: Java多线程高并发
+title: Java Thread
 date: {{ date }}
 categories:
 - Java
@@ -510,7 +510,7 @@ Condition condition2 = lock.newCondition();
 
 **解释**：线程创建时JVM会为其创建工作内存（线程私有），JMM规定所有变量存储在主内存（共享），但线程必须在工作内存中操作变量。具体流程：拷贝->操作->写回。各个工作内存存储主内存变量的复印件，不同线程无法互相访问，线程间通信必须通过主内存。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210121135743932.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+<img src="https://img-blog.csdnimg.cn/20210121135743932.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" style="zoom:50%;" />
 
 **JMM关于同步的规定**：
 

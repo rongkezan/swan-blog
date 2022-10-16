@@ -1,5 +1,5 @@
 ---
-title: Java基础
+title: Java 基础
 date: {{ date }}
 categories:
 - Java
