@@ -62,7 +62,7 @@ EagleEye：淘宝
 pom
 
 ```xml
-<!-- 引入sleuth依赖 -->
+<!-- Spring Cloud Sleuth -->
 <dependency>
     <groupId>org.springframework.cloud</groupId>
     <artifactId>spring-cloud-starter-sleuth</artifactId>

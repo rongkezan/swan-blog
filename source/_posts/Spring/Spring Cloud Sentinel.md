@@ -7,19 +7,57 @@ tags:
 - Spring Cloud
 ---
 
-## Sentinel
+## Sentinel Dashboard
 
-### 简单使用
+https://github.com/alibaba/Sentinel/wiki/Dashboard
+
+启动 Sentinel Dashboard
+
+```sh
+java -Dserver.port=8080 -Dcsp.sentinel.dashboard.server=localhost:8080 -Dproject.name=sentinel-dashboard -jar sentinel-dashboard.jar
+```
+
+登录控制台，默认账号密码都是 `sentinel`
+
+配置控制台信息
+
+```yml
+spring:
+  cloud:
+    sentinel:
+      transport:
+        port: 8719
+        dashboard: localhost:8080
+```
+
+## Spring Cloud Sentinel 
 
 pom
 
 ```xml
 <dependencyManagement>
     <dependencies>
+        <!-- Spring Boot -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-dependencies</artifactId>
+            <version>2.3.5.RELEASE</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+        <!-- Spring Cloud -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-dependencies</artifactId>
+            <version>Hoxton.SR12</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+        <!-- Spring Cloud Alibaba -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-alibaba-dependencies</artifactId>
-            <version>2.2.5.RC2</version>
+            <version>2.2.5.RELEASE</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -27,15 +65,23 @@ pom
 </dependencyManagement>
 
 <dependencies>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
+        <!-- Spring Cloud Alibaba Nacos -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+    
+        <!-- Spring Cloud Alibaba Sentinel -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
 
-    <dependency>
-        <groupId>com.alibaba.cloud</groupId>
-        <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
-    </dependency>
+        <!-- Spring Cloud Sentinel Datasource Nacos  -->
+        <dependency>
+            <groupId>com.alibaba.csp</groupId>
+            <artifactId>sentinel-datasource-nacos</artifactId>
+        </dependency>
 </dependencies>
 ```
 
@@ -80,24 +126,3 @@ public class TestController {
 
 调用 hello 接口，若qps大于2的时候会执行降级方法。
 
-### 整合 Sentinel Dashboard
-
-https://github.com/alibaba/Sentinel/wiki/Dashboard
-
-启动 Sentinel Dashboard，登录控制台，默认账号密码都是 sentinel
-
-**在服务中增加以下配置以注册到Dashboard**
-
-```properties
-server.port=8000
-spring.cloud.sentinel.transport.dashboard=localhost:8080
-# 服务启动后就注册到 Dashboard
-spring.cloud.sentinel.eager=true
-spring.application.name=stn
-```
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210211094241995.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
-
-新增一条流控规则
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210211095141129.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)

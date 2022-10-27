@@ -69,5 +69,27 @@ git checkout -b [branch_name]
 git push origin --delete [branch_name]
 ```
 
+## Linux记住Git账号密码
 
+配置Git用户名
+
+```sh
+git config --global user.name "your username"
+```
+
+配置Git用户邮箱
+
+```sh
+git config --global user.email "your email"
+```
+
+配置Git记住密码
+
+```sh
+git config --global credential.helper store
+```
+
+拉取Git仓库后会让你输入一次账号密码，之后就不用再输入了。
+
+刚才的配置信息保存在 root 目录下的 `.gitconfig` `.git-credential`
 

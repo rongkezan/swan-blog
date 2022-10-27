@@ -78,6 +78,21 @@ Profiles可以在 Maven settings 中通过 `<activeProfiles>` 激活
 mvn install -Dmaven.test.skip=true
 ```
 
+## 项目中的Common模块打包
+
+Common模块都**不加入**
+
+```xml
+<plugins>
+    <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+    </plugin>
+</plugins>
+```
+
+打包的时候去父工程打包 `mvn clean install`
+
 ## Pom样例
 
 ```xml
