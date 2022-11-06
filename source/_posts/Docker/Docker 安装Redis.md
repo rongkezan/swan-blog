@@ -1,5 +1,5 @@
 ---
-title: Docker安装Redis
+title: Docker 安装Redis
 date: {{ date }}
 categories:
 - Docker

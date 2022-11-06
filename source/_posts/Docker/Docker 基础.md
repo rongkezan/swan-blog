@@ -1,5 +1,5 @@
 ---
-title: Docker基本操作
+title: Docker 基础
 date: {{ date }}
 categories:
 - Docker
@@ -7,16 +7,6 @@ categories:
 ## 镜像操作
 
 ```sh
-# 安装docker
-yum -y install docker 
-# 启动docker
-systemctl start docker
-# 停止docker
-systemctl stop docker
-# 设置开机启动
-systemctl enable docker
-# 帮助命令
-docker --help
 # 搜索镜像
 docker search mysql
 # 拉取镜像
@@ -54,8 +44,21 @@ docker run --name mytomcat3 -d -p 8883:8080 tomcat:latest
 docker logs mytomcat
 # 进入容器（exit 命令退出）
 docker exec -it mytomcat bash 
-# 镜像提交
-docker commit -m="提交的描述信息" -a="作者" [容器ID] [要创建的目标镜像名]:[标签名]
 ```
+
+### 自定义镜像
+
+```sh
+# 构建镜像
+docker build -t java-demo:v1.0 -f Dockerfile .  
+# 提交镜像
+docker commit -m="提交的描述信息" -a="作者" [容器ID] [要创建的目标镜像名]:[标签名]
+# 标签镜像
+docker tag java-demo:v1.0 rongkezan/java-demo:v1.0
+# 推送镜像
+docker push rongkezan/java-demo:v1.0
+```
+
+
 
 更多命令：[https://docs.docker.com/engine/reference/commandline/docker](https://docs.docker.com/engine/reference/commandline/docker)

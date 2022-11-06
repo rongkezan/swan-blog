@@ -1,5 +1,5 @@
 ---
-title: Docker安装Nginx
+title: Docker 安装Nginx
 date: {{ date }}
 categories:
 - Docker

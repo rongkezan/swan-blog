@@ -244,6 +244,8 @@ kubectl apply -f calico.yaml
 
 ## 附录：完全卸载K8S和Docker
 
+### 卸载 K8S
+
 ```sh
 kubeadm reset -f
 modprobe -r ipip
@@ -262,10 +264,38 @@ yum remove -y kubelet kubeadm kubectl
 docker stop $(docker ps -a -q)
 docker rm $(docker ps -aq)
 docker rmi $(docker images -q)
-yum -y remove docker*
 
 # 对于无法删除的镜像可以直接去目录删除
 cd /var/lib/docker/image/overlay2/imagedb/content/sha256
 rm -rf *
 ```
+
+### 卸载 Docker
+
+```sh
+rm -rf /etc/docker
+rm -rf /run/docker
+rm -rf /var/lib/dockershim
+rm -rf /var/lib/docker
+```
+
+```sh
+ps -ef|grep docker
+kill -9 pid
+```
+
+```sh
+yum list installed | grep docker
+
+# 把匹配到的包执行 yum remove 删除
+yum remove -y containerd.io.x86_64 docker-ce.x86_64 docker-ce-cli.x86_64 docker-ce-rootless-extras.x86_64 docker-compose-plugin.x86_64 docker-scan-plugin.x86_64
+```
+
+查看Docker是否卸载成功
+
+```sh
+docker version
+```
+
+
 

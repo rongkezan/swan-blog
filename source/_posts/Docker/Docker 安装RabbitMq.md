@@ -1,5 +1,5 @@
 ---
-title: Docker安装RabbitMq
+title: Docker 安装RabbitMq
 date: {{ date }}
 categories:
 - Docker

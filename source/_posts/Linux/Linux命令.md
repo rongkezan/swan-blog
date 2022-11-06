@@ -187,6 +187,8 @@ kill [pid]
 kill -9 [pid]
 # 根据进程名查看运行进程
 ps -ef | grep [进程名]
+# 查询端口
+lsof -i:[端口号]
 ```
 
 软链接
