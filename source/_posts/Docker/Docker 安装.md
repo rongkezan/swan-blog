@@ -52,7 +52,7 @@ yum-config-manager \
 ### 安装 Docker
 
 ```sh
-yum install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+yum -y install docker-ce docker-ce-cli containerd.io docker-compose-plugin
 ```
 
 ### 启动并开机运行 Docker
