@@ -1,5 +1,5 @@
 ---
-title: Shell
+title: Linux Shell
 date: {{ date }}
 categories:
 - Linux

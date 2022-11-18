@@ -222,18 +222,18 @@ Person person = new Person("张三", 22);
 java -X
 java -XX:+PrintFlagsFinal -version
 # 模糊查询指令
-java -XX:+PrintFlagsFinal -version | grep Command 
+java -XX:+PrintFlagsFinal -version | grep <command>
 ```
 
 常用指令
 
 ```shell
--Xms<size>        					# 设置初始 Java 堆大小
--Xmx<size>        					# 设置最大 Java 堆大小
--Xss<size>        					# 设置 Java 线程堆栈大小
--XX:+PrintCommandLineFlags -version	# 查看当前使用的垃圾回收器
--XX: MetaspaceSize=128m				# 修改元空间大小
--XX: MaxTenuringThreshold=15		# 修改老年代的大小
+-Xms<size>        					# 初始堆内存
+-Xmx<size>        					# 最大堆内存
+-Xss<size>        					# 每个线程的栈大小
+-XX:MetaspaceSize=128m				# 初始元空间大小
+-XX:MaxMetaspaceSize=256m			# 最大元空间大小，默认没有限制
+-XX:MaxTenuringThreshold=15			# 老年代的大小
 ```
 ```shell
 jinfo <pid>		# 打印虚拟机详细信息
@@ -367,3 +367,4 @@ JVM一个线程的成本：1MB
 线程多了调度成本就高了，造成了CPU的浪费
 
 阿里多租户JVM：每租户单空间，Session based GC
+

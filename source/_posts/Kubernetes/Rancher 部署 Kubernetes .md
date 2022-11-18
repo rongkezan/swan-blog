@@ -10,7 +10,11 @@ tags:
 
 ## Docker 安装
 
-参考 [Docker 安装](https://rongkezan.github.io/swan-blog/2022/11/01/Docker/Docker%20%E5%AE%89%E8%A3%85/)
+每一台主机都安装 Docker，参考 [Docker 安装](https://rongkezan.github.io/swan-blog/2022/11/01/Docker/Docker%20%E5%AE%89%E8%A3%85/)
+
+## Rancher 说明
+
+Rancher 是 K8S 多集群管理平台，类似的管理平台还有 KubeSphere、Kuboard 等
 
 ## Rancher 安装
 
@@ -52,6 +56,10 @@ rancher/rancher:v2.5.15
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/56936e1ffe3b4f5b950b47d284110d8c.png)
 
 ### 添加 Master、Worker 节点
+
+可以通过 `集群 -> Registration Cmd` 调出添加主机命令页面
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/f4f56f2a035a40128047dec6ff35002e.png)
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/79925989196040d5a8830fabe07ae1c5.png)
 

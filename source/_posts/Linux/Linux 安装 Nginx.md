@@ -1,5 +1,5 @@
 ---
-title: Linux install nginx
+title: Linux 安装 Nginx
 date: {{ date }}
 categories:
 - Linux
