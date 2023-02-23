@@ -15,6 +15,15 @@ RBAC模型（Role-Based Access Control：基于角色的访问控制）
 
 角色：一系列权限的集合
 
-## RABC 数据库表设计
+## RBAC 数据库表设计
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210327205902709.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+用户表：user_id, user_name
+
+角色表：role_id, role_name
+
+权限表：permission_id, permission_key
+
+用户角色关联表：user_id, role_name
+
+角色权限关联表：role_name, permission_key
+

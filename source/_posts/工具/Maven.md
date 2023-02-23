@@ -93,6 +93,12 @@ Common模块都**不加入**
 
 打包的时候去父工程打包 `mvn clean install`
 
+## 本地Jar包安装到Maven仓库
+
+```sh
+mvn install:install-file -DgroupId="com.abc" -DartifactId="mavenTest" -Dversion="1.0.0" -Dpackaging="jar" -Dfile="test.jar"
+```
+
 ## Pom样例
 
 ```xml

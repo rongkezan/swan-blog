@@ -5,6 +5,10 @@ categories:
 - Java
 ---
 
+## Java Collection Cheat Sheet
+
+![img](https://pdai.tech/images/java_collections_overview.png)
+
 ## Collection
 
 ### List
@@ -34,125 +38,89 @@ categories:
 
 #### CopyOnWriteArrayList
 
-写时加锁，读时不加锁，复制一个新的数组，把新数组指向原来的数组
-
-适用于读多写少的场景
+写时加锁，读时不加锁，复制一个新的数组，把新数组指向原来的数组，适用于读多写少的场景。
 
 ### Set
 
-> LinkedHashSet、TreeSet、EnumSet、CopyOnWriteArraySet、ConcurrentSkipListSet
-
-| 名称          | 特点                         | add(E)  | remove(E) | contains(E) |
-| ------------- | ---------------------------- | ------- | --------- | ----------- |
-| HashSet       | 线程不安全，可存储null值     | O(1)    | O(1)      | O(1)        |
-| LinkedHashSet | 查询时有序 (存储还是无序)    | O(logn) | O(logn)   | O(logn)     |
-| TreeSet       | 可根据指定值排序(基于红黑树) | O(1)    | O(1)      | O(1)        |
-
-#### HashSet
-
-1. 底层是HashMap
-2. 添加过程
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200209154216578.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+| 名称          | 特点                                    | add(E)  | remove(E) | contains(E) |
+| ------------- | --------------------------------------- | ------- | --------- | ----------- |
+| HashSet       | 底层是HashMap，线程不安全，可存储null值 | O(1)    | O(1)      | O(1)        |
+| LinkedHashSet | 查询时有序 (存储还是无序)               | O(logn) | O(logn)   | O(logn)     |
+| TreeSet       | 可根据指定值排序(基于红黑树)            | O(1)    | O(1)      | O(1)        |
 
 ### Queue
 
 在多线程的情况下，多考虑使用Queue
 
-#### Deque 双端队列
+- Deque 双端队列：ArrayDeque、BlockingDeque、LinkedBlockingDeque
 
-> ArrayDeque、BlockingDeque、LinkedBlockingDeque
+- BlokingQueue：获取数据时队列中无数据，阻塞。添加数据时队列已满，阻塞。
 
-#### BlokingQueue
+  - ArrayBlockingQueue、ProrityBlockingQueue、LinkedBlockingQueue
+  - 添加元素
+    - add：添加元素的时候，若超出了度列的长度会直接抛出异常
+    - offer：添加元素的时候，若超出了度列的长度会直接返回false
+    - put：添加元素的时候，若超出了度列的长度会阻塞一直等待空间，以加入元素
+  - 获取元素
+    - remove：获取元素，若队列为空，会抛出异常
+    - poll：获取元素，队列为空时，返回null
+    - take：获取元素，队列为空时，队列阻塞
+    - element：查看队首元素，队列元素为空抛异常
+    - peek：查看队首元素，队列元素为空返回 null
 
-> ArrayBlockingQueue、ProrityBlockingQueue、LinkedBlockingQueue
+- SynchronousQueue：容量为0的队列，使用put添加元素时阻塞，直到另一个线程取到数据
 
-获取数据时队列中无数据，阻塞。添加数据时队列已满，阻塞。
+  - 场景：两个线程交换数据
 
-**添加元素**
-
-add：添加元素的时候，若超出了度列的长度会直接抛出异常
-
-offer：添加元素的时候，若超出了度列的长度会直接返回false
-
-put：添加元素的时候，若超出了度列的长度会阻塞一直等待空间，以加入元素
-
-**获取元素**
-
-remove：获取元素，若队列为空，会抛出异常
-
-poll：获取元素，队列为空时，返回null
-
-take：获取元素，队列为空时，队列阻塞
-
-element：查看队首元素，队列元素为空抛异常
-
-peek：查看队首元素，队列元素为空返回 null
-
-##### SynchronousQueue
-
-容量为0的队列，使用put添加元素时阻塞，直到另一个线程取到数据
-
-场景：两个线程交换数据
-
-```java
-static BlockingQueue<String> blockingQueue = new SynchronousQueue<>();
-public static void main(String[] args) throws InterruptedException {
-    new Thread(() -> {
-        try {
-            String value = blockingQueue.take();
-            System.out.println("子线程取到主线程数据:" + value);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }).start();
-    Thread.sleep(1000);
-    blockingQueue.put("1");
-}
-```
-
-##### TransferQueue LinkedTransferQueue
-
-与 SynchronousQueue 的区别在于，使用 `transfer` 方法来添加数据，并且当这个数据不被取走，线程会一直守在原地，类似MQ的消息确认机制。
-
-```java
- transferQueue.transfer("data");
-```
-
-#### ConcurrentLinkedQueue
-
-> 底层使用CAS实现原子性操作
-
-使用 ConcurrentLinkedQueue 实现卖票程序
-
-```java
-static Queue<String> tickets = new ConcurrentLinkedQueue<>();
-static {
-    for (int i = 0; i < 1000; i++)
-        tickets.add("票 编号:" + i);
-}
-public static void main(String[] args) {
-    for (int i = 0; i < 10; i++) {
+  - ```java
+    static BlockingQueue<String> blockingQueue = new SynchronousQueue<>();
+    public static void main(String[] args) throws InterruptedException {
         new Thread(() -> {
-            while (true){
-                String s = tickets.poll();
-                if (s == null) break;
-                System.out.println("销售了 - " + s);
+            try {
+                String value = blockingQueue.take();
+                System.out.println("子线程取到主线程数据:" + value);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }).start();
+        Thread.sleep(1000);
+        blockingQueue.put("1");
     }
-}
-```
+    ```
 
-#### PriorityQueue
+- TransferQueue LinkedTransferQueue
 
-有序的队列，内部使用二叉树实现
+  - 与 SynchronousQueue 的区别在于，使用 `transfer` 方法来添加数据，并且当这个数据不被取走，线程会一直守在原地，类似MQ的消息确认机制。
 
-#### DelayQueue
+  - ```java
+    transferQueue.transfer("data");
+    ```
 
-按照内部到期的时间进行排序，等待时间短的会排到队列的前面。
+- ConcurrentLinkedQueue：底层使用CAS实现原子性操作
 
-使用场景：按时间进行任务调度
+  - ```java
+    // 使用 ConcurrentLinkedQueue 实现卖票程序
+    static Queue<String> tickets = new ConcurrentLinkedQueue<>();
+    static {
+        for (int i = 0; i < 1000; i++)
+            tickets.add("票 编号:" + i);
+    }
+    public static void main(String[] args) {
+        for (int i = 0; i < 10; i++) {
+            new Thread(() -> {
+                while (true){
+                    String s = tickets.poll();
+                    if (s == null) break;
+                    System.out.println("销售了 - " + s);
+                }
+            }).start();
+        }
+    }
+    ```
+
+- PriorityQueue：有序的队列，内部使用二叉树实现
+
+- DelayQueue：按照内部到期的时间进行排序，等待时间短的会排到队列的前面。使用场景：按时间进行任务调度。
 
 ## Map
 

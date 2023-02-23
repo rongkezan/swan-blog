@@ -5,7 +5,7 @@ categories:
 - Linux
 ---
 
-## Nginx Install
+## Nginx 安装
 
 安装依赖包
 
@@ -59,7 +59,7 @@ nginx -s stop
 nginx -s reload
 ```
 
-## Nginx Config
+## Nginx 配置
 
 配置文件位置 `/usr/local/nginx/conf/nginx.conf`
 
@@ -117,3 +117,4 @@ http {
     }
 }
 ```
+
