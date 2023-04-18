@@ -1,5 +1,5 @@
 ---
-title: SpringCloud 架构
+	title: SpringCloud 架构
 date: {{ date }}
 categories:
 - Spring

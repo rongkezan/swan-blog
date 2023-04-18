@@ -59,6 +59,19 @@ nginx -s stop
 nginx -s reload
 ```
 
+可能出现的报错
+
+```sh
+nginx: [alert] could not open error log file: open() "/usr/local/nginx/logs/error.log" failed (2: No such file or directory)
+```
+
+解决方案：在nginx目录下创建 logs 文件夹并授权
+
+```sh
+mkdir logs
+chmod 700 logs
+```
+
 ## Nginx 配置
 
 配置文件位置 `/usr/local/nginx/conf/nginx.conf`

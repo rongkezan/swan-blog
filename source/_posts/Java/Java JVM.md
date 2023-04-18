@@ -118,13 +118,7 @@ CustomClassLoader 自定义类加载器：继承ClassLoader重写findClass方法
 5. **方法区**：存储class二进制文件、类信息、常量、静态变量、运行时常量池
 6. **直接内存**：JVM可以直接访问的内核空间的内存。
 
-**图示：线程的共享区和私有区**
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210119205519997.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
-
-
-
-## Stack
+## 栈
 
 栈：每个JVM都有自己私有的JVM栈，JVM栈用来存储Frame
 
@@ -153,7 +147,7 @@ System.out.println(i);
 
 标量替换：允许将对象打散分配在栈上，比如若一个对象拥有两个字段，会将这两个字段视作局部变量进行分配。 
 
-## Heap 
+## 堆
 
 ### 堆的基本概念
 
@@ -264,72 +258,38 @@ top -Hp <pid>
 jstack <pid>
 # 导出堆内存
 jmap -heap <pid>
+# 观察前20个占用内存比较大的类
+jmap -histo <pid> | head -20
 ```
 
 #### 如何监控JVM
 
-jstat
-
 ```shell
 # 格式模板
 jstat -<option> [-t] [-h<lines>] <vmid> [<interval> [<count>]]
-
-# 常见用法
-jstack <pid>
 # 类加载统计
-jstat -class 19570
+jstat -class <pid>
 # 编译统计
-jstat -compiler 19570
-
-### 观察信息
-# 死锁
-Found one java-level deadlock
-# 锁时间过长
-很多线程都在 waiting on <0x00000000eda673f0> 等待锁的释放
-要找到 <0x00000000eda673f0> 这把锁被哪个线程持有
-举例说明：一个程序有10个线程，第一个线程持有锁后死循环，其它线程全部WAITING，只有第一个线程是RUNNABLE
+jstat -compiler <pid>
 ```
-
-jconsole jvisualvm
 
 #### 执行GC之后内存占用依然很高
 
-使用jvisualvm打开GUI面板，监视 -> 堆 Dump，截取一个内存快照。
+进入 arthas 控制台dump一份内存快照
 
-检查 -> 查找前20个最大的对象，可以检查到哪几个对象占用了大量的内存。
-
-#### JMX不建议在生产环境使用
-
-JMX一般是在测试环境使用，因为 JMX 会 patch 到 JVM 上而且占用了很大的性能。
-
-如何在线上系统观察 可以使用 jmap 命令找到占用内存较大的类
-
-```shell
-jmap -histo 21853 | head -20
+```sh
+heapdump /tmp/dump.hprof
 ```
 
-但是对于内存特别大的系统，jmap执行期间会对进程产生很大影响，甚至卡顿
+使用 `%JAVA_HOME%/bin/jvisualvm.exe` 装入 `dump.hprof` 观察哪些对象占用了大量的内存，也可以比较两次dump的区别。
 
-解决方案1：设定以下参数，OOM的时候会自动生成堆转储文件
+但是对于内存特别大的系统，jmap执行期间会对进程产生很大影响，甚至卡顿。
 
-```shell
+解决方案：设定以下参数，OOM的时候会自动生成堆转储文件
+
+```sh
 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/usr/local/base
 ```
-
-解决方案2：有服务器备份（高可用），停掉这台服务器对其它服务器不影响
-
-### jconsole 远程连接
-
-程序启动加入参数：
-
-```shell
-java -Djava.rmi.server.hostname=192.168.17.11
--Dcom.sun.management.jmxremote=11111
--Dcom.sun.management.jmxremote.authenticate=false
--Dcom.sun.management.jmxremote.ssl=false
-```
-
-windows 打开 jconsole 远程连接 192.168.17.11:11111
 
 ### GC 日志分析
 
@@ -359,12 +319,3 @@ ParNew：年轻代收集器
 G1 Evacuation pause: 年轻代复制存活对象
 initial-mark: 混合回收阶段，这里是YGC混合老年代回收
 ```
-
-## 附录
-
-JVM一个线程的成本：1MB
-
-线程多了调度成本就高了，造成了CPU的浪费
-
-阿里多租户JVM：每租户单空间，Session based GC
-

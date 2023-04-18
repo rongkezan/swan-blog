@@ -202,6 +202,12 @@ kill -9 [pid]
 ps -ef | grep [进程名]
 # 查询端口
 lsof -i:[端口号]
+# 查询防火墙对应的端口是否已开启
+firewall-cmd --list-all
+# 已知服务使用端口，查看服务是否在监听
+netstat -anlp | grep :3306
+# 防火墙增加端口
+firewall-cmd --permanent --add-port=8001/tcp
 ```
 
 软链接

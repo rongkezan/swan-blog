@@ -5,7 +5,7 @@ categories:
 - Java
 ---
 
-## GC 概述
+## 概述
 
 GC是什么（分代收集算法）
 
@@ -17,7 +17,7 @@ GC是什么（分代收集算法）
 
 全局GC(Major GC / Full GC)：指发生在老年代的垃圾收集动作，出现了Major GC，经常会伴随至少一次的Minor GC，Major GC的速度一般要比Minor GC慢10倍以上。
 
-## GC 相关名词
+## 相关名词
 
 ### Card Table
 
@@ -37,7 +37,7 @@ GC是什么（分代收集算法）
 
 由于RSet的存在，那么每次给对象赋值引用的时候，就得做一些额外的操作：在RSet中做一些额外的记录，在GC中被称为写屏障（这个写屏障 不等于内存屏障）
 
-## GC 如何定位垃圾
+## 定位垃圾
 
 ### 引用计数法
 
@@ -158,15 +158,15 @@ ZGC：Colored Pointers（颜色指针）
 - 灰：自身被标记，成员变量未被标记
 - 黑：自身和成员变量均已标记完成
 
-漏标问题：在并发标记的过程中，业务逻辑线程可能会把黑色的属性重新指向白色，如果不对黑色重新扫描，则会把白色对象当做没有新引用指向从而回收掉。
-
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210214141554379.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 ### Incremental Update
 
 当一个白色对象被一个黑色对象引用，将黑色重启标记为灰色，让重新扫描。
 
-但是CMS在使用Increment Update的时候有一个致命问题是当黑灰被更新为灰色之后，当属性被标记完后还会被改成黑色。
+但是CMS在使用Increment Update的时候有一个致命问题是 漏标问题。
+
+**漏标问题**：在并发标记的过程中，业务逻辑线程可能会把黑色的属性重新指向白色，如果不对黑色重新扫描，则会把白色对象当做没有新引用指向从而回收掉。
 
 **举例：**
 

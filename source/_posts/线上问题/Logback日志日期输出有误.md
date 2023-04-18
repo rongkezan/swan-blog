@@ -383,7 +383,7 @@ public class TimeBasedRollingPolicy<E> extends RollingPolicyBase implements Trig
 }
 ```
 
-\3. 程序入口类，此类也有一个日志打印 Log 不过是用默认类加载器加载
+3. 程序入口类，此类也有一个日志打印 Log 不过是用默认类加载器加载
 
 ```java
 package com.alibaba.log.test;

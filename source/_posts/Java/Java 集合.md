@@ -11,7 +11,7 @@ categories:
 
 ## Collection
 
-### List
+### List	
 
 > ArrayList、LinkedList、Vector、Stack、CopyOnWriteArrayList
 

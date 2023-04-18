@@ -47,15 +47,6 @@ Session 1 为Table增加读锁之后：
 Session 1 为Table增加写锁之后：
 - Session 1 可以做锁定表进行任何操作
 - Session 2 无法对锁定表进行任何操作
-### 相关命令
-```sql
--- 加读锁
-lock table 表名1 read, 表名2 read;
--- 加写锁
-lock table 表名1 read, 表名2 read;
--- 解锁
-unlock tables;
-```
 ## 行锁
 ### 开启事务即开启了行锁
 提交事务之前，其它会话查询到的都是未提交的数据，如果更新了同一行，会被阻塞，直到这个事务被提交。

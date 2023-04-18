@@ -11,130 +11,6 @@ categories:
 2. 实例初始化 ：顺序: 非静态实例变量、非静态代码块、构造器代码
 3. 子类覆写了父类的方法，初始化时只会执行子类的方法，若父类方法没被覆写，则执行父类方法
 
-```java
-public class Parent {
-    private int i = param();
-    private int a = paramParent();
-    private static int j = staticParam();
-
-    static{
-        System.out.println("父类静态代码块");
-    }
-
-    Parent(){
-        System.out.println("父类构造方法");
-    }
-
-    {
-        System.out.println("父类代码块");
-    }
-
-    public int param(){
-        System.out.println("父类实例变量1");
-        return 1;
-    }
-
-    public int paramParent(){
-        System.out.println("父类实例变量2");
-        return 1;
-    }
-
-    public static int staticParam(){
-        System.out.println("父类静态实例变量");
-        return 1;
-    }
-}
-```
-
-```java
-public class Child extends Parent {
-    private int i = param();
-    private static int j = staticParam();
-
-    static {
-        System.out.println("子类静态代码块");
-    }
-
-    Child(){
-        System.out.println("子类构造方法");
-    }
-
-    {
-        System.out.println("子类代码块");
-    }
-
-    @Override
-    public int param(){
-        System.out.println("子类实例变量");
-        return 1;
-    }
-
-    public static int staticParam(){
-        System.out.println("子类静态实例变量");
-        return 1;
-    }
-}
-```
-
-```java
-public class Client {
-    public static void main(String[] args) {
-        Child c1 = new Child();
-        System.out.println();
-    }
-}
-```
-
-执行结果：
-
-父类静态实例变量
-
-父类静态代码块
-
-子类静态实例变量
-
-子类静态代码块
-
-子类实例变量
-
-父类实例变量2
-
-父类代码块
-
-父类构造方法
-
-子类实例变量
-
-子类代码块
-
-子类构造方法
-
-## 静态变量
-
-静态变量作用在类层面，所有实例都会共享
-
-```java
-public class StaticVariableDemo {
-    static int num;
-
-    {
-        num++;
-    }
-
-    void plus(){
-        num++;
-    }
-
-    public static void main(String[] args) {
-        StaticVariableDemo d1 = new StaticVariableDemo();
-        StaticVariableDemo d2 = new StaticVariableDemo();
-        d1.plus();
-        d2.plus();
-        System.out.println(num);
-    }
-}
-```
-
 ## 内部类
 
 | 静态内部类                                                   | 非静态内部类                                                 |
@@ -318,8 +194,6 @@ public class Client {
 ```
 
 ## 申请堆外内存
-
-unsafe类
 
 ```java
 // 分配 10M 堆外内存
