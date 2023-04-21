@@ -1,8 +1,10 @@
 ---
-title: MQ常见问题
+title: MQ 常见问题
 date: {{ date }}
 categories:
-- 分布式
+- 中间件
+tags:
+- 消息队列
 ---
 
 ## 消息堆积

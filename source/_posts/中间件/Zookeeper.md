@@ -2,9 +2,6 @@
 title: Zookeeper
 date: {{ date }}
 categories:
-- 分布式
-tags:
-- 分布式
 - 中间件
 ---
 

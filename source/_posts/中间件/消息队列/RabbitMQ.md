@@ -2,10 +2,9 @@
 title: RabbitMQ
 date: {{ date }}
 categories:
-- 分布式
-tags:
-- 分布式
 - 中间件
+tags:
+- 消息队列
 ---
 
 ## MQ种类

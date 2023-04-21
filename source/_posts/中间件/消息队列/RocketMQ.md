@@ -2,10 +2,9 @@
 title: RocketMQ
 date: {{ date }}
 categories:
-- 分布式
-tags:
-- 分布式
 - 中间件
+tags:
+- 消息队列
 ---
 
 > http://rocketmq.apache.org
@@ -138,7 +137,7 @@ Topic是一个逻辑上的概念，实际上Message是在每个Broker上以Queue
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/2021030118144581.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
-## Demo Code
+## 示例代码
 
 > 消息的发送和接收
 
@@ -263,62 +262,6 @@ MessageSelector selector = MessageSelector.bySql("order > 5");
 consumer.subscribe("myTopic", selector);
 ```
 
-## 事务消息
-
-1. Half Message：半事务消息，发送方已经成功的将消息发送到Broker，但是Broker未收到确认指令，此时该消息被标记为"暂不能投递"状态，即不能被消费者看到，即往RMQ_SYS_TRANS_HALF_TOPIC队列中投递消息。
-
-2. 检查事务状态：Broker会开启一个定时任务，消费RMQ_SYS_TRANS_HALF_TOPIC队列中的消息，每次执行任务会向消息发送者确认事务执行状态（提交、回滚、未知），如果是未知，等待下一次回查。
-
-3. 超时：如果超过回查次数，默认回滚消息
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210303135132451.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
-
-```java
-public class ProducerTransaction {
-    public static void main(String[] args) throws MQClientException {
-        TransactionMQProducer producer = new TransactionMQProducer("MyTransactionGroup");
-        producer.setNamesrvAddr("192.168.25.101:9876");
-        producer.setSendMsgTimeout(6000);
-        producer.setTransactionListener(new TransactionListener() {
-            @Override
-            public LocalTransactionState executeLocalTransaction(Message msg, Object arg) {
-                // Execute local transaction
-                try {
-                    System.out.println("--- Execute ---");
-                    System.out.println("msg: " + new String(msg.getBody()));
-                    System.out.println("msg: " + msg.getTransactionId());
-                    return LocalTransactionState.COMMIT_MESSAGE;
-                } catch (Exception e) {
-                    return LocalTransactionState.ROLLBACK_MESSAGE;
-                }
-            }
-
-            @Override
-            public LocalTransactionState checkLocalTransaction(MessageExt msg) {
-                // When no response to half message, this method will be invoked.
-                System.out.println("--- Check ---");
-                System.out.println("msg: " + new String(msg.getBody()));
-                System.out.println("msg: " + msg.getTransactionId());
-                return LocalTransactionState.UNKNOW;
-            }
-        });
-        producer.start();
-        producer.sendMessageInTransaction(new Message("myTopic", "Test Transaction Message".getBytes()), null);
-    }
-}
-```
-
-本地事务执行状态
-
-```java
-// 执行事务成功，确认提交
-LocalTransactionState.COMMIT_MESSAGE;
-// 回滚消息，broker端会删除半消息
-LocalTransactionState.ROLLBACK_MESSAGE;
-// 暂时为未知状态，等待broker回查
-LocalTransactionState.UNKNOW;
-```
-
 ## 重试机制
 
 生产者
@@ -357,7 +300,7 @@ consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -
 messageDelayLevel 1s 5s 10s 30s 1m 2m 3m 4m 5m 6m 7m 8m 9m 10m 20m 30m 1h 2h
 ```
 
-## 消息重复消费
+## 重复消费
 
 **引起重复消费的原因**
 
