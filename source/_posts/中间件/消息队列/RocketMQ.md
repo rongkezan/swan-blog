@@ -23,7 +23,7 @@ vi runbroker.sh
 JAVA_OPT="${JAVA_OPT} -server -Xms512m -Xmx512m -Xmn128m"
 ```
 
-启动/关闭 RocketMQ
+Linux 启动/关闭 RocketMQ
 
 ```shell
 # Start Name Server
@@ -35,6 +35,15 @@ nohup sh bin/mqbroker -n localhost:9876 &
 sh bin/mqshutdown namesrv
 # Shutdown Broker
 sh bin/mqshutdown broker
+```
+
+Windows 启动/关闭 RocketMQ
+
+```sh
+# Start Name Server
+start mqnamesrv.cmd
+# Start Broker
+start mqbroker -n localhost:9876
 ```
 
 查看启动日志
@@ -49,20 +58,20 @@ tail -f ~/logs/rocketmqlogs/broker.log
 测试
 
 ```shell
-# 消费端
+# 生产者
 export NAMESRV_ADDR=localhost:9876
 sh bin/tools.sh org.apache.rocketmq.example.quickstart.Producer
 
-# 服务端
+# 消费者
 export NAMESRV_ADDR=localhost:9876
 sh bin/tools.sh org.apache.rocketmq.example.quickstart.Consumer
 ```
 
-### Console
+### Dashboard
 
-下载 rocketmq-externals：https://github.com/apache/rocketmq-externals
+下载RocketMQ-Dashboard https://github.com/apache/rocketmq-dashboard/releases
 
-解压后修改 rocketmq-console 模块中的 application.properties
+解压后修改 rocketmq-dashboard 模块中的 application.properties
 
 ```properties
 rocketmq.config.namesrvAddr=localhost:9876
@@ -233,33 +242,6 @@ producer.send(message, new SendCallback() {
 ```java
 Message message = new Message("myTopic", "MyTag", "MyKey", "myMessage".getBytes());
 SendResult result = producer.send(message);
-```
-
-## SQL 表达式过滤
-
-消费者将收到包含TAGA或TAGB或TAGB的消息. 但限制是一条消息只能有一个标签，而这对于复杂的情况可能无效。 在这种情况下，您可以使用SQL表达式筛选出消息.
-
-在`broker.conf `中添加配置
-
-```shell
-enablePropertyFilter=true
-```
-
-启动 broker 加载指定配置文件
-
-```shell
-../bin/mqbroker -n 192.168.150.113:9876 -c broker.conf 
-```
-
-随后在集群配置中可以看到
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210302171804846.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
-
-代码
-
-```java
-MessageSelector selector = MessageSelector.bySql("order > 5");
-consumer.subscribe("myTopic", selector);
 ```
 
 ## 重试机制
