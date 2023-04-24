@@ -9,91 +9,21 @@ tags:
 
 > http://rocketmq.apache.org
 
-## 安装
-
-### Server
-
-下载最新的 binary release，修改配置（原因是默认配置消耗太多内存）
-
-```shell
-vi runserver.sh
-JAVA_OPT="${JAVA_OPT} -server -Xms1g -Xmx1g -Xmn256m -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=320m"
-
-vi runbroker.sh
-JAVA_OPT="${JAVA_OPT} -server -Xms512m -Xmx512m -Xmn128m"
-```
-
-Linux 启动/关闭 RocketMQ
-
-```shell
-# Start Name Server
-nohup sh bin/mqnamesrv &
-# Start Broker
-nohup sh bin/mqbroker -n localhost:9876 &
-
-# Shutdown Name Server
-sh bin/mqshutdown namesrv
-# Shutdown Broker
-sh bin/mqshutdown broker
-```
-
-Windows 启动/关闭 RocketMQ
-
-```sh
-# Start Name Server
-start mqnamesrv.cmd
-# Start Broker
-start mqbroker -n localhost:9876
-```
-
-查看启动日志
-
-```sh
-# 查看 namesrv 的启动日志
-tail -f ~/logs/rocketmqlogs/namesrv.log
-# 查看 broker 的启动日志
-tail -f ~/logs/rocketmqlogs/broker.log
-```
-
-测试
-
-```shell
-# 生产者
-export NAMESRV_ADDR=localhost:9876
-sh bin/tools.sh org.apache.rocketmq.example.quickstart.Producer
-
-# 消费者
-export NAMESRV_ADDR=localhost:9876
-sh bin/tools.sh org.apache.rocketmq.example.quickstart.Consumer
-```
-
-### Dashboard
-
-下载RocketMQ-Dashboard https://github.com/apache/rocketmq-dashboard/releases
-
-解压后修改 rocketmq-dashboard 模块中的 application.properties
-
-```properties
-rocketmq.config.namesrvAddr=localhost:9876
-```
-
-在 rocketmq-console 目录下编译
-
-```shell
-mvn clean package -Dmaven.test.skip=true
-```
-
-运行编译完的 jar 包
-
-```shell
-java -jar rocketmq-console-ng-1.0.0.jar --server.port=12581
-```
-
 ## 基本概念
 
 ### 角色
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210301111718407.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+![RocketMQ Architecture](https://rocketmq.apache.org/assets/images/RocketMQ%E9%83%A8%E7%BD%B2%E6%9E%B6%E6%9E%84-ee0435f80da5faecf47bca69b1c831cb.png)
+
+#### Nameserver
+
+底层由netty实现，提供了路由管理、服务注册、服务发现的功能，是一个无状态节点
+
+- nameserver是服务发现者：集群中各个角色（producer、broker、consumer等）都需要定时想nameserver上报自己的状态，以便互相发现彼此，超时不上报的话，nameserver会把它从列表中剔除
+- nameserver可以部署多个，当多个nameserver存在的时候，其他角色同时向他们上报信息，以保证高可用
+- NameServer集群间互不通信，没有主备的概念
+- nameserver内存式存储，nameserver中的broker、topic等信息默认不会持久化
+- 为什么不用zookeeper：rocketmq希望为了提高性能，CAP定理，客户端负载均衡
 
 #### Broker
 
@@ -110,7 +40,7 @@ java -jar rocketmq-console-ng-1.0.0.jar --server.port=12581
 - Master多机负载，可以部署多个broker
   - 每个Broker与nameserver集群中的所有节点建立长连接，定时注册Topic信息到所有nameserver。
 
-#### Group
+#### Consumer Group
 
 消费者可能存在多个，一个消费者集群就代表一个 Group，消息投递到 Group 后只要某一个消费者消费了，就算成功消费，即消息的消费是以 Group 为单位的。
 
@@ -125,20 +55,6 @@ java -jar rocketmq-console-ng-1.0.0.jar --server.port=12581
 消息的消费者，通过NameServer集群获得Topic的路由信息，连接到对应的Broker上消费消息。
 
 注意，由于Master和Slave都可以读取消息，因此Consumer会与Master和Slave都建立连接。
-
-#### Nameserver
-
-底层由netty实现，提供了路由管理、服务注册、服务发现的功能，是一个无状态节点
-
-**nameserver是服务发现者**，集群中各个角色（producer、broker、consumer等）都需要定时想nameserver上报自己的状态，以便互相发现彼此，超时不上报的话，nameserver会把它从列表中剔除
-
-**nameserver可以部署多个**，当多个nameserver存在的时候，其他角色同时向他们上报信息，以保证高可用，
-
-**NameServer集群间互不通信**，没有主备的概念
-
-**nameserver内存式存储**，nameserver中的broker、topic等信息默认不会持久化
-
-**为什么不用zookeeper？**：rocketmq希望为了提高性能，CAP定理，客户端负载均衡
 
 ### Topic
 

@@ -51,56 +51,102 @@ tags:
 
 ## 事务消息使用
 
-生产者实现如下，消费者在整个事务消息环节无变化，正常接收消息即可。
+生产者
 
 ```java
+/**
+ * 发送事务消息
+ *
+ * @author keith
+ */
+@Slf4j
 @RestController
-public class TestController {
+public class TransactionMessageController {
 
     @Resource
     private RocketMQTemplate rocketMQTemplate;
 
     @GetMapping("sendTransactionMessage")
-    public String sendTransactionMessage(@RequestParam String message) throws MQClientException {
-        // 创建事务生产者
-        TransactionMQProducer producer = new TransactionMQProducer("transaction_producer_group");
-        producer.setNamesrvAddr("localhost:9876");
-        // 设置事务监听器
-        producer.setTransactionListener(new TransactionListenerImpl());
-        // 启动事务生产者
-        producer.start();
-
-        try {
-            // 发送半消息
-            Message msg = new Message("topic", "tag", message.getBytes(StandardCharsets.UTF_8));
-            SendResult sendResult = rocketMQTemplate.getProducer().sendMessageInTransaction(msg, null);
-            System.out.println("Half message send success, transactionId: " + sendResult.getTransactionId());
-        } finally {
-            // 关闭事务生产者
-            producer.shutdown();
-        }
-        return "success";
-    }
-
-    static class TransactionListenerImpl implements TransactionListener {
-
-        @Override
-        public LocalTransactionState executeLocalTransaction(Message message, Object o) {
-            // 执行本地事务
-            // ...
-
-            // 返回事务状态
-            return LocalTransactionState.COMMIT_MESSAGE;
-        }
-
-        @Override
-        public LocalTransactionState checkLocalTransaction(MessageExt messageExt) {
-            // 查询本地事务状态
-            // ...
-
-            // 返回事务状态
-            return LocalTransactionState.COMMIT_MESSAGE;
-        }
+    public String sendTransactionMessage() {
+        OrderDo orderDo = new OrderDo();
+        TransactionSendResult sendResult = rocketMQTemplate.sendMessageInTransaction("tx-topic",
+                MessageBuilder.withPayload(orderDo).setHeader("tx_id", orderDo.getOrderId()).build(),
+                orderDo
+        );
+        return sendResult.getTransactionId();
     }
 }
 ```
+
+消费者 -- 接收消息
+
+```java
+/**
+ * @author keith
+ */
+@Slf4j
+@Component
+@RocketMQMessageListener(
+        topic = "tx-topic", 					// topic：和生产者发送的topic相同
+        consumerGroup = "tx-msg-group",         // group：不用和生产者group相同
+        selectorExpression = "*",               // tag
+        messageModel = MessageModel.CLUSTERING,
+        consumeMode = ConsumeMode.ORDERLY
+)
+public class OrderTransactionConsumerService implements RocketMQListener<OrderDo> {
+
+    @Override
+    public void onMessage(OrderDo orderDo) {
+        log.info("接收事务消息结果: {}", orderDo);
+    }
+}
+```
+
+消费者 -- 监听事务消息
+
+```java
+@Slf4j
+@RocketMQTransactionListener
+public class OrderTransactionListenerImpl implements RocketMQLocalTransactionListener {
+
+    @Resource
+    private OrderService orderService;
+
+    // 可以将事务状态存到redis，就不会有因为JVM重启后丢失事务状态的问题
+    private ConcurrentHashMap<String, RocketMQLocalTransactionState> localTransactions = new ConcurrentHashMap<>();
+
+    @Override
+    public RocketMQLocalTransactionState executeLocalTransaction(Message msg, Object arg) {
+        log.info("执行本地事务, message: {}, arg: {}", msg, arg);
+        OrderDo order = (OrderDo) arg;
+        try {
+            // 执行本地事务
+            localTransactions.put(order.getOrderId().toString(), RocketMQLocalTransactionState.UNKNOWN);
+            orderService.placeOrder(order);
+            localTransactions.put(order.getOrderId().toString(), RocketMQLocalTransactionState.COMMIT);
+        } catch (Exception e) {
+            // 执行本地事务失败，回滚消息
+            log.warn("本地事务执行失败，回滚事务消息，arg: {}", arg, e);
+            localTransactions.put(order.getOrderId().toString(), RocketMQLocalTransactionState.COMMIT);
+            return RocketMQLocalTransactionState.ROLLBACK;
+        }
+        // 执行本地事务成功，提交消息
+        return RocketMQLocalTransactionState.COMMIT;
+    }
+
+    @Override
+    public RocketMQLocalTransactionState checkLocalTransaction(Message msg) {
+        Object txId = msg.getHeaders().get("tx_id");
+        String orderId = txId != null ? txId.toString() : "";
+        log.info("检查本地事务, orderId: {}", orderId);
+
+        // 查询本地事务状态
+        RocketMQLocalTransactionState transactionState = localTransactions.get(orderId);
+        log.info("查询本地事务状态结果: {}", transactionState);
+
+        // 返回本地事务状态
+        return transactionState;
+    }
+}
+```
+
