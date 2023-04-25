@@ -145,6 +145,52 @@ mvn install:install-file -DgroupId="com.abc" -DartifactId="mavenTest" -Dversion=
 </distributionManagement>
 ```
 
+## Maven 引入自定义 Jar 包
+
+1.将jar放到项目根目录（lib文件夹下）
+
+![img](https://img2022.cnblogs.com/blog/1761926/202207/1761926-20220727145959787-69400310.png)
+
+2.修改pom文件
+
+```xml
+<dependency>
+    <groupId>*******</groupId>
+    <artifactId>*******</artifactId>
+    <version>1.1-SNAPSHOT</version>
+    <scope>system</scope>
+    <systemPath>${project.basedir}/lib/*******-1.1-20220629.060335-9.jar</systemPath>
+</dependency>
+```
+
+3.修改package配置
+
+```xml
+<build>
+    <resources>
+        <!--将项目根目录下的lib文件中的jar包全部打入BOOT-INF/lib文件下-->
+        <resource>
+            <directory>lib</directory>
+            <targetPath>BOOT-INF/lib/</targetPath>
+            <includes>
+                <include>**/*.jar</include>
+            </includes>
+            <filtering>false</filtering>
+        </resource>
+        <!--将项目根目录下的src/main/resources文件中的配置文件全部打入默认文件下-->
+        <resource>
+            <directory>src/main/resources</directory>
+            <includes>
+                <include>**/*.properties</include>
+                <include>**/*.xml</include>
+                <include>**/*.yml</include>
+            </includes>
+            <filtering>false</filtering>
+        </resource>
+    </resources>
+</build>
+```
+
 ## Maven配置私服
 
 ### 配置方式
@@ -462,3 +508,4 @@ maven-central 中可以修改中央仓库地址为阿里云镜像地址 http://m
 maven-public 中可以修改拉取依赖的优先级顺序
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/10d782dde3b74a16966da7a2187e5428.png)
+
