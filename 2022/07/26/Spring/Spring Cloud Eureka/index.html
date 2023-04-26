@@ -1,0 +1,359 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>SpringCloud 注册中心 | Swan Blog</title><meta name="keywords" content="Spring Cloud"><meta name="author" content="Keith"><meta name="copyright" content="Keith"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="注册中心和微服务的关系 注册：每个微服务启动时，将自己的网络地址等信息注册到注册中心，注册中心会存储（内存中）这些信息。 获取服务注册表：服务消费者从注册中心，查询服务提供者的网络地址，并使用该地址调用服务提供者，为了避免每次都查注册表信息，所以client会定时去server拉取注册表信息到缓存到client本地。 心跳：各个微服务与注册中心通过某种机制（心跳）通信，若注册中心长时间和服务间没有">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringCloud 注册中心">
+<meta property="og:url" content="https://rongkezan.github.io/swan-blog/2022/07/26/Spring/Spring%20Cloud%20Eureka/index.html">
+<meta property="og:site_name" content="Swan Blog">
+<meta property="og:description" content="注册中心和微服务的关系 注册：每个微服务启动时，将自己的网络地址等信息注册到注册中心，注册中心会存储（内存中）这些信息。 获取服务注册表：服务消费者从注册中心，查询服务提供者的网络地址，并使用该地址调用服务提供者，为了避免每次都查注册表信息，所以client会定时去server拉取注册表信息到缓存到client本地。 心跳：各个微服务与注册中心通过某种机制（心跳）通信，若注册中心长时间和服务间没有">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg">
+<meta property="article:published_time" content="2022-07-26T07:58:11.704Z">
+<meta property="article:modified_time" content="2022-10-12T08:43:42.934Z">
+<meta property="article:author" content="Keith">
+<meta property="article:tag" content="Spring Cloud">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><link rel="shortcut icon" href="/swan-blog/img/favicon.png"><link rel="canonical" href="https://rongkezan.github.io/swan-blog/2022/07/26/Spring/Spring%20Cloud%20Eureka/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/swan-blog/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/swan-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/swan-blog/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'SpringCloud 注册中心',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-10-12 16:43:42'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.2.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://bu.dusays.com/2022/05/02/626f92e193879.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/swan-blog/archives/"><div class="headline">文章</div><div class="length-num">136</div></a><a href="/swan-blog/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/swan-blog/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/swan-blog/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/swan-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/swan-blog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/swan-blog/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog_name"><a id="site-name" href="/swan-blog/">Swan Blog</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/swan-blog/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/swan-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/swan-blog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/swan-blog/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">SpringCloud 注册中心</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-07-26T07:58:11.704Z" title="发表于 2022-07-26 15:58:11">2022-07-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-10-12T08:43:42.934Z" title="更新于 2022-10-12 16:43:42">2022-10-12</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/swan-blog/categories/Spring/">Spring</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="SpringCloud 注册中心"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="post-content" id="article-container"><h2 id="注册中心和微服务的关系"><a href="#注册中心和微服务的关系" class="headerlink" title="注册中心和微服务的关系"></a>注册中心和微服务的关系</h2><ol>
+<li>注册：每个微服务启动时，将自己的网络地址等信息注册到注册中心，注册中心会存储（内存中）这些信息。</li>
+<li>获取服务注册表：服务消费者从注册中心，查询服务提供者的网络地址，并使用该地址调用服务提供者，为了避免每次都查注册表信息，所以client会定时去server拉取注册表信息到缓存到client本地。</li>
+<li>心跳：各个微服务与注册中心通过某种机制（心跳）通信，若注册中心长时间和服务间没有通信，就会注销该实例。</li>
+<li>调用：实际的服务调用，通过注册表，解析服务名和具体地址的对应关系，找到具体服务的地址，进行实际调用。</li>
+</ol>
+<p><img src="https://img-blog.csdnimg.cn/2021020610401060.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2 id="Spring-Cloud-Eureka"><a href="#Spring-Cloud-Eureka" class="headerlink" title="Spring Cloud Eureka"></a>Spring Cloud Eureka</h2><h3 id="Eureka-概念"><a href="#Eureka-概念" class="headerlink" title="Eureka 概念"></a>Eureka 概念</h3><p>Eureka注册中心各个节点是平等的，节点挂掉不会影响剩余节点的正常工作，只要有一台Eureka还在，就能保证注册服务可用，只不过查询到的数据可能不会最新的。Eureka还有自我保护机制，如果在15分钟内超过85%的节点都没有正常心跳，那么Eureka就认为客户端与注册中心出现了故障，此时会出现以下几种情况：</p>
+<ol>
+<li>Eureka不再从注册列表移除因为长时间没收到心跳而应该过期的服务</li>
+<li>Eureka仍然能够接受新服务的注册和查询请求，但是不会被同步到其它节点上（保证当前节点依然可用）</li>
+<li>当网络稳定时，当前实例新的注册信息会被同步到其它节点中</li>
+</ol>
+<p><strong>Eureka自我保护机制</strong></p>
+<p>某时刻某一个微服务不可用了，eureka不会立即清理，依旧会对该微服务的信息进行保存</p>
+<p>默认EurekaServer在一定时间内没有接收到某个微服务实例的心跳，EurekaServer将会注销该实例（默认90秒）</p>
+<p>当网络分区故障发生时，微服务与EurekaServer之间无法正常通信，但微服务本身其实是健康的。当EurekaServer节点在短时间内丢失过多客户端时，那么这个节点就会进入自我保护模式，EurekaServer会保护服务注册表中的信息，不再注销任何微服务。当它收到的心跳数重新恢复到阈值以上时，该Eureka Server节点就会自动退出自我保护模式。</p>
+<p>在Spring Cloud中，可以使用eureka.server.enable-self-preservation &#x3D; false 禁用自我保护模式。</p>
+<p>服务少的话要关闭自我保护，服务多的话要开启自我保护，原因是服务多的话如果发现服务挂了其实是不一定真的挂了，可以是由于网络波动等因素没调到服务，所以需要触发自我保护机制。</p>
+<p><strong>Eureka 三级缓存</strong></p>
+<table>
+<thead>
+<tr>
+<th>缓存</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>registry</strong></td>
+<td>ConcurrentHashMap</td>
+<td><strong>实时更新</strong>，类AbstractInstanceRegistry成员变量，UI端请求的是这里的服务注册信息</td>
+</tr>
+<tr>
+<td><strong>readWriteCacheMap</strong></td>
+<td>Guava Cache&#x2F;LoadingCache</td>
+<td><strong>实时更新</strong>，类ResponseCacheImpl成员变量，缓存时间180秒</td>
+</tr>
+<tr>
+<td><strong>readOnlyCacheMap</strong></td>
+<td>ConcurrentHashMap</td>
+<td><strong>周期更新</strong>，类ResponseCacheImpl成员变量，默认每<strong>30s</strong>从readWriteCacheMap更新，Eureka client默认从这里更新服务注册信息，可配置直接从readWriteCacheMap更新</td>
+</tr>
+</tbody></table>
+<p>开启 readOnlyCacheMap 是为了保证高可用，如果有大量请求进来会先往 readWriteCacheMap 里加，而不会影响 readOnlyCacheMap 的读</p>
+<h3 id="Eureka-Restful-服务调用"><a href="#Eureka-Restful-服务调用" class="headerlink" title="Eureka Restful 服务调用"></a>Eureka Restful 服务调用</h3><p>官方文档</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Netflix/eureka/wiki/Eureka-REST-operations">https://github.com/Netflix/eureka/wiki/Eureka-REST-operations</a></p>
+<table>
+<thead>
+<tr>
+<th><strong>Operation</strong></th>
+<th><strong>HTTP action</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Register new application instance</td>
+<td>POST &#x2F;eureka&#x2F;v2&#x2F;apps&#x2F;<strong>appID</strong></td>
+<td>Input: JSON&#x2F;XMLpayload HTTPCode: 204 on success</td>
+</tr>
+<tr>
+<td>De-register application instance</td>
+<td>DELETE &#x2F;eureka&#x2F;v2&#x2F;apps&#x2F;<strong>appID</strong>&#x2F;<strong>instanceID</strong></td>
+<td>HTTP Code: 200 on success</td>
+</tr>
+<tr>
+<td>Send application instance heartbeat</td>
+<td>PUT &#x2F;eureka&#x2F;v2&#x2F;apps&#x2F;<strong>appID</strong>&#x2F;<strong>instanceID</strong></td>
+<td>HTTP Code: * 200 on success * 404 if <strong>instanceID</strong>doesn’t exist</td>
+</tr>
+<tr>
+<td>Query for all instances</td>
+<td>GET &#x2F;eureka&#x2F;v2&#x2F;apps</td>
+<td>HTTP Code: 200 on success Output: JSON&#x2F;XML</td>
+</tr>
+<tr>
+<td>Query for all <strong>appID</strong> instances</td>
+<td>GET &#x2F;eureka&#x2F;v2&#x2F;apps&#x2F;<strong>appID</strong></td>
+<td>HTTP Code: 200 on success Output: JSON&#x2F;XML</td>
+</tr>
+<tr>
+<td>Query for a specific <strong>appID</strong>&#x2F;<strong>instanceID</strong></td>
+<td>GET &#x2F;eureka&#x2F;v2&#x2F;apps&#x2F;<strong>appID</strong>&#x2F;<strong>instanceID</strong></td>
+<td>HTTP Code: 200 on success Output: JSON&#x2F;XML</td>
+</tr>
+<tr>
+<td>Query for a specific <strong>instanceID</strong></td>
+<td>GET &#x2F;eureka&#x2F;v2&#x2F;instances&#x2F;<strong>instanceID</strong></td>
+<td>HTTP Code: 200 on success Output: JSON&#x2F;XML</td>
+</tr>
+<tr>
+<td>Take instance out of service</td>
+<td>PUT &#x2F;eureka&#x2F;v2&#x2F;apps&#x2F;<strong>appID</strong>&#x2F;<strong>instanceID</strong>&#x2F;status?value&#x3D;OUT_OF_SERVICE</td>
+<td>HTTP Code: * 200 on success * 500 on failure</td>
+</tr>
+<tr>
+<td>Move instance back into service (remove override)</td>
+<td>DELETE &#x2F;eureka&#x2F;v2&#x2F;apps&#x2F;<strong>appID</strong>&#x2F;<strong>instanceID</strong>&#x2F;status?value&#x3D;UP (The value&#x3D;UP is optional, it is used as a suggestion for the fallback status due to removal of the override)</td>
+<td>HTTP Code: * 200 on success * 500 on failure</td>
+</tr>
+<tr>
+<td>Update metadata</td>
+<td>PUT &#x2F;eureka&#x2F;v2&#x2F;apps&#x2F;<strong>appID</strong>&#x2F;<strong>instanceID</strong>&#x2F;metadata?key&#x3D;value</td>
+<td>HTTP Code: * 200 on success * 500 on failure</td>
+</tr>
+<tr>
+<td>Query for all instances under a particular <strong>vip address</strong></td>
+<td>GET &#x2F;eureka&#x2F;v2&#x2F;vips&#x2F;<strong>vipAddress</strong></td>
+<td>* HTTP Code: 200 on success Output: JSON&#x2F;XML  * 404 if the <strong>vipAddress</strong>does not exist.</td>
+</tr>
+<tr>
+<td>Query for all instances under a particular <strong>secure vip address</strong></td>
+<td>GET &#x2F;eureka&#x2F;v2&#x2F;svips&#x2F;<strong>svipAddress</strong></td>
+<td>* HTTP Code: 200 on success Output: JSON&#x2F;XML  * 404 if the <strong>svipAddress</strong>does not exist.</td>
+</tr>
+</tbody></table>
+<h3 id="Eureka-单节点服务端配置说明"><a href="#Eureka-单节点服务端配置说明" class="headerlink" title="Eureka 单节点服务端配置说明"></a>Eureka 单节点服务端配置说明</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">eureka:</span> </span><br><span class="line">  <span class="attr">instance:</span></span><br><span class="line">    <span class="comment"># 表示将自己的ip注册到EurekaServer上。不配置或false，表示将操作系统的hostname注册到server</span></span><br><span class="line">    <span class="attr">prefer-ip-address:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="comment"># 是否将自己注册到Eureka Server,默认为true，由于当前就是server，故而设置成false，表明该服务不会向eureka注册自己的信息</span></span><br><span class="line">    <span class="attr">register-with-eureka:</span> <span class="literal">false</span></span><br><span class="line">    <span class="comment"># 是否从eureka server获取注册信息，由于单节点，不需要同步其他节点数据，用false</span></span><br><span class="line">    <span class="attr">fetch-registry:</span> <span class="literal">false</span></span><br><span class="line">    <span class="comment"># 设置服务注册中心的URL，用于client和server端交流</span></span><br><span class="line">    <span class="attr">service-url:</span>                      </span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://root:root@eureka-7901:7901/eureka/</span></span><br><span class="line">  <span class="attr">server:</span></span><br><span class="line">  	<span class="comment"># 关闭自我保护</span></span><br><span class="line">    <span class="attr">enable-self-preservation:</span> <span class="literal">false</span></span><br><span class="line">    <span class="comment"># 自我保护阈值</span></span><br><span class="line">    <span class="attr">renewal-percent-threshold:</span> <span class="number">0.8</span></span><br><span class="line">    <span class="comment"># 剔除服务的时间间隔</span></span><br><span class="line">    <span class="attr">viction-interval-timer-in-ms:</span> <span class="number">1000</span></span><br><span class="line">    <span class="comment"># 关闭缓存</span></span><br><span class="line">    <span class="attr">use-read-only-response-cache:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Eureka-Client-注册"><a href="#Eureka-Client-注册" class="headerlink" title="Eureka Client 注册"></a>Eureka Client 注册</h3><p>pom.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>application.yml</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#注册中心</span></span><br><span class="line"><span class="attr">eureka:</span> </span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="comment">#设置服务注册中心的URL</span></span><br><span class="line">    <span class="attr">service-url:</span>                      </span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://root:root@localhost:7900/eureka/</span></span><br></pre></td></tr></table></figure>
+
+<p>不想注册，设置成false即可</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span> </span><br><span class="line">  <span class="attr">cloud:</span></span><br><span class="line">    <span class="attr">service-registry:</span></span><br><span class="line">      <span class="attr">auto-registration:</span></span><br><span class="line">        <span class="attr">enabled:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<p>注册成功：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DiscoveryClient_API-LISTEN-ORDER/api-listen-order:30.136.133.9:port - registration status: 204</span><br></pre></td></tr></table></figure>
+
+<h3 id="Eureka-集群的本地搭建"><a href="#Eureka-集群的本地搭建" class="headerlink" title="Eureka 集群的本地搭建"></a>Eureka 集群的本地搭建</h3><p>引入依赖 eureka server</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-eureka-server<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>修改本地hosts文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1 eureka1.com</span><br><span class="line">127.0.0.1 eureka2.com</span><br></pre></td></tr></table></figure>
+
+<p>application.yml</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">profiles:</span></span><br><span class="line">    <span class="attr">active:</span> <span class="number">01</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">5001</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">eureka-demo</span></span><br><span class="line">  <span class="attr">profiles:</span> <span class="number">01</span></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">instance:</span></span><br><span class="line">    <span class="attr">hostname:</span> <span class="string">eureka1.com</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="attr">service-url:</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://eureka2.com:5002/eureka</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">5002</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">eureka-demo</span></span><br><span class="line">  <span class="attr">profiles:</span> <span class="number">02</span></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">instance:</span></span><br><span class="line">    <span class="attr">hostname:</span> <span class="string">eureka2.com</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="attr">service-url:</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://eureka1.com:5001/eureka</span></span><br></pre></td></tr></table></figure>
+
+<p>启动类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="meta">@EnableEurekaServer</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RegistryApplication</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        SpringApplication.run(RegistryApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>多节点 Eureka 注意事项</strong></p>
+<blockquote>
+<p>peer：A 同步信息给 B，A 是 B 的peer</p>
+</blockquote>
+<p>举例说明：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">instance:</span></span><br><span class="line">    <span class="attr">hostname:</span> <span class="string">eureka2.com</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="attr">service-url:</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://eureka1.com:5001/eureka</span> <span class="comment"># 这个地址就是该服务的 peer</span></span><br></pre></td></tr></table></figure>
+
+<p>有3个服务 A B C，注册方式 A -&gt; B，B-&gt;C，C-&gt;A，结果注册信息并不同步</p>
+<p>启动流程：</p>
+<ol>
+<li>拉取 peer 的注册表，A 启动会拉取 B 的注册表</li>
+<li>把自己注册到 peer 上，A 会把自己注册到 B 的注册表上</li>
+<li>peer 会把自己的注册表同步给 peer 的 peer，B 会把 A 同步给 C</li>
+</ol>
+<h3 id="Eureka-架构图"><a href="#Eureka-架构图" class="headerlink" title="Eureka 架构图"></a>Eureka 架构图</h3><p><img src="https://img-blog.csdnimg.cn/20210206111125938.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h3 id="Eureka-客户端工作流程"><a href="#Eureka-客户端工作流程" class="headerlink" title="Eureka 客户端工作流程"></a>Eureka 客户端工作流程</h3><p><img src="https://img-blog.csdnimg.cn/20210206141833488.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h3 id="Eureka-原理"><a href="#Eureka-原理" class="headerlink" title="Eureka 原理"></a>Eureka 原理</h3><blockquote>
+<p>Eureka 存储了每个客户端的注册信息</p>
+<p>EurekaClient 从 EurekaServer 同步获取服务注册列表，通过一定的规则选择一个服务进行调用</p>
+</blockquote>
+<h4 id="名词解释"><a href="#名词解释" class="headerlink" title="名词解释"></a>名词解释</h4><p><strong>服务提供者</strong>：是一个eureka client，向Eureka Server注册和更新自己的信息，同时能从Eureka Server注册表中获取到其他服务的信息。</p>
+<p><strong>服务注册中心</strong>：提供服务注册和发现的功能。每个 Eureka Client 向 Eureka Server 注册自己的信息，也可以通过Eureka Server获取到其他服务的信息达到发现和调用其他服务的目的。</p>
+<p><strong>服务消费者</strong>：是一个 Eureka Client，通过 Eureka Server 获取注册到其上其他服务的信息，从而根据信息找到所需的服务发起远程调用。</p>
+<p><strong>同步复制</strong>：Eureka Server 之间注册表信息的同步复制，使 Eureka Server 集群中不同注册表中服务实例信息保持一致。</p>
+<p><strong>远程调用</strong>：服务客户端之间的远程调用。</p>
+<p><strong>注册</strong>：Client 向 Server 注册自身的元数据以供服务发现。</p>
+<p><strong>续约</strong>：Eureka客户端需要每30秒发送一次心跳来续租，通过发送心跳到 Server 以维持和更新注册表中服务实例元数据的有效性。当在一定时长内，Server 没有收到 Client 的心跳信息，将默认服务下线，会把服务实例的信息从注册表中删除。</p>
+<p><strong>下线</strong>：Client 在关闭时主动向 Server 注销服务实例元数据，这时 Client 的服务实例数据将从 Server 的注册表中删除。</p>
+<p><strong>获取注册表</strong>：Client 向 Server 请求注册表信息，用于服务发现，从而发起服务间远程调用。</p>
+<p><strong>元数据</strong>：Eureka的元数据有两种：标准元数据和自定义元数据。</p>
+<p>标准元数据：主机名、IP地址、端口号、状态页和健康检查等信息，这些信息都会被发布在服务注册表中，用于服务之间的调用。</p>
+<p>自定义元数据：可以使用eureka.instance.metadata-map配置，这些元数据可以在远程客户端中访问，但是一般不改变客户端行为，	除非客户端知道该元数据的含义。</p>
+<p>可以在配置文件中对当前服务设置自定义元数据，可后期用户个性化使用</p>
+<p>元数据可以配置在 eureka 服务器和 eureka 客户端上</p>
+<h4 id="如何自己实现一个注册中心"><a href="#如何自己实现一个注册中心" class="headerlink" title="如何自己实现一个注册中心"></a>如何自己实现一个注册中心</h4><ul>
+<li><p>客户端：拉取注册表，从注册表里选一个调用</p>
+</li>
+<li><p>服务端：</p>
+<ul>
+<li>定义注册表：<code>Map&lt;name, Map&lt;id, InstanceInfo&gt;&gt;</code></li>
+<li>别人可以向我注册自己的信息</li>
+<li>别人可以从我这里拉取他人的信息</li>
+<li>我和我的同类可以共享注册表</li>
+</ul>
+<p>eureka是用：jersey实现，也是个mvc框架。我们可以自己写个spring boot web实现。</p>
+</li>
+</ul>
+<h3 id="Eureka-源码"><a href="#Eureka-源码" class="headerlink" title="Eureka 源码"></a>Eureka 源码</h3><h4 id="Eureka-Server-启动"><a href="#Eureka-Server-启动" class="headerlink" title="Eureka Server 启动"></a>Eureka Server 启动</h4><p>通过注解 @EnableEurekaServer 导入了 EurekaServerMarkerConfiguration 类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@EnableEurekaServer</span> -&gt; <span class="meta">@Import(EurekaServerMarkerConfiguration.class)</span></span><br></pre></td></tr></table></figure>
+
+<p>在 EurekaServerMarkerConfiguration 类中只是新建了一个 Marker</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="keyword">public</span> Marker <span class="title function_">eurekaServerMarkerBean</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Marker</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Marker</span> &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 Erueka Server 的 jar 包下的 spring.facoties 中发现导入了 EurekaServerAutoConfiguration 配置类，而该配置类生效的条件是 Marker 类的存在</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ConditionalOnBean(EurekaServerMarkerConfiguration.Marker.class)</span></span><br></pre></td></tr></table></figure>
+
+<p>同时在 EurekaServerAutoConfiguration 中还导入了 EurekaServerInitializerConfiguration</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Import(EurekaServerInitializerConfiguration.class)</span></span><br></pre></td></tr></table></figure>
+
+<p>而导入这个类后会直接执行其 start 方法，原因是它实现了 SmartLifecycle 接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">EurekaServerInitializerConfiguration</span></span><br><span class="line">		<span class="keyword">implements</span> <span class="title class_">ServletContextAware</span>, SmartLifecycle, Ordered &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">start</span><span class="params">()</span> &#123;</span><br><span class="line">		<span class="comment">// ...</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Eureka-Server-注册实例"><a href="#Eureka-Server-注册实例" class="headerlink" title="Eureka Server 注册实例"></a>Eureka Server 注册实例</h4><p>ApplicationResource#addInstance</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">registry.register -&gt; PeerAwareInstanceRegistryImpl#register -&gt;</span><br><span class="line">AbstractInstanceRegistry#register</span><br></pre></td></tr></table></figure>
+
+<p>在 AbstractInstanceRegistry 这个类中可以找到存放实例信息的map</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// map&lt;服务名, map&lt;实例ID，实例信息&gt;&gt;</span></span><br><span class="line">ConcurrentHashMap&lt;String, Map&lt;String, Lease&lt;InstanceInfo&gt;&gt;&gt; register</span><br></pre></td></tr></table></figure>
+
+<h4 id="Eureka-Server-拉取实例"><a href="#Eureka-Server-拉取实例" class="headerlink" title="Eureka Server 拉取实例"></a>Eureka Server 拉取实例</h4><p>ApplicationResource#getApplication</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">responseCache.get(cacheKey) -&gt; getValue(key, useReadOnlyCache) -&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 如果开启了readOnly缓存</span></span><br><span class="line"><span class="keyword">if</span> (useReadOnlyCache) &#123;</span><br><span class="line">    <span class="comment">// 先从readOnly缓存里取</span></span><br><span class="line">    <span class="keyword">final</span> <span class="type">Value</span> <span class="variable">currentPayload</span> <span class="operator">=</span> readOnlyCacheMap.get(key);</span><br><span class="line">    <span class="keyword">if</span> (currentPayload != <span class="literal">null</span>) &#123;</span><br><span class="line">        payload = currentPayload;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 取不到再从readWrite缓存里取</span></span><br><span class="line">        payload = readWriteCacheMap.get(key);</span><br><span class="line">        readOnlyCacheMap.put(key, payload);</span><br><span class="line">    &#125;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// 如果没开启，则直接从readWrite缓存里取</span></span><br><span class="line">    payload = readWriteCacheMap.get(key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://rongkezan.github.io/swan-blog">Keith</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://rongkezan.github.io/swan-blog/2022/07/26/Spring/Spring%20Cloud%20Eureka/">https://rongkezan.github.io/swan-blog/2022/07/26/Spring/Spring%20Cloud%20Eureka/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://rongkezan.github.io/swan-blog" target="_blank">Swan Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/swan-blog/tags/Spring-Cloud/">Spring Cloud</a></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/swan-blog/2022/07/26/Spring/Spring%20Cloud%20Gateway/"><img class="prev-cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="onerror=null;src='/swan-blog/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Spring Cloud Gateway</div></div></a></div><div class="next-post pull-right"><a href="/swan-blog/2022/07/26/Spring/Spring%20Cloud%20Sentinel/"><img class="next-cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="onerror=null;src='/swan-blog/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Spring Cloud Sentinel</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/swan-blog/2022/07/26/Spring/Spring%20Cloud%20Admin/" title="SpringCloud 健康检查"><img class="cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-07-26</div><div class="title">SpringCloud 健康检查</div></div></a></div><div><a href="/swan-blog/2022/07/26/Spring/Spring%20Cloud%20Config%20Center/" title="SpringCloud Config Center"><img class="cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-07-26</div><div class="title">SpringCloud Config Center</div></div></a></div><div><a href="/swan-blog/2022/07/26/Spring/Spring%20Cloud%20Gateway/" title="Spring Cloud Gateway"><img class="cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-07-26</div><div class="title">Spring Cloud Gateway</div></div></a></div><div><a href="/swan-blog/2022/10/12/Spring/Spring%20Cloud%20Nacos/" title="Spring Cloud Nacos"><img class="cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-12</div><div class="title">Spring Cloud Nacos</div></div></a></div><div><a href="/swan-blog/2022/10/12/Spring/Spring%20Cloud%20OpenFeign/" title="Spring Cloud OpenFeign"><img class="cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-12</div><div class="title">Spring Cloud OpenFeign</div></div></a></div><div><a href="/swan-blog/2022/10/12/Spring/Spring%20Cloud%20Overview/" title="SpringCloud 架构"><img class="cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-12</div><div class="title">SpringCloud 架构</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://bu.dusays.com/2022/05/02/626f92e193879.jpg" onerror="this.onerror=null;this.src='/swan-blog/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Keith</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/swan-blog/archives/"><div class="headline">文章</div><div class="length-num">136</div></a><a href="/swan-blog/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/swan-blog/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/rongkezan"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/rongkezan" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="/swan-blog/rongkezan@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E5%92%8C%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">1.</span> <span class="toc-text">注册中心和微服务的关系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Spring-Cloud-Eureka"><span class="toc-number">2.</span> <span class="toc-text">Spring Cloud Eureka</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Eureka-%E6%A6%82%E5%BF%B5"><span class="toc-number">2.1.</span> <span class="toc-text">Eureka 概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Eureka-Restful-%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8"><span class="toc-number">2.2.</span> <span class="toc-text">Eureka Restful 服务调用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Eureka-%E5%8D%95%E8%8A%82%E7%82%B9%E6%9C%8D%E5%8A%A1%E7%AB%AF%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E"><span class="toc-number">2.3.</span> <span class="toc-text">Eureka 单节点服务端配置说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Eureka-Client-%E6%B3%A8%E5%86%8C"><span class="toc-number">2.4.</span> <span class="toc-text">Eureka Client 注册</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Eureka-%E9%9B%86%E7%BE%A4%E7%9A%84%E6%9C%AC%E5%9C%B0%E6%90%AD%E5%BB%BA"><span class="toc-number">2.5.</span> <span class="toc-text">Eureka 集群的本地搭建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Eureka-%E6%9E%B6%E6%9E%84%E5%9B%BE"><span class="toc-number">2.6.</span> <span class="toc-text">Eureka 架构图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Eureka-%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-number">2.7.</span> <span class="toc-text">Eureka 客户端工作流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Eureka-%E5%8E%9F%E7%90%86"><span class="toc-number">2.8.</span> <span class="toc-text">Eureka 原理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%8D%E8%AF%8D%E8%A7%A3%E9%87%8A"><span class="toc-number">2.8.1.</span> <span class="toc-text">名词解释</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E8%87%AA%E5%B7%B1%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83"><span class="toc-number">2.8.2.</span> <span class="toc-text">如何自己实现一个注册中心</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Eureka-%E6%BA%90%E7%A0%81"><span class="toc-number">2.9.</span> <span class="toc-text">Eureka 源码</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Eureka-Server-%E5%90%AF%E5%8A%A8"><span class="toc-number">2.9.1.</span> <span class="toc-text">Eureka Server 启动</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Eureka-Server-%E6%B3%A8%E5%86%8C%E5%AE%9E%E4%BE%8B"><span class="toc-number">2.9.2.</span> <span class="toc-text">Eureka Server 注册实例</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Eureka-Server-%E6%8B%89%E5%8F%96%E5%AE%9E%E4%BE%8B"><span class="toc-number">2.9.3.</span> <span class="toc-text">Eureka Server 拉取实例</span></a></li></ol></li></ol></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2018 - 2022 By Keith</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><p><a target="_blank" href="https://hexo.io/"><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&logo=hexo" title="博客框架为Hexo"></a>&nbsp;<a target="_blank" href="https://butterfly.js.org/"><img src="https://img.shields.io/badge/Theme-Butterfly-6513df?style=flat&logo=bitdefender" title="主题采用butterfly"></a>&nbsp;<a target="_blank" href="https://www.jsdelivr.com/"><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&logo=jsDelivr" title="本站使用JsDelivr为静态资源提供CDN加速"></a> &nbsp;<a target="_blank" href="https://vercel.com/ "><img src="https://img.shields.io/badge/Hosted-Vervel-brightgreen?style=flat&logo=Vercel" title="本站采用双线部署，默认线路托管于Vercel"></a>&nbsp;<a target="_blank" href="https://vercel.com/ "><img src="https://img.shields.io/badge/Hosted-Coding-0cedbe?style=flat&logo=Codio" title="本站采用双线部署，联通线路托管于Coding"></a>&nbsp;<a target="_blank" href="https://github.com/"><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&logo=GitHub" title="本站项目由Gtihub托管"></a>&nbsp;<a target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&logo=Claris" title="本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可"></a></p></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/swan-blog/js/utils.js"></script><script src="/swan-blog/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="/swan-blog/js/search/local-search.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Redis基础 | Swan Blog</title><meta name="author" content="Keith"><meta name="copyright" content="Keith"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="常用命令1234567891011121314151617181920212223242526### list# 取出指定 key 的 start 到 end 个元素LRANGE KEY START END# 栈：同向命令，如 &#96;lpush + lpop&#96;，&#96;rpush + rpop&#96;# 队列：反向命令：如 &#96;lpush + rpop&#96;，&#96;rpush + lpop&#96;# 取出 k1 的所有元素LRA">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis基础">
+<meta property="og:url" content="https://rongkezan.github.io/swan-blog/2022/07/26/Redis/Redis%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="Swan Blog">
+<meta property="og:description" content="常用命令1234567891011121314151617181920212223242526### list# 取出指定 key 的 start 到 end 个元素LRANGE KEY START END# 栈：同向命令，如 &#96;lpush + lpop&#96;，&#96;rpush + rpop&#96;# 队列：反向命令：如 &#96;lpush + rpop&#96;，&#96;rpush + lpop&#96;# 取出 k1 的所有元素LRA">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg">
+<meta property="article:published_time" content="2022-07-26T07:58:11.699Z">
+<meta property="article:modified_time" content="2022-07-26T07:58:11.699Z">
+<meta property="article:author" content="Keith">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><link rel="shortcut icon" href="/swan-blog/img/favicon.png"><link rel="canonical" href="https://rongkezan.github.io/swan-blog/2022/07/26/Redis/Redis%E5%9F%BA%E7%A1%80/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/swan-blog/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/swan-blog/',
+  algolia: undefined,
+  localSearch: {"path":"/swan-blog/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Redis基础',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-07-26 15:58:11'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.2.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://bu.dusays.com/2022/05/02/626f92e193879.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/swan-blog/archives/"><div class="headline">文章</div><div class="length-num">136</div></a><a href="/swan-blog/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/swan-blog/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/swan-blog/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/swan-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/swan-blog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/swan-blog/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog_name"><a id="site-name" href="/swan-blog/">Swan Blog</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/swan-blog/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/swan-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/swan-blog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/swan-blog/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">Redis基础</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-07-26T07:58:11.699Z" title="发表于 2022-07-26 15:58:11">2022-07-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-07-26T07:58:11.699Z" title="更新于 2022-07-26 15:58:11">2022-07-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/swan-blog/categories/Redis/">Redis</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Redis基础"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="post-content" id="article-container"><h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">### list</span></span><br><span class="line"><span class="comment"># 取出指定 key 的 start 到 end 个元素</span></span><br><span class="line">LRANGE KEY START END</span><br><span class="line"><span class="comment"># 栈：同向命令，如 `lpush + lpop`，`rpush + rpop`</span></span><br><span class="line"><span class="comment"># 队列：反向命令：如 `lpush + rpop`，`rpush + lpop`</span></span><br><span class="line"><span class="comment"># 取出 k1 的所有元素</span></span><br><span class="line">LRANGE k1 0 -1</span><br><span class="line"><span class="comment"># 实现阻塞队列</span></span><br><span class="line">BLPOP k1 0 <span class="comment"># 客户端1阻塞</span></span><br><span class="line">LPUSH k1 1 2 3 <span class="comment"># 客户端2压入数据客户端1取消阻塞</span></span><br><span class="line"></span><br><span class="line"><span class="comment">### set</span></span><br><span class="line">sadd kset 1 1 2 3 4 5 6 <span class="comment"># 向set里加入数据并去重</span></span><br><span class="line">srandmember kset 3 <span class="comment"># 随机取出3个元素，去重</span></span><br><span class="line">srandmember kset -3 <span class="comment"># 随机取出3个元素，可以有重复</span></span><br><span class="line">spop kset <span class="comment"># 弹出一个元素</span></span><br><span class="line">sinter a b <span class="comment"># 取两个集合的交集</span></span><br><span class="line">sunion a b <span class="comment"># 取两个集合的并集</span></span><br><span class="line">sdiff a b <span class="comment"># 取a集合对于b集合的差集</span></span><br><span class="line"></span><br><span class="line"><span class="comment">### Hash</span></span><br><span class="line">HSET sean name zzl</span><br><span class="line">HMSET sean age 18 address bj</span><br><span class="line">hget sean name</span><br><span class="line">hmget sean name age</span><br><span class="line">hkeys sean</span><br></pre></td></tr></table></figure>
+
+<h2 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h2><h3 id="String"><a href="#String" class="headerlink" title="String"></a>String</h3><p>redis的字符串类型是由一种叫做简单动态字符串(SDS)的数据类型来实现</p>
+<ul>
+<li>SDC和C语言字符串的区别：<ul>
+<li>SDS保存了字符串的长度，而C语言不保存，只能遍历找到第一个\0的结束符才能确定字符串的长度</li>
+<li>修改SDS，会检查空间是否足够，不足会先扩展空间，防止缓冲区溢出，C字符串不会检查</li>
+<li>SDS的预分配空间机制，可以减少为字符串重新分配空间的次数</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sdshdr</span> &#123;</span></span><br><span class="line">  <span class="type">int</span> len;       <span class="comment">// buf中已占用空间的长度</span></span><br><span class="line">  <span class="type">int</span> <span class="built_in">free</span>;      <span class="comment">// buf中剩余空间的长度</span></span><br><span class="line">  <span class="type">char</span> buf[];    <span class="comment">// 数据空间</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="List"><a href="#List" class="headerlink" title="List"></a>List</h3><p>双向链表实现</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">list</span> &#123;</span><br><span class="line">    listNode *head;  						<span class="comment">// 表头节点</span></span><br><span class="line">    listNode tail; 							<span class="comment">// 表尾节点</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> len; 						<span class="comment">// 链表所包含的节点数量</span></span><br><span class="line">    <span class="built_in">void</span> (dup) (<span class="type">void</span> ptr); 					<span class="comment">// 节点值赋值函数 这里有问题</span></span><br><span class="line">    <span class="built_in">void</span> (free) (<span class="type">void</span> ptr); 				<span class="comment">// 节点值释放函数</span></span><br><span class="line">    <span class="built_in">int</span> (match) (<span class="type">void</span> *ptr, <span class="type">void</span> *key) 		<span class="comment">// 节点值对比函数</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">listNode</span> &#123;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">listNode</span> * pre;  <span class="comment">// 前置节点</span></span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">listNode</span> * next; <span class="comment">// 后置节点</span></span><br><span class="line">    <span class="type">void</span> * value;           <span class="comment">// 节点的值</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Hash"><a href="#Hash" class="headerlink" title="Hash"></a>Hash</h3><p>哈希表是一个dictht结构体</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">dictht</span> &#123;</span><br><span class="line">  dictEntry ** table;    <span class="comment">// 哈希表数组</span></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">long</span> size;    <span class="comment">// 哈希表大小</span></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">long</span> sizemask <span class="comment">// 哈希表大小掩码，用于计算索引值 总是等于 size - 1</span></span><br><span class="line">  <span class="type">unsigned</span> logn used;    <span class="comment">// 该哈希表已有节点的数量</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">dictEntry</span>&#123;</span><br><span class="line">  <span class="type">void</span> *key;   <span class="comment">// 键</span></span><br><span class="line">  <span class="keyword">union</span> &#123;      <span class="comment">// 不同键对饮的值得类型可能不同，使用union来处理这个问题</span></span><br><span class="line">    <span class="type">void</span> *val;</span><br><span class="line">    uint64_tu64;</span><br><span class="line">    int64_ts64;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">struct</span> <span class="title class_">dictEntry</span> *next;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Set"><a href="#Set" class="headerlink" title="Set"></a>Set</h3><p>无序集合可以用整数集合(intset)或者字典实现</p>
+<h3 id="ZSet"><a href="#ZSet" class="headerlink" title="ZSet"></a>ZSet</h3><ol>
+<li>跳表：有序集合的底层实现之， 除此之外跳表它在 Redis 中没有其他应用。</li>
+<li>整数集合（intset）： 当一个集合只包含整数值元素， 并且这个集合的元素数量不多时， Redis 就会使用整数集合作为集合键的底层实现。</li>
+<li>ziplist(压缩列表)：数据少时使用，占用连续内存，每项元素都是(数据+score)的方式连续存储，按照score从小到大排序。ziplist为了节省内存，每个元素占用的空间可以不同，对于大数据(long long)，就多用一些字节存储，而对于小的数据(short)，就少用一些字节来存储。因此查找的时候需要按顺序遍历。ziplist省内存但是查找效率低。</li>
+</ol>
+<h2 id="Pipeline"><a href="#Pipeline" class="headerlink" title="Pipeline"></a>Pipeline</h2><p>可以将多个操作合并成一次请求，降低通信的成本</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开启socket连接使用redis</span></span><br><span class="line">nc localhost <span class="number">6379</span></span><br><span class="line"><span class="built_in">set</span> k1 v1</span><br><span class="line"><span class="comment"># 批量操作redis</span></span><br><span class="line"><span class="built_in">echo</span> <span class="literal">-e</span> <span class="string">&quot;set k2 2\n incr k2\n get k2&quot;</span> | nc localhost <span class="number">6379</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">setCache</span><span class="params">(List&lt;String&gt; names, String key)</span> &#123;</span><br><span class="line">    <span class="type">Pipeline</span> <span class="variable">pipeline</span> <span class="operator">=</span> redis.pipelined();</span><br><span class="line">    <span class="keyword">for</span> (String name : names) &#123;</span><br><span class="line">        pipeline.zadd(key, name, score);</span><br><span class="line">    &#125;</span><br><span class="line">    pipeline.expire(key, CACHE_EXPIRE_SECONDS);</span><br><span class="line">    pipeline.sync();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Publish-Subscribe"><a href="#Publish-Subscribe" class="headerlink" title="Publish Subscribe"></a>Publish Subscribe</h2><p>在redis中的A端开启消息的发布<code>publish</code></p>
+<p>在redis中的B端使用<code>subscribe</code>可实时监听消息</p>
+<p><strong>服务端</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; publish my hello</span><br><span class="line">(integer) <span class="number">0</span></span><br><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; publish my world</span><br><span class="line">(integer) <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>消费端</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; subscribe my</span><br><span class="line">Reading messages... (press Ctrl<span class="literal">-C</span> to quit)</span><br><span class="line"><span class="number">1</span>) <span class="string">&quot;subscribe&quot;</span></span><br><span class="line"><span class="number">2</span>) <span class="string">&quot;my&quot;</span></span><br><span class="line"><span class="number">3</span>) (integer) <span class="number">1</span></span><br><span class="line"><span class="number">1</span>) <span class="string">&quot;message&quot;</span></span><br><span class="line"><span class="number">2</span>) <span class="string">&quot;my&quot;</span></span><br><span class="line"><span class="number">3</span>) <span class="string">&quot;world&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>使用场景：实时聊天</strong></p>
+<p>客户端A发布消息到redis</p>
+<ol>
+<li><p>客户端B订阅消息，收消息</p>
+</li>
+<li><p>redis zset服务订阅消息，维护近期的热点消息，时间作为分值，消息作为元素，剔除早期的数据</p>
+</li>
+<li><p>数据库服务订阅消息，维护全量消息数据</p>
+</li>
+</ol>
+<p><img src="https://img-blog.csdnimg.cn/20210110094824260.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2 id="Bloom（布隆过滤器）"><a href="#Bloom（布隆过滤器）" class="headerlink" title="Bloom（布隆过滤器）"></a>Bloom（布隆过滤器）</h2><p>布隆过滤器：解决缓存穿透</p>
+<ol>
+<li>将可查询到的数据通过映射函数向布隆过滤器里标记</li>
+<li>如果用户请求的数据你有，就会放行到DB，如果你没有，也有小概率被放行</li>
+<li>可能会误标记：商品3 映射到了商品1和商品2标记的位置</li>
+<li>但是一定概率会大量减少穿透，而且成本低</li>
+<li>数据库增加了元素，也需要向布隆过滤器里增加</li>
+</ol>
+<p><img src="https://img-blog.csdnimg.cn/20210110163932551.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>布隆过滤器的3种实现</p>
+<p><img src="https://img-blog.csdnimg.cn/20210110164709746.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>安装布隆过滤器</p>
+<p><img src="https://img-blog.csdnimg.cn/20210110164739616.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2 id="redis-encoding"><a href="#redis-encoding" class="headerlink" title="redis encoding"></a>redis encoding</h2><p><strong>判断这个key中value的编码</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">object encoding key</span><br></pre></td></tr></table></figure>
+
+<p>二进制安全：redis只取字节流</p>
+<p>如果进行了 incr 操作，那么 redis 会将 value 取出转换成数值类型再进行 incr</p>
+<p><strong>编码集格式化</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli --raw</span><br></pre></td></tr></table></figure>
+
+<h2 id="Sorted-Set"><a href="#Sorted-Set" class="headerlink" title="Sorted Set"></a>Sorted Set</h2><blockquote>
+<p>skip list</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">添加元素到zset</span></span><br><span class="line">zadd kzset 8 apple 2 banana 3 orange</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看zset的元素，带分值</span></span><br><span class="line">zrange kzset 0 -1 WITHSCORES</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">取出分值3-8之间的元素</span></span><br><span class="line">zrangbyscore kzset 3 8</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">取出对应元素的分值</span></span><br><span class="line">zscore kzset apple</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">得到对应元素的排名</span></span><br><span class="line">zrank kzset apple</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">增加对应元素分值+</span> </span><br><span class="line">zincrby kzset 2.5 banana</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">并集 第一个集合权重1 第二个集合权重0.5</span></span><br><span class="line">zunionstore unkey 2 k1 k2 weights 1 0.5</span><br></pre></td></tr></table></figure>
+
+<h2 id="bitmap"><a href="#bitmap" class="headerlink" title="bitmap"></a>bitmap</h2><p>1字节 &#x3D; 8位 即 1字节 &#x3D; 0000 0000</p>
+<p>将k1偏移量为1的位置上设置为1，即 0100 0000</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">setbit k1 1 1</span><br><span class="line">strlen k1 # 长度是1</span><br></pre></td></tr></table></figure>
+
+<p>将k1偏移量为9的位置上设置为1，即 0000 0000 0100 0000</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">setbit k2 9 1</span><br><span class="line">strlen k2 # 长度是2</span><br></pre></td></tr></table></figure>
+
+<p><strong>bitpos</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bitpos key bit start end</span><br></pre></td></tr></table></figure>
+
+<p>从第一个字节中找出1的第一次出现位置</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bitpos k1 1 0 0</span><br><span class="line">(integer) 1</span><br></pre></td></tr></table></figure>
+
+<p>从第二个字节中找出1的第一次出现位置</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bitpos k2 1 1 1</span><br><span class="line">(integer) 9</span><br></pre></td></tr></table></figure>
+
+<p><strong>bitcount</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BITCOUNT key [start] [end]</span><br></pre></td></tr></table></figure>
+
+<p><code>start</code> 和 <code>end</code> 都可以使用负数值：比如 <code>-1</code> 表示最后一个位，而 <code>-2</code> 表示倒数第二个位，以此类推。</p>
+<p>返回前两个字节中1的个数</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bitcount k1 0 1</span><br></pre></td></tr></table></figure>
+
+<p><strong>bitop</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">按位与 有0则0</span></span><br><span class="line">bitop and ka k1 k2</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">按位或 有1则1</span></span><br><span class="line">bitop or ko k1 k2</span><br></pre></td></tr></table></figure>
+
+<p><strong>应用场景</strong></p>
+<ol>
+<li>有用户系统，统计用户登录天数，且窗口随机</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">setbit sean 1 1		# 第1天登录</span><br><span class="line">setbit sean 7 1		# 第7天登录</span><br><span class="line">setbit sean 364 1	# 第364天登录</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看长度，即46个字节即可保存一个用户一年的登录天数</span></span><br><span class="line">strlen sean</span><br><span class="line">(integer) 46</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">反向索引找到最后一次的登录时间</span></span><br><span class="line">bitcount sean -2 -1</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>统计某几天的活跃用户数</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2020-6-18 号用户数1个</span></span><br><span class="line">setbit 20200618 1 1</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2020-6-18 号用户数2个</span></span><br><span class="line">setbit 20200619	1 1</span><br><span class="line">setbit 20200619	7 1</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">按位或运算</span></span><br><span class="line">bitop or destkey 20190618 20190619</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">统计人数</span></span><br><span class="line">bitcount destkey 0 -1</span><br></pre></td></tr></table></figure>
+
+<p>位图可以这样表示：user1登录了一天，user2登录了两天，user3没登录</p>
+<table>
+<thead>
+<tr>
+<th>key</th>
+<th>user1</th>
+<th>user2</th>
+<th>user3</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>20200618</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr>
+<td>20200619</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+</tbody></table>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://rongkezan.github.io/swan-blog">Keith</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://rongkezan.github.io/swan-blog/2022/07/26/Redis/Redis%E5%9F%BA%E7%A1%80/">https://rongkezan.github.io/swan-blog/2022/07/26/Redis/Redis%E5%9F%BA%E7%A1%80/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://rongkezan.github.io/swan-blog" target="_blank">Swan Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/swan-blog/2022/07/26/Redis/Redis%E5%B8%B8%E8%A7%81%E7%BC%93%E5%AD%98%E9%97%AE%E9%A2%98/"><img class="prev-cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="onerror=null;src='/swan-blog/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Redis常见缓存问题</div></div></a></div><div class="next-post pull-right"><a href="/swan-blog/2022/07/26/Redis/Redis%E6%8C%81%E4%B9%85%E5%8C%96/"><img class="next-cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="onerror=null;src='/swan-blog/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Redis持久化</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://bu.dusays.com/2022/05/02/626f92e193879.jpg" onerror="this.onerror=null;this.src='/swan-blog/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Keith</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/swan-blog/archives/"><div class="headline">文章</div><div class="length-num">136</div></a><a href="/swan-blog/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/swan-blog/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/rongkezan"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/rongkezan" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="/swan-blog/rongkezan@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="toc-number">1.</span> <span class="toc-text">常用命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="toc-number">2.</span> <span class="toc-text">数据结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#String"><span class="toc-number">2.1.</span> <span class="toc-text">String</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#List"><span class="toc-number">2.2.</span> <span class="toc-text">List</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Hash"><span class="toc-number">2.3.</span> <span class="toc-text">Hash</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Set"><span class="toc-number">2.4.</span> <span class="toc-text">Set</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ZSet"><span class="toc-number">2.5.</span> <span class="toc-text">ZSet</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pipeline"><span class="toc-number">3.</span> <span class="toc-text">Pipeline</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Publish-Subscribe"><span class="toc-number">4.</span> <span class="toc-text">Publish Subscribe</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Bloom%EF%BC%88%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8%EF%BC%89"><span class="toc-number">5.</span> <span class="toc-text">Bloom（布隆过滤器）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#redis-encoding"><span class="toc-number">6.</span> <span class="toc-text">redis encoding</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Sorted-Set"><span class="toc-number">7.</span> <span class="toc-text">Sorted Set</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#bitmap"><span class="toc-number">8.</span> <span class="toc-text">bitmap</span></a></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2018 - 2022 By Keith</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><p><a target="_blank" href="https://hexo.io/"><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&logo=hexo" title="博客框架为Hexo"></a>&nbsp;<a target="_blank" href="https://butterfly.js.org/"><img src="https://img.shields.io/badge/Theme-Butterfly-6513df?style=flat&logo=bitdefender" title="主题采用butterfly"></a>&nbsp;<a target="_blank" href="https://www.jsdelivr.com/"><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&logo=jsDelivr" title="本站使用JsDelivr为静态资源提供CDN加速"></a> &nbsp;<a target="_blank" href="https://vercel.com/ "><img src="https://img.shields.io/badge/Hosted-Vervel-brightgreen?style=flat&logo=Vercel" title="本站采用双线部署，默认线路托管于Vercel"></a>&nbsp;<a target="_blank" href="https://vercel.com/ "><img src="https://img.shields.io/badge/Hosted-Coding-0cedbe?style=flat&logo=Codio" title="本站采用双线部署，联通线路托管于Coding"></a>&nbsp;<a target="_blank" href="https://github.com/"><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&logo=GitHub" title="本站项目由Gtihub托管"></a>&nbsp;<a target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&logo=Claris" title="本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可"></a></p></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/swan-blog/js/utils.js"></script><script src="/swan-blog/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="/swan-blog/js/search/local-search.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
