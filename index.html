@@ -48,7 +48,7 @@
   isHome: true,
   isHighlightShrink: false,
   isToc: false,
-  postUpdate: '2022-11-21 11:21:52'
+  postUpdate: '2023-04-26 14:01:06'
 }</script><noscript><style type="text/css">
   #nav {
     opacity: 1
@@ -137,138 +137,114 @@
       }
     }
     detectApple()
-    })(window)</script><meta name="generator" content="Hexo 6.2.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://bu.dusays.com/2022/05/02/626f92e193879.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/swan-blog/archives/"><div class="headline">文章</div><div class="length-num">136</div></a><a href="/swan-blog/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/swan-blog/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/swan-blog/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/swan-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/swan-blog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/swan-blog/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog_name"><a id="site-name" href="/swan-blog/">Swan Blog</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/swan-blog/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/swan-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/swan-blog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/swan-blog/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav></header><main class="layout" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/swan-blog/2022/11/18/Mysql/Mysql%20%E5%8E%8B%E7%BC%A9%E5%8C%85%E5%AE%89%E8%A3%85/" title="Mysql 压缩包安装">Mysql 压缩包安装</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2022-11-18T08:03:44.619Z" title="发表于 2022-11-18 16:03:44">2022-11-18</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/swan-blog/categories/Mysql/">Mysql</a></span></div><div class="content">下载官网压缩包下载地址
-https://downloads.mysql.com/archives/community/
-下载mysql依赖1234# 查询是否有libaiorpm -qa | grep libaio# 下载libaioyum -y install libaio
-
-解压并移动12tar -xzvf mysql-5.7.39-el7-x86_64.tar.gzmv mysql-5.7.39-el7-x86_64.tar.gz /usr/local/mysql
-
-创建mysql用户组123groupadd mysql  useradd -g mysql mysqlchown -R mysql.mysql /usr/local/mysql/
-
-初始化mysql在 bin 目录下
-1./mysqld --initialize --user=mysql --basedir=/usr/local/mysql/ --datadir=/usr/local/mysql/data
-
-将mysql服务脚本放到系统服务中1cp -a support-files/mysql.server /etc ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/swan-blog/2022/11/18/Mysql/Mysql%20%E5%A4%87%E4%BB%BD/" title="Mysql 备份">Mysql 备份</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2022-11-18T02:17:17.389Z" title="发表于 2022-11-18 10:17:17">2022-11-18</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/swan-blog/categories/Mysql/">Mysql</a></span></div><div class="content">备份数据备份全部数据库
-1mysqldump -uroot -p&#x27;pwd&#x27; -A  &gt; dump.sql
-
-备份单个数据库
-1mysqldump -uroot -p&#x27;pwd&#x27; [db_name] &gt; dump.sql
-
-备份单个表
-1mysqldump -uroot -p&#x27;pwd&#x27; [db_name] [table] &gt; dump.sql
-
-还原数据方法一
-1mysql&gt; source /disk/backup/dump.sql
-
-方法二
-1mysql -uroot -p&#x27;pwd&#x27; &lt; /disk/backup/dump.sql
-
-</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/swan-blog/2022/11/08/Kubernetes/Rancher%20%E9%83%A8%E7%BD%B2%20Kubernetes/" title="Rancher 部署 Kubernetes">Rancher 部署 Kubernetes</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2022-11-08T09:00:44.677Z" title="发表于 2022-11-08 17:00:44">2022-11-08</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/swan-blog/categories/Kubernetes/">Kubernetes</a></span></div><div class="content">Docker 安装每一台主机都安装 Docker，参考 Docker 安装
-Rancher 说明Rancher 是 K8S 多集群管理平台，类似的管理平台还有 KubeSphere、Kuboard 等
-Rancher 安装1docker pull rancher/rancher:v2.5.15
-
-1mkdir -p /opt/data/rancher_data
-
-123456docker run -d --privileged \-p 80:80 -p 443:443 \-v /opt/data/rancher_data:/var/lib/rancher \--restart=always \--name rancher-2.5.15 \rancher/rancher:v2.5.15
-
-Rancher 使用Rancher 控制台设置密码，URL后登录到控制台，将语言改为中文
-
-通过 Rancher 创建 K8S 集群添加集群 -&gt; 自定义集群
+    })(window)</script><meta name="generator" content="Hexo 6.2.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://bu.dusays.com/2022/05/02/626f92e193879.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/swan-blog/archives/"><div class="headline">文章</div><div class="length-num">137</div></a><a href="/swan-blog/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/swan-blog/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/swan-blog/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/swan-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/swan-blog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/swan-blog/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog_name"><a id="site-name" href="/swan-blog/">Swan Blog</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/swan-blog/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/swan-blog/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/swan-blog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/swan-blog/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav></header><main class="layout" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/swan-blog/2023/04/25/%E8%AE%BE%E8%AE%A1%E6%80%9D%E6%83%B3/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E8%AE%BE%E8%AE%A1/" title="分布式事务">分布式事务</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-04-25T06:22:23.116Z" title="发表于 2023-04-25 14:22:23">2023-04-25</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/swan-blog/categories/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/">系统设计</a></span></div><div class="content">2PC2PC 流程协调者询问每个服务是否可以提交，任何一个服务拒绝，事务管理器全部回滚。
+阶段1：投票，协调者让每个服务都执行SQL，但是不提交。
+阶段2：每个服务都返回OK以后，协调者统一提交
+2PC 问题协调者与服务交互超时：协调者有超时机制，如果在一定的时间内未收到客户端的消息默认失败，全部回滚
+如果某个服务提交失败了，只能进行人工补偿（定时任务）
+同步阻塞，单点故障
+2PC 实现方式Spring + JTA（XA 协议的 Java 实现）
+2PC 扩展LCN：占用链接资源
+Seata AT：不占用链接资源，直接落库提交，做好的镜像记录，回滚的时候回滚镜像记录
+2PC 流程图
+3PC
+在两阶段上增加了：客户端超时机制和预提交机制，实际工作中不会使用
 
 
-输入集群名称，其他配置默认，点击页面最下方的 下一步  完成集群创建
+CanCommit：询问
+preCommit：预提交
+doCommit：提交
 
-添加 Master、Worker 节点可以通过 集群 -&gt ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/swan-blog/2022/11/01/Docker/Docker%20%E5%AE%89%E8%A3%85/" title="Docker 安装">Docker 安装</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2022-11-01T06:29:39.825Z" title="发表于 2022-11-01 14:29:39">2022-11-01</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/swan-blog/categories/Docker/">Docker</a></span></div><div class="content">Docker版本Docker 分为 CE 和 EE 两大版本。
-CE 即社区版（免费，支持周期 7 个月）
-EE 即企业版，强调安全，付费使用，支持周期 24 个月
-Docker CE 分为 stable test 和 nightly 三个更新频道。
-官方网站上有各种环境下的安装指南，这里主要介绍Docker CE 在 CentOS上的安装。
-卸载旧版本的Docker1234567891011yum remove -y docker \                  docker-client \                  docker-client-latest \                  docker-common \                  docker-latest \                  docker-latest-logrotate \                  docker-logrotate \                  docker-selinux \                  docker-eng ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/swan-blog/2022/10/24/%E7%BA%BF%E4%B8%8A%E9%97%AE%E9%A2%98/Nginx%E4%BB%A3%E7%90%86%E7%BC%93%E5%AD%98%E5%8C%BA/" title="Nginx代理缓存区">Nginx代理缓存区</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2022-10-24T02:43:56.951Z" title="发表于 2022-10-24 10:43:56">2022-10-24</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/swan-blog/categories/%E7%BA%BF%E4%B8%8A%E9%97%AE%E9%A2%98/">线上问题</a></span></div><div class="content">问题描述浏览器出现
-1net::ERR_CONTENT_LENGTH_MISMATCH 206 (Partial Content)
+2PC 问题只有协调者有超时机制，参与者没有。
+如果协调者挂了，那么参与者将会一直等待，3PC是为了解决这个问题而出现的。
+3PC解决该问题
+协调者和参与者都有超时机制
 
-原因是Nginx代理之后会有相应的代理缓存区，缓存区默认只有几十K，某些版本的nginx默认设置中没有相关处理，导致部分文件代理是会出现加载不全的现象，其实不仅仅是JS文件。只是因为框架的JS文件略大，所以经常出现类似问题。
-解决方案在Nginx配置中，http块下加上如下配置
-123proxy_buffer_size 128k;proxy_buffers   32 128k;proxy_busy_buffers_size 128k;
+如果第一阶段参与者没有反馈，那么协调者 发送回滚指令
+如果第一阶段协调者没有返回 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/swan-blog/2023/04/25/%E5%BC%80%E5%8F%91%E9%9B%86/Seata/" title="Seata">Seata</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-04-25T02:09:38.844Z" title="发表于 2023-04-25 10:09:38">2023-04-25</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/swan-blog/categories/%E5%BC%80%E5%8F%91%E9%9B%86/">开发集</a></span></div><div class="content">Seata 安装下载seata v1.6.1https://github.com/seata/seata/releases/tag/v1.6.1
+修改 application.yml 配置解压后进入 .&#x2F;conf 目录，修改配置文件如下（ 使用db模式 ）：
+1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253server:  port: 7091spring:  application:    name: seata-server  # seata-server服务名logging:  config: classpath:logback-spring.xml  file:    path: $&#123;user.home&#125;/seata/runlogs  # 指定日志路径  extend:    logstash-appender:      destination: 127.0.0.1:4560    kafka-appe ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/swan-blog/2023/04/24/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/RocketMQ%20%E5%AE%89%E8%A3%85%E8%BF%90%E8%A1%8C/" title="RocketMQ 安装运行">RocketMQ 安装运行</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-04-24T01:11:30.413Z" title="发表于 2023-04-24 09:11:30">2023-04-24</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/swan-blog/categories/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/">消息队列</a></span></div><div class="content">安装Server下载最新的 binary release，修改配置（原因是默认配置消耗太多内存）
+12345vi runserver.shJAVA_OPT=&quot;$&#123;JAVA_OPT&#125; -server -Xms1g -Xmx1g -Xmn256m -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=320m&quot;vi runbroker.shJAVA_OPT=&quot;$&#123;JAVA_OPT&#125; -server -Xms512m -Xmx512m -Xmn128m&quot;
 
-重启nginx即可
-</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/swan-blog/2022/10/24/Kubernetes/Kubernetes%20%E6%93%8D%E4%BD%9C/" title="Kubernetes 操作">Kubernetes 操作</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2022-10-24T02:43:56.949Z" title="发表于 2022-10-24 10:43:56">2022-10-24</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/swan-blog/categories/Kubernetes/">Kubernetes</a></span></div><div class="content">Kubernetes 特性
-服务发现和负载均衡Kubernetes 可以使用 DNS 名称或自己的 IP 地址公开容器，如果进入容器的流量很大， Kubernetes 可以负载均衡并分配网络流量，从而使部署稳定。
-存储编排Kubernetes 允许你自动挂载你选择的存储系统，例如本地存储、公共云提供商等。
-自动部署和回滚你可以使用 Kubernetes 描述已部署容器的所需状态，它可以以受控的速率将实际状态 更改为期望状态。例如，你可以自动化 Kubernetes 来为你的部署创建新容器， 删除现有容器并将它们的所有资源用于新容器。
-自动完成装箱计算Kubernetes 允许你指定每个容器所需 CPU 和内存（RAM）。 当容器指定了资源请求时，Kubernetes 可以做出更好的决策来管理容器的资源。
-自我修复Kubernetes 重新启动失败的容器、替换容器、杀死不响应用户定义的 运行状况检查的容器，并且在准备好服务之前不将其通告给客户端。
-密钥与配置管理Kubernetes 允许你存储和管理敏感信息，例如密码、OAuth 令牌和 ssh 密钥。 你可以在不重建容器镜像的情况下部署 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/swan-blog/2022/10/24/Linux/Linux%20%E8%99%9A%E6%8B%9F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" title="Linux 虚拟文件系统">Linux 虚拟文件系统</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2022-10-24T02:43:56.949Z" title="发表于 2022-10-24 10:43:56">2022-10-24</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/swan-blog/categories/Linux/">Linux</a></span></div><div class="content">观察文件分区命令 df -h
-12345678910[root@master ~]# df -hFilesystem      Size  Used Avail Use% Mounted ondevtmpfs        3.7G     0  3.7G   0% /devtmpfs           3.7G     0  3.7G   0% /dev/shmtmpfs           3.7G  2.5M  3.7G   1% /runtmpfs           3.7G     0  3.7G   0% /sys/fs/cgroup/dev/vda1        40G   37G  1.1G  98% /tmpfs           3.7G   12K  3.7G   1% /var/lib/kubelet/pods/026a6dff-d5d0-451b-a5e9-ebd16a0952ea/volumes/kubernetes.io~secret/kube-proxy-token-297hwtmpfs           3.7G   12K  3.7G    ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/swan-blog/2022/10/24/Kubernetes/Kubernetes%20%E5%AE%89%E8%A3%85/" title="Kubernetes 安装">Kubernetes 安装</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2022-10-24T02:43:56.948Z" title="发表于 2022-10-24 10:43:56">2022-10-24</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/swan-blog/categories/Kubernetes/">Kubernetes</a></span></div><div class="content">Docker配置yum源12345yum install -y yum-utilsyum-config-manager \--add-repo \http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+Linux 启动&#x2F;关闭 RocketMQ
+123456789# Start Name Servernohup sh mqnamesrv &amp;# Start Brokernohup sh mqbroker -n localhost:9876 &amp;# Shutdown Name Serversh mqshutdown namesrv# Shutdown Brokersh mqshutdown broker
 
-安装Docker12# 安装docker社区版，docker命令行，docker容器化运行环境yum install -y docker-ce docker-ce-cli containerd.io
+ ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/swan-blog/2023/04/23/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/RocketMQ%20%E6%95%B4%E5%90%88SpringBoot/" title="RocketMQ 整合 SpringBoot">RocketMQ 整合 SpringBoot</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-04-23T06:48:37.210Z" title="发表于 2023-04-23 14:48:37">2023-04-23</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/swan-blog/categories/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/">消息队列</a></span></div><div class="content">依赖引入
+12345678910111213&lt;!-- Spring Boot Web --&gt;&lt;dependency&gt;    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;    &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;    &lt;version&gt;2.4.2&lt;/version&gt;&lt;/dependency&gt;&lt;!-- RocketMQ --&gt;&lt;dependency&gt;    &lt;groupId&gt;org.apache.rocketmq&lt;/groupId&gt;    &lt;artifactId&gt;rocketmq-spring-boot-starter&lt;/artifactId&gt;    &lt;version&gt;2.2.2&lt;/version&gt;&lt;/dependency&gt;
 
-启动并开机启动Docker1systemctl enable docker --now
+配置文件
+123456789101112131 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/swan-blog/2023/04/23/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/RocketMQ%20%E9%A2%86%E5%9F%9F%E6%A8%A1%E5%9E%8B/" title="RocketMQ 领域模型">RocketMQ 领域模型</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-04-23T06:09:07.478Z" title="发表于 2023-04-23 14:09:07">2023-04-23</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/swan-blog/categories/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/">消息队列</a></span></div><div class="content">
+如上图所示，Apache RocketMQ 中消息的生命周期主要分为消息生产、消息存储、消息消费这三部分。
+生产者生产消息并发送至 Apache RocketMQ 服务端，消息被存储在服务端的主题中，消费者通过订阅主题消费消息。
+消息生产
+生产者（Producer）：
+Apache RocketMQ 中用于产生消息的运行实体，一般集成于业务调用链路的上游。生产者是轻量级匿名无身份的。
+消息存储
 
-配置加速registry-mirrors配置为自己的阿里云容器镜像服务的镜像加速地址
-1234567891011121314mkdir -p /etc/dockertee /etc/docker/daemon.json &lt;&lt;-&#x27;EOF&#x27;&#123;  &quot;registry-mirrors&quot;: [&quot;https://7yti41gr.mirror.aliyuncs.com& ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/swan-blog/2022/10/24/Java/Java%20%E9%9B%86%E5%90%88/" title="Java 集合">Java 集合</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2022-10-24T02:43:56.947Z" title="发表于 2022-10-24 10:43:56">2022-10-24</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/swan-blog/categories/Java/">Java</a></span></div><div class="content">CollectionList
-ArrayList、LinkedList、Vector、Stack、CopyOnWriteArrayList
+主题（Topic）：
+Apache RocketMQ 消息传输和存储的分组容器，主题内部由多个队列组成，消息的存储和水平扩展实际是通过主题内的队列实现的。
 
+队列（MessageQueue）：
+Apache RocketMQ 消息传输和存储的实际单元容器，类比于其他消息队列中的分区。 Apache RocketMQ 通过流式特性的无限队列结构来存储消息，消息在队列内具备顺序性存储特征。
 
-
-
-名称
-特点
-get(index)
-add(E)
-add(index, E)
-remove(E)
+消息（Message）：
+Apache RocketMQ 的最小传输单元。消息具备不可变性，在初始化发送和完成存储后即不可变。
 
 
+消息消费
 
-ArrayList
-高效，线程不安全
-O(1)
-O(1)
-O(n)
-O(n)
+消费者分组（ConsumerGroup）：
+Apache Ro ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/swan-blog/2023/04/23/%E8%AE%BE%E8%AE%A1%E6%80%9D%E6%83%B3/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/%E6%94%AF%E4%BB%98%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/" title="支付系统设计">支付系统设计</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-04-23T01:13:45.734Z" title="发表于 2023-04-23 09:13:45">2023-04-23</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/swan-blog/categories/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/">系统设计</a></span></div><div class="content">热点账户余额变动由于Mysql更新数据有行锁的存在，当修改并发很高的时候，数据库很容易出现性能瓶颈
+解决方案：采用同步插入流水，异步更新余额的方式，也就是说，可以通过定时任务定时轮询流水表中未进行余额计算的记录，将其发生额进行累加后再异步更新到账户的余额表之中。
+记账死锁问题A账户和B账户双方转账请求并发，账户系统对每个转账请求都会更新A、B余额，这两个更新需要在一个事务里，正常流程
+线程1先更新A，再更新B，线程2先更新B，再更新A
+线程1更新完A后会等待B的锁，不提交事务
+线程2更新完B后会等待A的锁，不提交事务
+这样两个线程互相等待锁，造成死锁。
+解决方案：更新时根据账户ID进行一个排序，总是保证A先更新。
+</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/swan-blog/2023/04/21/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/RocketMQ%20%E4%BA%8B%E5%8A%A1%E6%B6%88%E6%81%AF/" title="RocketMQ 事务消息">RocketMQ 事务消息</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-04-21T08:47:23.128Z" title="发表于 2023-04-21 16:47:23">2023-04-21</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/swan-blog/categories/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/">消息队列</a></span></div><div class="content">指Producer端消息发送事件和本地事务事件，同时成功或同时失败
+正常事务发送与提交阶段
+生产者发送一个半消息给broker(半消息是指的暂时不能消费的消息)
+服务端响应
+开始执行本地事务
+根据本地事务的执行情况执行Commit或者Rollback
+
+事务信息的补偿流程
+如果broker长时间没有收到本地事务的执行状态,会向生产者发起一个确认回查的操作请求
+生产者收到确认会查请求后,检查本地事务的执行状态
+根据检查后的结果执行Commit或者Rollback操作，补偿阶段主要是用于解决生产者在发送Commit或者Rollback操作时发生超时或失败的情况
 
 
-LinkedList
-删除更高效，查询低效
-O(n)
-O(1)
-O(n)
-O(1)
+事务流程关键事务消息在一阶段对用户不可见
+事务消息相对普通消息最大的特点就是一阶段发送的消息对用户是不可见的,也就是说消费者不能直接消费.这里RocketMQ实现方法是原消息的主题与消息消费队列,然后把主题改成RMQ_SYS_TRANS_HALF_TOPIC.这样由于消费者没有订阅这个主题,所以不会消费.
+如何处理第二阶段的发送消息?
+在本地事务执行完成后回向Broker发送Commit或者Rollback操作,此时如果在发送消 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/swan-blog/2023/04/21/Redis/10.Redis%20%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8/" title="Redis 布隆过滤器">Redis 布隆过滤器</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-04-21T07:54:49.708Z" title="发表于 2023-04-21 15:54:49">2023-04-21</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/swan-blog/categories/Redis/">Redis</a></span></div><div class="content">介绍布隆过滤器采用一个很长的二进制数组，通过一系列的Hash函数来确定该数据是否存在
+使用场景
+防止缓存穿透
+数据去重
+过滤垃圾信息
 
+原理布隆过滤器本质上是一个二进制数组，元素的值不是1就是0. 当我们存一个商品id为10的商品，假设我们经过三次哈希，存的数组下标为1，3，7，就将这三个下标的元素改为1.这样每次访问redis之前，先访问布隆过滤器。查询id为10的商品的时候，经过布隆过滤器的哈希算法，获取到该商品对应的下标是1，3，7。那么，如果这三个数组的下标对应的元素都为1 则表示存在该商品，放行这次请求。如果有一个为0，则不存在该商品。
+布隆过滤器判断存在不一定真的存在，但是，判断不存在则一定不存在。
+针对布隆过滤器的一些误判，我们可以增加二进制数组位数或者增加Hash次数来解决。
+使用引入Guava依赖
+12345&lt;dependency&gt;    &lt;groupId&gt;com.google.guava&lt;/groupId&gt;    &lt;artifactId&gt;guava&lt;/artifactId&gt;    &lt;version&g ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/swan-blog/2023/03/06/Linux/Linux%20%E5%AE%89%E8%A3%85%20Minio/" title="Linux 安装 minio">Linux 安装 minio</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-03-06T06:29:42.807Z" title="发表于 2023-03-06 14:29:42">2023-03-06</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/swan-blog/categories/Linux/">Linux</a></span></div><div class="content">获取Minio12wget https://dl.min.io/server/minio/release/linux-amd64/miniochmod +x minio
 
-Vector
-低效，线程安全
-O(1)
-O(1)
-O(n)
-O(n)
+直接启动Minio1MINIO_ROOT_USER=admin MINIO_ROOT_PASSWORD=password ./minio server /mnt/data --console-address &quot;:9001&quot;
 
+将Minio设置成服务启动1234# 进入system目录cd /etc/systemd/system/# 创建 minio.service 文件touch minio.service
 
-ArrayList
-底层是数组
-默认装Object
-初始为10，(Jdk8之后默认添加数据的时候才开始给默认长度)。
-每次扩容是原长度的一半（取整）：第一次扩到15，第二次22
-扩容方式：Arrays.copyOf，默认把原数组复制到新数组
-不是线程安全的
+minio.service 文件内容
+1234567891011121314[Unit]Description=Minio Service [Service]Environment=&quot;MINIO_ROOT_USER=admin&quot;Environment=&quot;MINIO_ROOT_PASSWORD=minio123456&quot;ExecStart=/data/mi ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/swan-blog/2023/03/06/Linux/Linux%20%E5%AE%89%E8%A3%85%20Redis/" title="Linux 安装 Redis">Linux 安装 Redis</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-03-06T06:23:43.492Z" title="发表于 2023-03-06 14:23:43">2023-03-06</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/swan-blog/categories/Linux/">Linux</a></span></div><div class="content">安装1234567# 解压tar -zxvf redis-7.0.5.tar.gz# 执行编译安装cd redis-7.0.5make &amp;&amp; make install# 默认安装路径在 /usr/local/bin 下cd /usr/local/bin
 
-LinkedList
-底层是双向链表
-链表删除和增加快，查询和修改慢
-实现了Queue接口，所以还提供了offer(), peek(), poll()等方法
+启动命令123456# redis 服务端启动redis-server# redis 客户端启动redis-cli# redis 哨兵启动redis-sentinel
 
-CopyOnWriteArrayList写时加锁，读时不加锁，复制一个新的数组，把新数 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/swan-blog/2022/10/24/Kubernetes/Kubernetes%20%E5%AD%98%E5%82%A8%E6%8A%BD%E8%B1%A1/" title="Kubernetes 存储抽象">Kubernetes 存储抽象</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2022-10-24T02:43:56.947Z" title="发表于 2022-10-24 10:43:56">2022-10-24</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/swan-blog/categories/Kubernetes/">Kubernetes</a></span></div><div class="content">NFS所有节点安装nfs1yum install -y nfs-utils
-
-主节点配置12345678910# nfs主节点echo &quot;/nfs/data/ *(insecure,rw,sync,no_root_squash)&quot; &gt; /etc/exportsmkdir -p /nfs/datasystemctl enable rpcbind --nowsystemctl enable nfs-server --now# 配置生效exportfs -r# 查看nfs配置exportfs
-
-从节点配置1234567# 检查主节点有哪些目录可以挂载showmount -e 172.23.184.235# 挂载数据目录mkdir -p /nfs/datamount -t nfs 172.23.184.235:/nfs/data /nfs/data# 写入一个测试文件echo &quot;hello nfs server&quot; &gt; /nfs/data/test.txt
-
-原生方式挂载1234567891011121314151617181920212223 ...</div></div></div><nav id="pagination"><div class="pagination"><span class="page-number current">1</span><a class="page-number" href="/swan-blog/page/2/#content-inner">2</a><span class="space">&hellip;</span><a class="page-number" href="/swan-blog/page/14/#content-inner">14</a><a class="extend next" rel="next" href="/swan-blog/page/2/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://bu.dusays.com/2022/05/02/626f92e193879.jpg" onerror="this.onerror=null;this.src='/swan-blog/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Keith</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/swan-blog/archives/"><div class="headline">文章</div><div class="length-num">136</div></a><a href="/swan-blog/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/swan-blog/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/rongkezan"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/rongkezan" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="/swan-blog/rongkezan@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="sticky_layout"><div class="card-widget card-categories"><div class="item-headline">
+</div></div></div><nav id="pagination"><div class="pagination"><span class="page-number current">1</span><a class="page-number" href="/swan-blog/page/2/#content-inner">2</a><span class="space">&hellip;</span><a class="page-number" href="/swan-blog/page/14/#content-inner">14</a><a class="extend next" rel="next" href="/swan-blog/page/2/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://bu.dusays.com/2022/05/02/626f92e193879.jpg" onerror="this.onerror=null;this.src='/swan-blog/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Keith</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/swan-blog/archives/"><div class="headline">文章</div><div class="length-num">137</div></a><a href="/swan-blog/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/swan-blog/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/rongkezan"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/rongkezan" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="/swan-blog/rongkezan@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="sticky_layout"><div class="card-widget card-categories"><div class="item-headline">
             <i class="fas fa-folder-open"></i>
             <span>分类</span>
             <a class="card-more-btn" href="/swan-blog/categories/" title="查看更多">
     <i class="fas fa-angle-right"></i></a>
             </div>
             <ul class="card-category-list" id="aside-cat-list">
-            <li class="card-category-list-item "><a class="card-category-list-link" href="/swan-blog/categories/Docker/"><span class="card-category-list-name">Docker</span><span class="card-category-list-count">8</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/swan-blog/categories/Java/"><span class="card-category-list-name">Java</span><span class="card-category-list-count">9</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/swan-blog/categories/Kubernetes/"><span class="card-category-list-name">Kubernetes</span><span class="card-category-list-count">7</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/swan-blog/categories/Linux/"><span class="card-category-list-name">Linux</span><span class="card-category-list-count">7</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/swan-blog/categories/Mysql/"><span class="card-category-list-name">Mysql</span><span class="card-category-list-count">13</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/swan-blog/categories/Python/"><span class="card-category-list-name">Python</span><span class="card-category-list-count">2</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/swan-blog/categories/Redis/"><span class="card-category-list-name">Redis</span><span class="card-category-list-count">10</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/swan-blog/categories/Spring/"><span class="card-category-list-name">Spring</span><span class="card-category-list-count">19</span></a></li>
-            </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/swan-blog/tags/Kubernetes/" style="font-size: 1.4em; color: #99a5b6">Kubernetes</a> <a href="/swan-blog/tags/MQ/" style="font-size: 1.1em; color: #999">MQ</a> <a href="/swan-blog/tags/Rancher/" style="font-size: 1.1em; color: #999">Rancher</a> <a href="/swan-blog/tags/Spring-Cloud/" style="font-size: 1.5em; color: #99a9bf">Spring Cloud</a> <a href="/swan-blog/tags/%E4%B8%AD%E9%97%B4%E4%BB%B6/" style="font-size: 1.2em; color: #999da3">中间件</a> <a href="/swan-blog/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" style="font-size: 1.3em; color: #99a1ac">分布式</a></div></div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站资讯</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">136</div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总访问量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2022-11-21T03:21:52.002Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2018 - 2022 By Keith</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><p><a target="_blank" href="https://hexo.io/"><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&logo=hexo" title="博客框架为Hexo"></a>&nbsp;<a target="_blank" href="https://butterfly.js.org/"><img src="https://img.shields.io/badge/Theme-Butterfly-6513df?style=flat&logo=bitdefender" title="主题采用butterfly"></a>&nbsp;<a target="_blank" href="https://www.jsdelivr.com/"><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&logo=jsDelivr" title="本站使用JsDelivr为静态资源提供CDN加速"></a> &nbsp;<a target="_blank" href="https://vercel.com/ "><img src="https://img.shields.io/badge/Hosted-Vervel-brightgreen?style=flat&logo=Vercel" title="本站采用双线部署，默认线路托管于Vercel"></a>&nbsp;<a target="_blank" href="https://vercel.com/ "><img src="https://img.shields.io/badge/Hosted-Coding-0cedbe?style=flat&logo=Codio" title="本站采用双线部署，联通线路托管于Coding"></a>&nbsp;<a target="_blank" href="https://github.com/"><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&logo=GitHub" title="本站项目由Gtihub托管"></a>&nbsp;<a target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&logo=Claris" title="本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可"></a></p></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/swan-blog/js/utils.js"></script><script src="/swan-blog/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="/swan-blog/js/search/local-search.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/swan-blog/categories/Docker/"><span class="card-category-list-name">Docker</span><span class="card-category-list-count">8</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/swan-blog/categories/Java/"><span class="card-category-list-name">Java</span><span class="card-category-list-count">5</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/swan-blog/categories/Kubernetes/"><span class="card-category-list-name">Kubernetes</span><span class="card-category-list-count">7</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/swan-blog/categories/Linux/"><span class="card-category-list-name">Linux</span><span class="card-category-list-count">10</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/swan-blog/categories/Mysql/"><span class="card-category-list-name">Mysql</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/swan-blog/categories/Python/"><span class="card-category-list-name">Python</span><span class="card-category-list-count">2</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/swan-blog/categories/Redis/"><span class="card-category-list-name">Redis</span><span class="card-category-list-count">10</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/swan-blog/categories/Spring/"><span class="card-category-list-name">Spring</span><span class="card-category-list-count">19</span></a></li>
+            </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/swan-blog/tags/Kubernetes/" style="font-size: 1.3em; color: #99a1ac">Kubernetes</a> <a href="/swan-blog/tags/MQ/" style="font-size: 1.1em; color: #999">MQ</a> <a href="/swan-blog/tags/Rancher/" style="font-size: 1.1em; color: #999">Rancher</a> <a href="/swan-blog/tags/Spring-Cloud/" style="font-size: 1.5em; color: #99a9bf">Spring Cloud</a></div></div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站资讯</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">137</div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总访问量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2023-04-26T06:01:05.454Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2018 - 2023 By Keith</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><p><a target="_blank" href="https://hexo.io/"><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&logo=hexo" title="博客框架为Hexo"></a>&nbsp;<a target="_blank" href="https://butterfly.js.org/"><img src="https://img.shields.io/badge/Theme-Butterfly-6513df?style=flat&logo=bitdefender" title="主题采用butterfly"></a>&nbsp;<a target="_blank" href="https://www.jsdelivr.com/"><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&logo=jsDelivr" title="本站使用JsDelivr为静态资源提供CDN加速"></a> &nbsp;<a target="_blank" href="https://vercel.com/ "><img src="https://img.shields.io/badge/Hosted-Vervel-brightgreen?style=flat&logo=Vercel" title="本站采用双线部署，默认线路托管于Vercel"></a>&nbsp;<a target="_blank" href="https://vercel.com/ "><img src="https://img.shields.io/badge/Hosted-Coding-0cedbe?style=flat&logo=Codio" title="本站采用双线部署，联通线路托管于Coding"></a>&nbsp;<a target="_blank" href="https://github.com/"><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&logo=GitHub" title="本站项目由Gtihub托管"></a>&nbsp;<a target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&logo=Claris" title="本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可"></a></p></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/swan-blog/js/utils.js"></script><script src="/swan-blog/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="/swan-blog/js/search/local-search.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
