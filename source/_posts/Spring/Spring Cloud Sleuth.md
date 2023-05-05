@@ -105,6 +105,7 @@ pom
 <dependency>
     <groupId>org.springframework.cloud</groupId>
     <artifactId>spring-cloud-starter-zipkin</artifactId>
+    <version>2.2.8.RELEASE</version>
 </dependency>
 ```
 
@@ -131,3 +132,7 @@ java -jar zipkin.jar
 访问地址：http://localhost:9411/
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210208165821768.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
+可以通过某个traceID追踪整个调用链路
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/97d2da0e5cbd4655a1f428f6ef7aff99.png)
