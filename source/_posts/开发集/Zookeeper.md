@@ -2,7 +2,7 @@
 title: Zookeeper
 date: {{ date }}
 categories:
-- 中间件
+- 开发集
 ---
 
 ## 基本概念

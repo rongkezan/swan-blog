@@ -2,7 +2,7 @@
 title: Maven
 date: {{ date }}
 categories:
-- 工具
+- 开发集
 ---
 
 ## Maven 加载顺序

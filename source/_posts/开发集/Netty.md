@@ -2,7 +2,7 @@
 title: Netty
 date: {{ date }}
 categories:
-- Java
+- 开发集
 ---
 
 ## Netty简介

@@ -2,9 +2,7 @@
 title: Seata
 date: {{ date }}
 categories:
-- 分布式
-tags:
-- 分布式事务
+- 开发集
 ---
 
 ## Seata 安装

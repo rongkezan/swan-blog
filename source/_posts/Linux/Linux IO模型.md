@@ -1,8 +1,8 @@
 ---
-title: IO模型
+title: Linux IO模型
 date: {{ date }}
 categories:
-- Java
+- Linux
 ---
 
 ## 基本概念说明

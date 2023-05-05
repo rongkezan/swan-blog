@@ -2,8 +2,6 @@
 title: RocketMQ 安装运行
 date: {{ date }}
 categories:
-- 中间件
-tags:
 - 消息队列
 ---
 
@@ -19,6 +17,13 @@ JAVA_OPT="${JAVA_OPT} -server -Xms1g -Xmx1g -Xmn256m -XX:MetaspaceSize=128m -XX:
 
 vi runbroker.sh
 JAVA_OPT="${JAVA_OPT} -server -Xms512m -Xmx512m -Xmn128m"
+```
+
+修改 ./conf/broker.conf 文件，增加一行配置
+
+```sh
+# 自动创建 topic
+autoCreateTopicEnable = true
 ```
 
 Linux 启动/关闭 RocketMQ

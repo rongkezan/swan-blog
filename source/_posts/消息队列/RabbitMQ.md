@@ -2,8 +2,6 @@
 title: RabbitMQ
 date: {{ date }}
 categories:
-- 中间件
-tags:
 - 消息队列
 ---
 

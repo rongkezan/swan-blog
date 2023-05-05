@@ -17,6 +17,37 @@ GC是什么（分代收集算法）
 
 全局GC(Major GC / Full GC)：指发生在老年代的垃圾收集动作，出现了Major GC，经常会伴随至少一次的Minor GC，Major GC的速度一般要比Minor GC慢10倍以上。
 
+## JVM 内存分代模型
+
+> 除了 Epsilon ZGC Shenandoah 之外的GC都是使用逻辑分代模型
+>
+> G1是逻辑分代，物理不分代
+>
+> 除上述 GC 模型之外不仅是逻辑分代，而且是物理分代
+
+新生代 = Eden区 + 2 个 Suvivor区
+
+1. YGC 回收之后，大多数对象被回收，活着的进入S0
+2. 再次 YGC ，活着的对象 Eden + S0 -> S1
+3. 再次 YGC， Eden + S1 -> S0
+4. 年龄足够进入老年代
+5. 分配担保：Suvivor区装不下直接进入老年代 
+
+老年代：
+
+1. 老年代满了就Full GC
+
+永久代（1.7）/ 元空间（1.8）
+
+1. 永久代 元空间 - Class
+2. 永久代必须指定大小限制，元空间可以设置，也可以不设置，上限取决于物理内存
+3. 字符串常量 1.7 - 永久代，1.8 - 堆
+4. 永久代和元空间都是方法区的实现
+
+图示
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20200131193503949.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+
 ## 相关名词
 
 ### Card Table

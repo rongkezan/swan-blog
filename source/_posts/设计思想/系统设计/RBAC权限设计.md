@@ -2,7 +2,7 @@
 title: RBAC权限设计
 date: {{ date }}
 categories:
-- 设计思想
+- 系统设计
 ---
 
 ## RBAC 概述

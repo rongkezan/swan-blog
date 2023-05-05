@@ -2,7 +2,7 @@
 title: Mac
 date: {{ date }}
 categories:
-- 工具
+- 开发集
 ---
 
 ## Mac命令行快捷键

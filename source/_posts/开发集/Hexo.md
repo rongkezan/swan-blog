@@ -2,10 +2,8 @@
 title: Hexo
 date: {{ date }}
 categories:
-- 工具
+- 开发集
 ---
-
-# Hexo
 
 ## Hexo 搭建
 
@@ -57,9 +55,9 @@ url: https://rongkezan.github.io/demo
 
 5. 部署
 
-```sh
-hexo deploy
-```
+执行 `hexo deploy` 后即可自动部署到 github
+
+执行后会生成 public 文件夹生成部署资源，如需再次部署，需要删除 public 文件夹
 
 ## Hexo 主题 -- Fluid
 

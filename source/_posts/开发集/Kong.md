@@ -2,7 +2,7 @@
 title: Kong
 date: {{ date }}
 categories:
-- 中间件
+- 开发集
 ---
 
 ## Kong的安装

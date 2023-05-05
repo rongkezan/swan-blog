@@ -2,8 +2,6 @@
 title: MQ 常见问题
 date: {{ date }}
 categories:
-- 中间件
-tags:
 - 消息队列
 ---
 

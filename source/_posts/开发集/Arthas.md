@@ -2,7 +2,7 @@
 title: Arthas
 date: {{ date }}
 categories:
-- 工具
+- 开发集
 ---
 
 ## Arthas 可以解决的问题

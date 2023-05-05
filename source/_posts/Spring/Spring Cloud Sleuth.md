@@ -41,6 +41,8 @@ EagleEye：淘宝
 
    span 被启动和停止时，记录了时间信息，初始化span叫：root span，它的 span id 和 trace id 相等
 
+   通过 spanID 的开始和结束时间戳，就能统计该span的调用时间
+
 2. trace：一组共享 `root span` 的 span 组成的树状结构称为 trace
 
    trace 也有一个64位 ID，trace 中所有 span 共享一个 trace id，类似于一颗 span 树。
@@ -81,8 +83,6 @@ pom
 --- 参数解释 ---
 [服务名称，traceId（一条请求调用链中 唯一ID），spanID（基本的工作单元，获取数据等），是否让zipkin收集和展示此信息]
 ```
-
-
 
 ## Spring Cloud Zipkin
 

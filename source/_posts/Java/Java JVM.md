@@ -45,7 +45,7 @@ categories:
 
 - 数组长度：4字节
 - 数组数据
-- Padding：8的倍数
+- padding：8的倍数
 
 ```sh
 -XX:+UseCompressedClassPoiners # class pointer压缩，默认开启
@@ -72,10 +72,6 @@ markword 64位
 
 如果对象不大，先进行线程本地分配，分配不下找伊甸区，然后进行GC的过程，年龄到了进入老年代。
 
-### 对象生命周期
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/de1cabf13ea549b991e3e3522f5d229e.png)
-
 ### Java从编码到执行
 
 class被加载到内存之后，class的二进制文件加载到内存里，与此同时生成了class类的对象，该对象指向了二进制文件。class对象存在metaspace
@@ -91,7 +87,7 @@ class被加载到内存之后，class的二进制文件加载到内存里，与�
 
 **ClassLoader**：负责加载class文件（class文件在文件开头有特定文件标识）
 
-**各个类加载器的作用**
+#### 各个类加载器的作用
 
 BootStrapClassLoader 引导类加载器：加载JVM自身需要的类，使用C++实现，负责加载`%JAVA_HOME%/jre/lib.jar`核心类库。
 
@@ -101,9 +97,15 @@ AppClassLoader 系统类加载器：负责加载系统类路径`java -classpath`
 
 CustomClassLoader 自定义类加载器：继承ClassLoader重写findClass方法
 
-**双亲委派**：JVM收到类加载请求，他会自底向上地去缓存中找这个类，找到了返回，没找到就把这个请求委派给父加载器（不是继承）去寻找，直到BootstrapClassLoader也没找到时，会自顶向下加载这个class，如果到最后还没加载成功，则会抛出异常 `ClassNotFoundException`
+#### 双亲委派
 
-作用：沙箱安全，不让自己定义的类去勿扰JDK出厂自带的类
+JVM收到类加载请求，他会自底向上地去缓存中找这个类，找到了返回，没找到就把这个请求委派给父加载器（不是继承）去寻找，直到BootstrapClassLoader也没找到时，会自顶向下加载这个class，如果到最后还没加载成功，则会抛出异常 `ClassNotFoundException`
+
+双亲委派的作用
+
+1. 避免重复加载：当多个类加载器同时加载相同的类时，双亲委派模型可以避免重复加载，提高了加载效率。因为父类加载器已经加载了该类，就不需要子类加载器再次加载，避免了内存中出现多个重复的类定义。
+2. 确保类的一致性：通过委派给父类加载器加载类，可以确保使用的是相同的类定义。如果不使用双亲委派模型，不同的类加载器可能会加载同一个类的不同版本，导致类的不一致性和冲突。
+3. 加载安全性：由于双亲委派模型默认从上至下加载类，只有在父类加载器无法加载时才由子类加载器加载，这可以防止恶意代码通过自定义的类加载器来替换系统核心类，保护了JDK的安全性。
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210111223139570.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
@@ -120,11 +122,11 @@ CustomClassLoader 自定义类加载器：继承ClassLoader重写findClass方法
 
 ## 栈
 
-栈：每个JVM都有自己私有的JVM栈，JVM栈用来存储Frame
+栈：每个JVM都有自己私有的JVM栈，JVM栈用来存储栈帧
 
-Frame：每个方法对应一个 Frame
+栈帧：每个方法对应一个栈帧
 
-Frame 存放：Local Variable Table, Operated Stack, Dynamic Linking, Return Address
+栈帧 存放：Local Variable Table 本地变量表, Operated Stack 操作栈, Dynamic Linking 动态链接, Return Address 返回地址
 
 - Local Variable Table：byte、short、int、long、float、double、boolean、char、reference
 - Dynamic Linking：A方法调用B方法，这个过程就叫动态链接
@@ -140,6 +142,10 @@ i = i++;
 // 输出最终结果 8
 System.out.println(i);
 ```
+
+大部分 JVM 的默认栈大小在 1MB ~ 2MB 之间，也可以通过 `-Xss4m` 命令来调整 JVM 的栈大小
+
+在 Java 中每开启一个线程需要耗用 1MB 的 JVM 内存空间用于作为线程栈之用。
 
 **栈上分配** 
 
@@ -158,38 +164,28 @@ Java 中的堆是用来存储对象本身的以及数组（当然，数组引用
 Person person = new Person("张三", 22);
 ```
 
-### JVM 内存分代模型
+### JVM 堆默认配置
 
-> 除了 Epsilon ZGC Shenandoah 之外的GC都是使用逻辑分代模型
->
-> G1是逻辑分代，物理不分代
->
-> 除上述 GC 模型之外不仅是逻辑分代，而且是物理分代
+> 具体能承载多少并发，需要看硬件的配置，CPU 越多性能越高，分配给 JVM 的内存越多性能也就越高，但也会加重 GC 的负担。
 
-新生代 = Eden区 + 2 个 Suvivor区
+默认堆大小
 
-1. YGC 回收之后，大多数对象被回收，活着的进入S0
-2. 再次 YGC ，活着的对象 Eden + S0 -> S1
-3. 再次 YGC， Eden + S1 -> S0
-4. 年龄足够进入老年代
-5. 分配担保：Suvivor区装不下直接进入老年代 
+- 最大堆大小
+  - 物理内存小于192MB时，为物理内存的一半
+  - 物理内存大于192MB且小于1GB时，为物理内存的四分之一
+  - 大于等于1GB时，都为256MB
+- 初始化堆大小
+  - 至少为8MB
+  - 物理内存大于512MB且小于1GB时，为物理内存的六十四分之一
+  - 大于等于1GB时，都为16MB
 
-老年代：
+在程序中可以使用如下语句打印最大内存
 
-1. 老年代满了就Full GC
+```java
+Runtime.getRuntime().maxMemory()
+```
 
-永久代（1.7）/ 元空间（1.8）
-
-1. 永久代 元空间 - Class
-2. 永久代必须指定大小限制，元空间可以设置，也可以不设置，上限取决于物理内存
-3. 字符串常量 1.7 - 永久代，1.8 - 堆
-4. 永久代和元空间都是方法区的实现
-
-图示
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200131193503949.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
-
-### 实例化对象分配
+## 实例化对象分配
 
 1. 栈上分配
 

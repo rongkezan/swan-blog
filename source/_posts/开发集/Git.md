@@ -2,7 +2,7 @@
 title: Git
 date: {{ date }}
 categories:
-- 工具
+- 开发集
 ---
 ## Git 仓库操作
 

@@ -2,7 +2,7 @@
 title: Webpack
 date: {{ date }}
 categories:
-- 工具
+- 开发集
 ---
 
 # Webpack
