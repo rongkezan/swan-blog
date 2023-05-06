@@ -62,3 +62,13 @@ Registry.getRegistry(null, null).invoke(mbeans, "start", false);
 各个组件在其生命期中会有各种各样行为，而这些行为都有触发相应的事件，Tomcat就是通过侦听这些时间达到对这些行为进行扩展的目的。在看组件的init和start过程中会看到大量如：
 
 lifecycle.fireLifecycleEvent(AFTER_START_EVENT, null);这样的代码，这就是对某一类型事件的触发，如果你想在其中加入自己的行为，就只用注册相应类型的事件即可。
+
+### 服务器性能
+
+Tomcat 默认的 `WebScoket` 并发连接数是200，`HTTP` 并发连接数也是200，默认线程池数量是200。
+
+Tomcat的最大并发数是可以配置的，实际运用中，最大并发数与硬件性能和CPU数量都有很大关系的。更好的硬件，更多的处理器都会使Tomcat支持更多的并发。
+
+Tomcat中，`WebSocket` 连接使用的是 `WebSocket` 协议处理器，而 HTTP 连接使用的是 `HTTP/1.1` 或 `HTTP/2` 协议处理器。这两种协议处理器使用不同的连接池来管理连接，`WebSocket` 连接和 `HTTP` 连接的生命周期不同。`HTTP` 连接是短连接，每次请求都会建立一条连接，请求完成后立即释放连接。而 `WebSocket` 连接是长连接，一旦建立成功，客户端和服务器端之间会一直保持连接，直到连接关闭。因此 `WebSocket` 连接不会直接消耗 `HTTP` 连接数。虽然 `WebSocket` 连接不会直接消耗 HTTP 连接数，但它们仍然会占用服务器资源，包括内存和 CPU。因此，在设计应用程序时，需要合理地管理 `WebSocket` 连接，以避免对服务器造成过度负担。
+
+Tomcat支持三种接收请求的处理方式：BIO、NIO、APR 。但是NIO、APR都没有BIO成熟。
