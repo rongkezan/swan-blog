@@ -54,9 +54,11 @@ categories:
 
 注意，由于Master和Slave都可以读取消息，因此Consumer会与Master和Slave都建立连接。
 
-### Topic
+#### Topic
 
 Topic是一个逻辑上的概念，实际上Message是在每个Broker上以Queue的形式记录。
+
+Kafka的Partition的概念约等于RocketMQ的Queue
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/2021030118144581.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 

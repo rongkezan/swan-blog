@@ -169,7 +169,7 @@ pool.shutdown();
 定义：等待队列和max线程数都满了，那么就需要启用拒绝策略处理这个问题。
 
 - AbortPolicy(默认)：直接抛出RejectedExecutionException异常
-- CallerRunsPolicy：既不会抛弃任务，也不会抛出异常，而是把某些任务回退给调用者
+- CallerRunsPolicy：不会抛弃任务和抛出异常，让调用线程（提交任务的线程）直接执行此任务，可能导致数据处理顺序不一致。
 - DiscardOldestPolicy：抛弃队列中等待最久的任务，然后把当前任务加入队列中尝试再次提交当前任务
 - DiscardPolicy：直接丢弃任务，不予任何处理也不抛出异常
 - 自定义Policy：实现 `RejectedExecutionHandler` 接口
