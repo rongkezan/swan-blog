@@ -47,27 +47,97 @@ String、包装类等属于引用数据类型，同时是**不可变对象**
 > 不可变对象(Immutable Object)：对象一旦被创建后，对象所有的状态及属性在其生命周期内不会发生任何变化。
 > 由于ImmutableObject不提供任何setter方法，并且成员变量value是基本数据类型，getter方法返回的是value的拷贝，所以一旦ImmutableObject实例被创建后，该实例的状态无法再进行更改，因此该类具备不可变性。
 
-## 序列化与反序列化
+## 泛型
 
-对象的序列化主要有两种用途：
+### 泛型使用方式
 
-1. 把对象的字节序列永久地保存到硬盘上，通常存放在一个文件中
-2. 在网络上传送对象的字节序列
+![在这里插入图片描述](https://img-blog.csdnimg.cn/8e5b70b8587b4c718adc753dac84e637.png)
 
-serialVersionUID作用：序列化时为了保持版本的兼容性，即在版本升级时反序列化仍保持对象的唯一性。
+### 泛型常用通配符
 
-有两种生成方式：
+> 常用通配符为：T、E、K、V、?
 
-1. 默认的1L，比如：private static final long serialVersionUID = 1L
-2. 根据类名、接口名、成员方法及属性等来生成一个64位的哈希字段，比如：
+- ? 表示不确定的 java 类型
+- T（type）表示一个具体的 java 类型
+- K V（key value）分别代表 java 键值中的 Key Value
+- E（Element）代表 Element
+
+### 泛型擦除
+
+Java 的泛型是伪泛型，这是因为 Java 在编译期间，所有的类型信息都会被擦掉。也就是说，在运行的时候是没有泛型的。
+
+例如
 
 ```java
-private static final long serialVersionUID = xxxxL;
+LinkedList<Cat> cats = new LinkedList<Cat>();
+LinkedList list = cats; // 注意我在这里把范型去掉了，但是list和cats是同一个链表！
+list.add(new Dog()); 	// 完全没问题！
 ```
+
+因为Java的范型只存在于源码里，编译的时候给你静态地检查一下范型类型是否正确，而到了运行时就不检查了。上面这段代码在JRE（Java运行环境）看来和下面这段没区别：
+
+```java
+LinkedList cats = new LinkedList(); // 注意：没有范型！
+LinkedList list = cats;
+list.add(new Dog());
+```
+
+为什么要类型擦除呢？
+
+主要是为了向下兼容，因为JDK5之前是没有泛型的，为了让JVM保持向下兼容，就出了类型擦除这个策略。
+
+## 序列化与反序列化
+
+### 什么是序列化和反序列化
+
+序列化：把 Java 对象转为二进制流，方便存储和传输
+
+反序列化：把二进制流恢复成 Java 对象
+
+### Serializable接口
+
+这个接口只是一个标记，没有具体的作用，但是如果不实现这个接口，在有些序列化场景会报错，所以一般建议，创建的JavaBean类都实现 Serializable。
+
+### serialVersionUID
+
+用来验证序列化的对象和反序列化对应的对象ID 是否一致。
+
+```java
+// 这个ID其实不重要，无论是1L还是自动生成的，只要序列化的ID和反序列化ID一致就行
+private static final long serialVersionUID = 1L;
+```
+
+所以如果你没有定义一个 serialVersionUID， 结果序列化一个对象之后，在反序列化之前把对象的类的结构改了，比如增加了一个成员变量，则此时的反序列化会失败。
+
+因为类的结构变了，所以 serialVersionUID 就不一致。
+
+### Java 序列化包含静态变量吗
+
+序列化的时候是不包含静态变量的。
+
+### 对于有些变量不想序列化，怎么办
+
+对于不想进行序列化的变量，使用 transient 关键字修饰。
+
+transient 关键字的作用是：阻止实例中那些用此关键字修饰的的变量序列化。
+
+当对象被反序列化时，被 transient 修饰的变量值不会被持久化和恢复。
+
+transient 只能修饰变量，不能修饰类和方法。
+
+### 序列化方式
+
+- Java对象流列化 ：Java原生序列化方法即通过Java原生流(InputStream和OutputStream之间的转化)的方式进行转化，一般是对象输出流ObjectOutputStream 和对象输入流 ObjectInputStream 。
+- Json序列化：这个可能是我们最常用的序列化方式，Json序列化的选择很多，一般会使用jackson包，通过ObjectMapper类来进行一些操作，比如将对象转化为byte数组或者将json串转化为对象。
+- ProtoBuff序列化：ProtocolBuffer是一种轻便高效的结构化数据存储格式。ProtoBuff序列化对象可以很大程度上将其压缩，可以大大减少数据传输大小，提高系统性能。
 
 ## 反射
 
-> JAVA反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法。对于任意一个对象，都能够调用它的任意方法和属性。
+我们想在时候动态地获取类信息、创建类实例、调用类方法这时候就要用到反射。
+
+通过反射你可以获取任意一个类的所有属性和方法，你还可以调用这些方法和属性。
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/2579a6fbdbcd482f85a4f52e06ff48ac.png)
 
 获取 Class 对象的方式
 
@@ -124,74 +194,15 @@ public static void setFieldValue(String fieldName, Object object, Object value) 
 
 ## 注解
 
-可以通过注解来获取相关属性，通过这些属性再配合反射实现相应业务。
+Java注解本质上是一个标记，可以标记在类上、方法上、属性上等，标记自身也可以设置一些值，有了标记之后，我们就可以在编译或者运行阶段去识别这些标记，去处理一些具体的业务。
 
-案例：通过反射获取全类名，再通过全类名实例化对应的类
+注解的应用：AOP、Lombok
 
-```java
-@Target({ElementType.TYPE, ElementType.METHOD})
-@Retention(RetentionPolicy.RUNTIME)
-@interface Channel{
-    String value();
-}
-```
+注解的生命周期
 
-```java
-/* 连接接口 */
-public interface Connection {
-    boolean build();
-}
-
-public class CloudConnection implements Connection {
-    @Override
-    public boolean build() {
-        System.out.println("Connect to cloud");
-        return true;
-    }
-}
-
-public class DatabaseConnection implements Connection {
-    @Override
-    public boolean build() {
-        System.out.println("Connect to database");
-        return true;
-    }
-}
-```
-
-```java
-@Channel("com.demo.basic.annotation.DatabaseConnection")
-public class Message{
-
-    private Connection conn;
-
-    public Message(){
-        Channel channel = this.getClass().getAnnotation(Channel.class);
-        try {
-            // 通过反射获取到Connection对象实例
-            conn = (Connection) Class.forName(channel.value()).newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void send(String msg){
-        // 执行build方法，实际上执行的是Connection接口的实现类
-        if (conn.build()){
-            System.out.println("消息发送:" + msg);
-        }
-    }
-}
-```
-
-```java
-public class Client {
-    public static void main(String[] args) {
-        Message msg = new Message();
-        msg.send("Hello World");
-    }
-}
-```
+- RetentionPolicy.SOURCE：给编译器用的，不会写入 class 文件
+- RetentionPolicy.CLASS：会写入 class 文件，在类加载阶段丢弃，也就是运行的时候就没这个信息了
+- RetentionPolicy.RUNTIME：会写入 class 文件，永久保存，可以通过反射获取注解信息
 
 ## 申请堆外内存
 
@@ -207,6 +218,41 @@ unsafe.freeMemory()
 接口：自上向下，定义约束和规范
 
 抽象类：自下向上，将具体子类公共实现抽象到一个父类之中
+
+## IO模型
+
+### Java BIO
+
+`Java BIO`就是Java的传统IO模型，对应了操作系统IO模型里的阻塞IO。
+
+`Java BIO`相关的实现都位于`java.io`包下，其通信原理是客户端、服务端之间通过`Socket`套接字建立管道连接，然后从管道中获取对应的输入/输出流，最后利用输入/输出流对象实现发送/接收信息。
+
+那么我们就进入Java的下一种IO模型——`Java NIO`，它对应操作系统IO模型中的多路复用IO，底层采用了`epoll`实现。
+
+### Java NIO
+
+`Java-NIO`则是`JDK1.4`中新引入的`API`，它在`BIO`功能的基础上实现了非阻塞式的特性，其所有实现都位于`java.nio`包下。`NIO`是一种基于通道、面向缓冲区的`IO`操作，相较`BIO`而言，它能够更为高效的对数据进行读写操作，同时与原先的`BIO`使用方式也大有不同。
+
+Java-NIO中有三个核心概念：**`Buffer`（缓冲区）、`Channel`（通道）、`Selector`（选择器）**。
+
+- 每个客户端连连接本质上对应着一个`Channel`通道，每个通道都有自己的`Buffer`缓冲区来进行读写，这些`Channel`被`Selector`选择器管理调度
+- `Selector`负责轮询所有已注册的`Channel`，监听到有事件发生，才提交给服务端线程处理，服务端线程不需要做任何阻塞等待，直接在`Buffer`里处理`Channel`事件的数据即可，处理完马上结束，或返回线程池供其他客户端事件继续使用。
+- 通过`Selector`，服务端的一个`Thread`就可以处理多个客户端的请求
+- Buffer（缓冲区）就是饭店用来存放食材的储藏室，当服务员点餐时，需要从储藏室中取出食材进行制作。
+- Channel（通道）是用于传输数据的车道，就像饭店里的上菜窗口，可以快速把点好的菜品送到客人的桌上。
+- Selector（选择器）就是大堂经理，负责协调服务员、厨师和客人的配合和沟通，以保证整个就餐过程的效率和顺畅。
+
+### Java AIO
+
+`Java-AIO`也被成为`NIO2`，它是在`NIO`的基础上，引入了新的异步通道的概念，并提供了异步文件通道和异步套接字的实现。
+
+它们的主要区别就在于这个异步通道，见名知意：使用异步通道去进行`IO`操作时，所有操作都为异步非阻塞的，当调用`read()/write()/accept()/connect()`方法时，本质上都会交由操作系统去完成，比如要接收一个客户端的数据时，操作系统会先将通道中可读的数据先传入`read()`回调方法指定的缓冲区中，然后再主动通知Java程序去处理。
+
+所有的操作都是异步进行，通过`completed`接收异步回调，通过`failed`接收错误回调。
+
+而且我们发现，相较于之前的`NIO`而言，`AIO`其中少了`Selector`选择器这个核心组件，选择器在`NIO`中充当了协调者的角色。
+
+但在`Java-AIO`中，类似的角色直接由操作系统担当，而且不是采用轮询的方式监听`IO`事件，而是采用一种类似于“订阅-通知”的模式。
 
 ## IO
 
@@ -571,5 +617,21 @@ System.out.println(summary.getAverage());
 System.out.println(summary.getMax());
 // 拼接
 String str = emps.stream().map(Employee::getName).collect(Collectors.joining(","));
+```
+
+## Optional
+
+Optional 是用于防范 NullPointerException 。
+
+可以将 Optional 看做是包装对象（可能是 null , 也有可能非 null ）的容器。
+
+当我们定义了 一个方法，这个方法返回的对象可能是空，也有可能非空的时候，我们就可以考虑用 Optional 来包装它，这也是在 Java 8 被推荐使用的做法。
+
+```java
+Optional<String> optional = Optional.of("bam");
+optional.isPresent(); 			// true
+optional.get(); 				// "bam"
+optional.orElse("fallback"); 	// "bam"
+optional.ifPresent((s) -> System.out.println(s.charAt(0)));
 ```
 

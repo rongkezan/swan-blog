@@ -714,9 +714,32 @@ public class AtomicReferenceDemo {
 
 是用来构建锁或者其它同步组件的抽象父类
 
-- volatile state：用volatile修饰保证线程之间可见，state的值根据子类的具体实现来分配，如ReentrantLock加锁是1，不加锁是0；CountDownLatch设置为5，state就是5
-- CAS：抢锁的时候使用CAS
+AQS是基于一个FIFO的双向队列，其内部定义了一个节点类Node，Node 节点内部的 SHARED 用来标记该线程是获取共享资源时被阻挂起后放入AQS 队列的，EXCLUSIVE 用来标记线程是 取独占资源时被挂起后放入AQS 队列。
+
 - 双端队列：CLH变种的双端队列，Node中存放的是线程
+- state：用volatile修饰保证线程之间可见，state的值根据子类的具体实现来分配，如ReentrantLock加锁是1，不加锁是0；CountDownLatch设置为5，state就是5，修改 state 时通过CAS来保证修改的原子性。
+- 获取state的方式分为两种
+  - 独占：独占方式获取了资源，其它线程就会在获取失败后被阻塞。
+  - 共享：共享方式获取了资源，其它线程还可以通过CAS的方式进行获取。
+- 如果共享资源被占用，需要一定的阻塞等待唤醒机制来保证锁的分配，AQS 中会将竞争共享资源失败的线程添加到一个变体的 CLH 队列中。
+
+### AQS 抽象队列同步器
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/a058071f46f2474ea1796dce47da288e.png)
+
+先简单了解一下CLH：Craig、Landin and Hagersten 队列，是 单向链表实现的队列。申请线程只在本地变量上自旋，它不断轮询前驱的状态，如果发现 前驱节点释放了锁就结束自旋。
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/e01f9ba43a434c60ae36b393c9a26ab4.png)
+
+AQS 中的队列是 CLH 变体的虚拟双向队列，通过将每条请求共享资源的线程封装成一个节点来实现锁的分配：
+
+AQS 中的 CLH 变体等待队列拥有以下特性：
+
+- AQS 中队列是个双向链表，也是 FIFO 先进先出的特性
+- 通过 Head、Tail 头尾两个节点来组成队列结构，通过 volatile 修饰保证可见性
+- Head 指向节点为已获得锁的节点，是一个虚拟节点，节点本身不持有具体线程获取不到同步状态，会将节点进行自旋获取锁，自旋一定次数失败后会将线程阻塞，相对于 CLH 队列性能较好
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/9c041fea3fdd4b01a742a9af37cdae78.png)
 
 ### 抢锁流程
 
@@ -738,8 +761,6 @@ if (c == 0) {
     }
 }
 ```
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20201218203120948.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 ### 源码说明
 
@@ -787,27 +808,46 @@ if (p == head && tryAcquire(arg)){}
 
 JDK9使用VarHandle：普通的原子操作，比反射快，直接操作二进制码
 
-### AQS资源获取方式
-
-AQS定义了两种资源获取的方式：独占、共享
-
-独占：只有一个线程能访问运行，又根据顺序分为公平锁和非公平锁
-
-共享：多个线程可同时访问运行，如Semaphore、CountDownLatch、CyclicBarrier
-
 ## ThreadLocal
 
-> 线程独享的Map
+### ThreadLocal 作用
 
-**ThreadLocalMap中的Entry是弱引用**
+线程本地全局变量。如果你创建了一个ThreadLocal变量，那么访问这个变量的每个线程都会有这个变量的一个本地拷贝，多个线程操作这个变量的时候，实际是操作自己本地内存里面的变量，从而起到线程隔离的作用，避免了线程安全问题。
 
-1.  若是强引用，即使tl == null，但key的引用依然指向ThreadLocal对象，所以有内存泄露，而使用弱引用则不会。
-2.  但还是有内存泄露的存在，ThreadLocalMap 是 Thread 的一个属性，生命周期跟 Thread 一致，当ThreadLocal被回收，key的值变成null，则导致整个value再也无法被访问到，因此依然存在内存泄露。所以ThreadLocal不用了需要调用 `remove()`回收
+### ThreadLocal 使用
 
 ```java
-ThreadLocal<M> tl = new ThreadLocal<>();
-tl.set(new M());
+ThreadLocal<String> localVariable = new ThreadLocal();
+try {
+	localVariable.set("鄙人三某”);
+} finally {
+	localVariable.remove();
+}
 ```
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210114221056228.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
+### ThreadLocal 原理
 
+- Thread类有一个类型为ThreadLocal.ThreadLocalMap的实例变量threadLocals，每个线程都有一个属于自己的ThreadLocalMap。
+- ThreadLocalMap内部维护着Entry数组，每个Entry代表一个完整的对象，key是ThreadLocal的弱引用，value是ThreadLocal的泛型值。
+- 每个线程在往ThreadLocal里设置值的时候，都是往自己的ThreadLocalMap里存，读也是以某个ThreadLocal作为引用，在自己的map里找对应的key，从而实现了线程隔离。
+- ThreadLocal本身不存储值，它只是作为一个key来让线程往ThreadLocalMap里存取值。
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/988e7ae0175f41c3b39233bac9c2dad5.png)
+
+### ThreadLocal 内存泄露 
+
+ThreadLocalMap中使用的 key 为 ThreadLocal 的弱引用。
+
+> 弱引用：只要垃圾回收机制一运行，不管JVM的内存空间是否充足，都会回收该对象占用的内存。
+
+那么现在问题就来了，弱引用很容易被回收，如果ThreadLocal（ThreadLocalMap的Key）被垃圾回收器回收了，但是ThreadLocalMap生命周期和Thread是一样的，它这时候如果不被回收，就会出现这种情况：ThreadLocalMap的key没了，value还在，这就会造成了内存泄漏问题。 
+
+如何解决内存泄露问题：使用完ThreadLocal后调用 `remove()` 方法释放空间。
+
+**为什么key还要设计成弱引用？**
+
+key设计成弱引用同样是为了防止内存泄漏。
+
+假如key被设计成强引用，如果ThreadLocal Reference被销毁，此时它指向ThreadLocal的强引用就没有了，但是此时key还强引用指向ThreadLocal，就会导致ThreadLocal不能被回收，这时候就发生了内存泄漏的问题。
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/a1b46d09786547d49b11f2ad371a302a.png)
