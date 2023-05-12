@@ -2,7 +2,7 @@
 title: Elasticsearch 基本概念
 date: {{ date }}
 categories:
-- Elasticsearch
+- Elastic Stack
 ---
 
 ## 节点 Node

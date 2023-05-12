@@ -2,7 +2,7 @@
 title: Elasticsearch Kibana 操作
 date: {{ date }}
 categories:
-- Elasticsearch
+- Elastic Stack
 ---
 
 ## 索引操作
