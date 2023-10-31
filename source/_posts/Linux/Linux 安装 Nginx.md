@@ -7,6 +7,8 @@ categories:
 
 ## Nginx 安装
 
+### CentOS
+
 安装依赖包
 
 ```sh
@@ -16,8 +18,8 @@ yum -y install gcc zlib zlib-devel pcre-devel openssl openssl-devel
 下载并解压nginx
 
 ```sh
-wget http://nginx.org/download/nginx-1.18.0.tar.gz
-tar -xvf nginx-1.18.0.tar.gz
+wget http://nginx.org/download/nginx-1.24.0.tar.gz
+tar -xvf nginx-1.24.0.tar.gz
 ```
 
 进入nginx目录安装ssl模块
@@ -70,6 +72,34 @@ nginx: [alert] could not open error log file: open() "/usr/local/nginx/logs/erro
 ```sh
 mkdir logs
 chmod 700 logs
+```
+
+### Ubuntu
+
+```sh
+sudo apt update
+sudo apt-get install libpcre3-dev
+sudo apt-get install ruby
+sudo apt-get install zlib1g-dev
+```
+
+```sh
+tar -zxvf nginx-1.16.1.tar.gz
+cd nginx-1.22.1/
+ 
+#编译
+./configure  --with-http_ssl_module
+ 
+./configure 
+ 
+#提示没有安装的工具包，见步骤一，并且删除nginx-1.22.1，重新安装
+ 
+#安装
+make && make install
+```
+
+```sh
+sudo /usr/local/nginx/sbin/nginx
 ```
 
 ## Nginx 配置
@@ -130,4 +160,6 @@ http {
     }
 }
 ```
+
+
 

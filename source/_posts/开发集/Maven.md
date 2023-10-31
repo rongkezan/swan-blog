@@ -468,7 +468,7 @@ docker run -d --name nexus3 -p 8081:8081 -v /usr/local/nexus-data:/var/nexus-dat
 # 进入Nexus容器
 docker exec -it 4057a8835ca8 /bin/bash
 # 查看默认密码
-cat nexus-data/admin.password
+cat /nexus-data/admin.password
 e806f582-5ca1-4e3f-a5dc-65044aa1cd0f
 ```
 
