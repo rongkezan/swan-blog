@@ -74,3 +74,9 @@ server.host: "0.0.0.0"
 nohup ./kibana &
 ```
 
+## IK 分词器安装
+
+```sh
+./elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v8.11.0/elasticsearch-analysis-ik-8.11.0.zip
+```
+
