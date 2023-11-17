@@ -26,6 +26,8 @@ tar -xvf nginx-1.24.0.tar.gz
 
 ```sh
 ./configure --with-http_stub_status_module --with-http_ssl_module
+# 可选--指定OpenSSL路径
+./configure --with-http_ssl_module --with-http_stub_status_module --with-openssl=/path/to/new/openssl
 ```
 
 执行编译
