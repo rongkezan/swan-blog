@@ -208,6 +208,8 @@ firewall-cmd --list-all
 netstat -anlp | grep :3306
 # 防火墙增加端口
 firewall-cmd --permanent --add-port=8001/tcp
+# 设置root密码
+sudo passwd root
 ```
 
 软链接
@@ -233,6 +235,68 @@ ln [source] [target]
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210406230655759.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEwMzAyNg==,size_16,color_FFFFFF,t_70)
 
 
+
+## 装载磁盘
+
+### 1. 列出磁盘
+
+使用命令 `lsblk` 来列出磁盘，输出类似以下示例：
+
+```sh
+[root@DEMO ~]# lsblk
+NAME    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda       8:0    0   30G  0 disk 
+├─sda1    8:1    0  500M  0 part /boot
+├─sda2    8:2    0   29G  0 part /
+├─sda14   8:14   0    4M  0 part 
+└─sda15   8:15   0  495M  0 part /boot/efi
+sdb       8:16   0   32G  0 disk 
+└─sdb1    8:17   0   32G  0 part /mnt/resource
+sdc       8:32   0    1T  0 disk
+```
+
+在此示例中，需要添加的磁盘为 `sdc`
+
+### 2. 准备新的空磁盘
+
+如果附加新磁盘，需要对磁盘进行分区。
+
+`parted` 实用程序可用于对数据磁盘进行分区和格式设置。
+
+- 使用适用于你的发行版的最新版本 `parted`。
+- 如果磁盘大于或等于 2 TiB，必须使用 GPT 分区。 如果磁盘小于 2 TiB，则可以使用 MBR 或 GPT 分区。
+
+以下示例在 `/dev/sdc` 上使用 `parted`，那里是大多数 VM 上第一块数据磁盘通常所在的位置。 将 `sdc` 替换为磁盘的正确选项。 我们还使用 [XFS](https://xfs.wiki.kernel.org/) 文件系统对其进行格式设置。
+
+```sh
+sudo parted /dev/sdc --script mklabel gpt mkpart xfspart xfs 0% 100%
+sudo mkfs.xfs /dev/sdc1
+sudo partprobe /dev/sdc1
+```
+
+### 3. 装载磁盘
+
+```sh
+sudo mkdir /dist
+sudo mount /dev/sdc1 /dist
+```
+
+若要确保在重新引导后自动重新装载驱动器，必须将其添加到 */etc/fstab* 文件。 此外，强烈建议在 /etc/fstab 中使用 UUID（全局唯一标识符）来引用驱动器而不是只使用设备名称（例如 /dev/sdc1）。 如果 OS 在启动过程中检测到磁盘错误，使用 UUID 可以避免将错误的磁盘装载到给定位置。 然后为剩余的数据磁盘分配这些设备 ID。 若要查找新驱动器的 UUID，请使用 `blkid` 实用工具：
+
+```sh
+sudo blkid
+```
+
+输出与以下示例类似：
+
+```sh
+/dev/sda1: UUID="b2a358be-34df-4846-9b43-a8f4b33e114f" TYPE="xfs" PARTUUID="baaf47d7-5e5d-4c91-bf61-63ff0cb2f32d" 
+/dev/sda2: UUID="8a88d08f-4735-454c-b1d6-56cd0d4bc8a3" TYPE="xfs" PARTUUID="7ac6b562-4b4b-4769-ac51-476fcca96b25" 
+/dev/sda15: SEC_TYPE="msdos" UUID="75E4-142D" TYPE="vfat" PARTLABEL="EFI System Partition" PARTUUID="f7890c76-f2bf-4b47-b33e-c41b6dc41234" 
+/dev/sdb1: UUID="e1425ac9-8947-4f75-b9d3-708441a56708" TYPE="ext4" 
+/dev/sdc1: UUID="a364e712-b567-44ca-9c13-e5a9342625d2" TYPE="xfs" PARTLABEL="xfspart" PARTUUID="00365c44-a108-4d70-a2ba-2739726a901a" 
+/dev/sda14: PARTUUID="06b6b72b-2607-4e03-91c5-ed2e2c33fb36"
+```
 
 ## Vi命令
 
