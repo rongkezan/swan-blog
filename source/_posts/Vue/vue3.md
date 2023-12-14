@@ -183,3 +183,64 @@ const goList = () => {
 }
 ```
 
+## element-plus
+安装
+```sh
+pnpm install element-plus
+```
+配置按需自动导入
+```sh
+pnpm install -D unplugin-vue-components unplugin-auto-import
+```
+```js
+// vite.config.ts
+import { defineConfig } from 'vite'
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+
+export default defineConfig({
+  // ...
+  plugins: [
+    // ...
+    AutoImport({
+      resolvers: [ElementPlusResolver()],
+    }),
+    Components({
+      resolvers: [ElementPlusResolver()],
+    }),
+  ],
+})
+```
+
+## Pinia
+```sh
+pnpm add pinia-plugin-persistedstate -D
+```
+
+```js
+// main.js
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+import App from './App.vue'
+import router from './router'
+import '@/assets/main.scss'
+
+const app = createApp(App)
+
+app.use(createPinia().use(piniaPluginPersistedstate))
+app.use(router)
+
+app.mount('#app')
+```
+
+## Axios
+```sh
+pnpm add axios
+```
+
+### 图标库
+```sh
+pnpm i @element-plus/icons-vu
+```
