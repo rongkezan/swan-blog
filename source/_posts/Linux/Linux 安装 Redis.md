@@ -5,31 +5,12 @@ categories:
 - Linux
 ---
 
-## yum安装
-
-```sh
-yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-
-yum -y install redis
-
-systemctl start redis
-
-# 配置文件路径 /etc/redis.conf
-```
-
 ## 二进制安装
 
 ```bash
 yum install -y gcc
 cd redis-7.0.11
 make && make install
-```
-
-## 启动命令
-
-```sh
-systemctl start redis
-systemctl restart redis
 ```
 
 ## 配置
@@ -59,3 +40,12 @@ daemonize yes
 ```sh
 requirepass 123456
 ```
+
+## 启动
+
+指定配置文件启动
+
+```sh
+redis-server redis.conf
+```
+
