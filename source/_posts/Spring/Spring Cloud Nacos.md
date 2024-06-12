@@ -68,6 +68,20 @@ db.password.0=nacos
 172.23.184.238:8848
 ```
 
+### Nacos 权限配置
+
+> 基于nacos2.3.2版本
+
+```properties
+# 开启鉴权
+nacos.core.auth.enabled=true
+# nacos登录的username,password
+nacos.core.auth.server.identity.key=nacos
+nacos.core.auth.server.identity.value=nacos
+# 默认token，需要32位以上
+nacos.core.auth.plugin.nacos.token.secret.key=bmFjb3NfMjAyNDAxMTBfc2hpZ3poX25hY29zX3Rva2Vu
+```
+
 #### Nginx 配置
 
 > upstream 名称不能用下划线，nginx无法识别 
